@@ -1,7 +1,5 @@
 package opkp.controller;
 
-import opkp.OPKPService;
-import opkp.model.Food;
 import opkp.parser.SQLBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +17,7 @@ public class QueryController {
 				.where(condition)
 				.build();
 
-		return OPKPService.getDatabase().query(query, (rs, rowNum) -> Food.fromResultSet(rs));
+		return query;
 	}
 
 }
