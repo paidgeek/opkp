@@ -1,11 +1,18 @@
 var OPKP = {};
 
-OPKP.host = "http://localhost:8080/api/";
+OPKP.host = "http://localhost:8080/";
 
-OPKP.getAllFoods = function (callback) {
+OPKP.select = function (statement, success, error) {
     $.ajax({
-        url: OPKP.host + "food"
-    }).then(function (data) {
-        callback(data);
+        type: "POST",
+        url: OPKP.host + "select",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        data: JSON.stringify(statement),
+        timeout: 3000,
+        success: success,
+        error: error
     });
 };

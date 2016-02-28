@@ -47,4 +47,24 @@ public class Pojo implements JsonSerializable {
 		throw new NotImplementedException();
 	}
 
+	public static class Builder {
+
+		private Map<String, Object> properties;
+
+		public Builder() {
+			properties = new HashMap<>();
+		}
+
+		public Builder setProperty(String name, Object value) {
+			properties.put(name, value);
+
+			return this;
+		}
+
+		public Pojo build() {
+			return new Pojo(properties);
+		}
+
+	}
+
 }

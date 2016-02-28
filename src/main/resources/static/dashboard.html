@@ -10,21 +10,16 @@
     <title>OPKP Dashboard</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/query-builder.min.css">
+    <link rel="stylesheet" href="css/table-fixed-header.css">
     <link href="css/main.css" rel="stylesheet"/>
 </head>
 
 <body>
 
-<div class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">OPKP</a>
-        </div>
+<div class="navbar navbar-default navbar-fixed-top" id="header">
+    <div class="container-fluid">
+        <div class="navbar-brand">OPKP</div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">Log out</a></li>
@@ -33,26 +28,46 @@
     </div>
 </div>
 
-<form>
-    <input type="text" class="form-control" placeholder="Search...">
-</form>
-<button type="button" class="btn btn-primary" id="searchButton" data-loading-text="Loading...">
-    Search
-</button>
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h2>Results </h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-1 no-float sidebar">
+            <ul class="nav nav-sidebar">
+                <li class="active"><a href="#">Explore<span class="sr-only">(current)</span></a></li>
+                <li><a href="#">Tab 2</a></li>
+                <li><a href="#">Tab 3</a></li>
+                <li><a href="#">Tab 4</a></li>
+            </ul>
+        </div>
+        <div class="col-md-11 col-md-offset-1 main">
+            <div class="row">
+                <div>
+                    <form>
+                        <input type="text" class="form-control" placeholder="Search...">
+                    </form>
+                    <button type="button" class="btn btn-default" id="find-button" data-loading-text="Loading...">
+                        Find
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="fixed-table">
+                    <div class="table-content">
+                        <table class="table table-striped table-hover table-condensed" id="result-table">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-<div class="grid-wrapper-div">
-    <table class="table table-striped table-hover" id="resultTable">
-    </table>
 </div>
 
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/doT.min.js"></script>
+<script src="js/extendext.min.js"></script>
+<script src="js/moment-with-locales.min.js"></script>
+<script src="js/query-builder.min.js"></script>
+<script src="js/table-fixed-header.js"></script>
 <script src="js/service.js"></script>
 <script src="js/main.js"></script>
 </body>

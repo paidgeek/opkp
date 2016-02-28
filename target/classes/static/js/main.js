@@ -1,5 +1,6 @@
 var $searchButton = $("#searchButton");
 var $resultTable = $("#resultTable");
+var $entriesSelect = $("#entriesSelect");
 
 function clearResult() {
     $resultTable.html("");
@@ -18,31 +19,12 @@ function writeResult(result) {
     var html = "<thead><tr>";
 
     for (var prop in objects[0]) {
-        html += "<th>" + prop + "</th>";
+        html += "<th data-column-id='" + prop + "'>" + prop + "</th>";
     }
 
-    html += "</tr></thead><tbody>";
+    html += "<th data-column-id=\"commands\" data-formatter=\"commands\" data-sortable=\"false\">Commands</th>";
 
-    /*
-     <thead>
-     <tr>
-     <th>#</th>
-     <th>Header</th>
-     <th>Header</th>
-     <th>Header</th>
-     <th>Header</th>
-     </tr>
-     </thead>
-     <tbody>
-     <tr>
-     <td>1,001</td>
-     <td>Lorem</td>
-     <td>ipsum</td>
-     <td>dolor</td>
-     <td>sit</td>
-     </tr>
-     </tbody>
-     */
+    html += "</tr></thead><tbody>";
 
     for (var i = 0; i < count; i++) {
         html += "<tr>";
@@ -65,9 +47,23 @@ $searchButton.click(function (e) {
     clearResult();
     $searchButton.button("loading");
 
-    OPKP.getAllFoods(function (data) {
+    var stmt = {};
+    stmt.from = "fir_food";
+
+    var count = $entriesSelect.val();
+
+    if (count !== "All") {
+        stmt.count = parseInt(count);
+    }
+
+    console.log(stmt);
+
+    OPKP.select(stmt, function (data) {
+        console.log(data);
         writeResult(data);
 
+        $searchButton.button("reset");
+    }, function () {
         $searchButton.button("reset");
     });
 });

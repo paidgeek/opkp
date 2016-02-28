@@ -1,73 +1,75 @@
-var $searchButton = $("#searchButton");
-var $resultTable = $("#resultTable");
+$(function () {
+    var $findButton = $("#find-button");
+    var $resultTable = $("#result-table");
+    var $entriesSelect = $("#entries-select");
 
-function clearResult() {
-    $resultTable.html("");
-}
+    $resultTable.fixedHeader();
 
-function writeResult(result) {
-    clearResult();
-
-    var count = result["count"];
-    var objects = result["objects"];
-
-    if (!count || count == 0) {
-        return;
+    function clearResult() {
+        $resultTable.html("");
     }
 
-    var html = "<thead><tr>";
+    function writeResult(result) {
+        clearResult();
 
-    for (var prop in objects[0]) {
-        html += "<th>" + prop + "</th>";
-    }
+        var count = result["count"];
+        var objects = result["objects"];
 
-    html += "</tr></thead><tbody>";
-
-    /*
-     <thead>
-     <tr>
-     <th>#</th>
-     <th>Header</th>
-     <th>Header</th>
-     <th>Header</th>
-     <th>Header</th>
-     </tr>
-     </thead>
-     <tbody>
-     <tr>
-     <td>1,001</td>
-     <td>Lorem</td>
-     <td>ipsum</td>
-     <td>dolor</td>
-     <td>sit</td>
-     </tr>
-     </tbody>
-     */
-
-    for (var i = 0; i < count; i++) {
-        html += "<tr>";
-
-        var obj = objects[i];
-
-        for (var prop in obj) {
-            html += "<td>" + obj[prop] + "</td>";
+        if (!count || count == 0) {
+            return;
         }
 
-        html += "</tr>";
+        var html = "<thead><tr>";
+
+        for (var prop in objects[0]) {
+            html += "<th data-column-id='" + prop + "'>" + prop + "</th>";
+        }
+
+        html += "<th data-column-id=\"commands\" data-formatter=\"commands\" data-sortable=\"false\">Commands</th>";
+
+        html += "</tr></thead><tbody>";
+
+        for (var i = 0; i < count; i++) {
+            html += "<tr>";
+
+            var obj = objects[i];
+
+            for (var prop in obj) {
+                html += "<td>" + obj[prop] + "</td>";
+            }
+
+            html += "</tr>";
+        }
+
+        html += "</tbody>";
+
+        $resultTable.html(html);
     }
 
-    html += "</tbody>";
+    $findButton.click(function (e) {
+        clearResult();
+        $findButton.button("loading");
 
-    $resultTable.html(html);
-}
+        var stmt = {};
+        stmt.from = "fir_food";
 
-$searchButton.click(function (e) {
-    clearResult();
-    $searchButton.button("loading");
+        var count = $entriesSelect.val();
 
-    OPKP.getAllFoods(function (data) {
-        writeResult(data);
+        if (!count) {
+            stmt.count = 100;
+        } else if (count !== "All") {
+            stmt.count = parseInt(count);
+        }
 
-        $searchButton.button("reset");
+        console.log(stmt);
+
+        OPKP.select(stmt, function (data) {
+            console.log(data);
+            writeResult(data);
+
+            $findButton.button("reset");
+        }, function () {
+            $findButton.button("reset");
+        });
     });
 });
