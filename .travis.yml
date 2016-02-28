@@ -3,3 +3,7 @@ jdk:
   - oraclejdk8
 sudo: false
 script: mvn clean verify
+notifications:
+  email:
+    on_success: never
+	on_failure: change
