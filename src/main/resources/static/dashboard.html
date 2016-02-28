@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <title>OPKP Dashboard</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="main.css" rel="stylesheet"/>
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-static-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">OPKP</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Log out</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 main">
+            <div class="row">
+                <div class="col-md-6">
+                    <form>
+                        <input type="text" class="form-control" placeholder="Search...">
+                    </form>
+                    <button type="button" class="btn btn-primary" id="searchButton" data-loading-text="Loading...">
+                        Search
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>Results </h2>
+                </div>
+                <table class="table table-fixed table-striped header-fixed table-hover" id="resultTable">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/service.js"></script>
+<script src="js/main.js"></script>
+</body>
+
+</html>
