@@ -6,8 +6,7 @@ $(function () {
 
     $resultTable.fixedHeader();
 
-
-    function findFoods() {
+    window.findFoods = function () {
         $findButton.button("loading");
 
         var stmt = {};
@@ -17,9 +16,9 @@ $(function () {
         var query = $searchField.val().trim();
 
         if (query) {
-            stmt.where = "ORIGFDNM LIKE '" + query;
-            stmt.where += "' OR ENGFDNAM LIKE '" + query;
-            stmt.where += "' OR SCINAM LIKE '" + query + "'";
+            stmt.where = "ORIGFDNM LIKE '%" + query;
+            stmt.where += "%' OR ENGFDNAM LIKE '%" + query;
+            stmt.where += "%' OR SCINAM LIKE '%" + query + "%'";
         }
 
         var count = $entriesSelect.val();

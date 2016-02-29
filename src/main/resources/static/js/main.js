@@ -3,11 +3,11 @@ $(function () {
     var $searchField = $("#search-field");
     var $resultTable = $("#result-table");
     var $entriesSelect = $("#entries-select");
-
-    $resultTable.fixedHeader();
+    var $header = $("#header")
 
     window.findFoods = function () {
         $findButton.button("loading");
+        $resultTable.html("");
 
         var stmt = {};
         stmt.from = "fir_food";
@@ -33,6 +33,8 @@ $(function () {
             $findButton.button("reset");
 
             populateFoodTable($resultTable, data["objects"]);
+
+            $resultTable.floatThead();
         }, function () {
             $findButton.button("reset");
         });

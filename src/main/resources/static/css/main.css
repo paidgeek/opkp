@@ -1,6 +1,7 @@
 body {
     padding-top: 51px;
     height: 100vh;
+    overflow-x: hidden;
 }
 
 .sub-header {
@@ -44,7 +45,6 @@ body {
 }
 
 .main {
-    position: fixed;
     padding: 20px;
 }
 
@@ -52,9 +52,26 @@ body {
     margin-top: 0;
 }
 
-.fixed-table .table-content {
-    display: block;
-    position: relative;
-    height: -webkit-calc(100vh - 200px);
-    overflow-y: auto;
+table.floatThead-table {
+    border-top: none;
+    border-bottom: none;
+    background-color: #FFF;
+}
+
+.table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+    border: none;
+}
+
+/* Food profile modal */
+#food-profile-modal > .modal-body {
+    padding: 10px;
+}
+
+#food-components-table {
+    width: 100%;
+    font-size: 12px;
+}
+
+#food-profile-modal > .food-component-value {
+    text-align: right;
 }
