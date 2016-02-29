@@ -3,7 +3,11 @@ $(function () {
 
     $foodProfileModal.focus();
 
-    window.onFoodProfileClick = function(entityId) {
-        $foodProfileModal.modal("show");
+    window.onFoodProfileClick = function (foodId) {
+        OPKP.getFood(foodId, function (data) {
+            $foodProfileModal.modal("show");
+        }, function () {
+            alert("error");
+        });
     }
 });

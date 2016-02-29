@@ -18,6 +18,8 @@ public class SQLController {
 
 	@RequestMapping(value = "/select", method = RequestMethod.POST)
 	public ResponseEntity<Pojo> select(@RequestBody SQLSelect select) {
+		System.out.println(select.getStatement());
+
 		List<Pojo> objects = db.queryObjects(select.getStatement());
 
 		Pojo result = new Pojo();

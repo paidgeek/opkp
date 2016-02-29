@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 
 <head>
     <meta charset="utf-8"/>
@@ -40,16 +40,28 @@
         </div>
         <div class="col-md-11 col-md-offset-1 main">
             <div class="row">
-                <div class="col-md-6">
-                    <form>
-                        <input type="text" class="form-control" placeholder="Search...">
-                    </form>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-default" id="find-button" data-loading-text="Loading...">
-                        Find
-                    </button>
-                </div>
+                <form>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="Search..." id="search-field">
+                        </div>
+
+                        <div class="col-md-1">
+                            <button type="submit" class="btn btn-default" id="find-button" data-loading-text="Loading...">
+                                Find
+                            </button>
+                        </div>
+                    </div>
+                    <!--
+                    <div class="row">
+                        <div class="col-md-3 col-md-offset-1 alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            Oh no! Something has gone wrong.
+                        </div>
+                    </div>
+                    -->
+                </form>
             </div>
             <div class="row">
                 <div class="fixed-table">
@@ -68,7 +80,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="gridSystemModalLabel">Food profile</h4>
             </div>
             <div class="modal-body">
@@ -88,6 +101,7 @@
 <script src="js/moment-with-locales.min.js"></script>
 <script src="js/query-builder.min.js"></script>
 <script src="js/table-fixed-header.js"></script>
+<script src="js/populate-table.js"></script>
 <script src="js/service.js"></script>
 <script src="js/main.js"></script>
 <script src="js/food-profile.js"></script>
