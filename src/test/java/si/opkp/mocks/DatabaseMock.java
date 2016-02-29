@@ -10,6 +10,7 @@ public class DatabaseMock implements Database {
 
 	@Override
 	public void setDataSource(DataSource dataSource) {
+
 	}
 
 	@Override
@@ -18,8 +19,17 @@ public class DatabaseMock implements Database {
 	}
 
 	@Override
+	public List<Pojo> queryObjects(String sql, Object... args) {
+		return null;
+	}
+
+	@Override
 	public Pojo queryObject(String sql) {
 		return null;
 	}
 
+	@Override
+	public Pojo queryObject(String sql, Object... args) {
+		return null;
+	}
 }

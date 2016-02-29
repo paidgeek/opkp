@@ -1,6 +1,7 @@
 package si.opkp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import si.opkp.model.Database;
 import si.opkp.model.SQLSelect;
@@ -16,13 +17,15 @@ public class SQLController {
 	private Database db;
 
 	@RequestMapping(value = "/select", method = RequestMethod.POST)
-	public Object select(@RequestBody SQLSelect select) {
+	public ResponseEntity<Pojo> select(@RequestBody SQLSelect select) {
 		List<Pojo> objects = db.queryObjects(select.getStatement());
 
-		return new Pojo.Builder()
-				.setProperty("count", objects.size())
-				.setProperty("objects", objects)
-				.build();
+		Pojo result = new Pojo();
+
+		result.setProperty("count", objects.size());
+		result.setProperty("objects", objects);
+
+		return ResponseEntity.ok(result);
 	}
 
 }

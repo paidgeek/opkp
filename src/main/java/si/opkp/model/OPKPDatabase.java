@@ -30,8 +30,35 @@ public class OPKPDatabase implements Database {
 	}
 
 	@Override
+	public List<Pojo> queryObjects(String sql, Object... args) {
+		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, args);
+		List<Pojo> objects = new ArrayList<>();
+
+		result.forEach(e -> objects.add(new Pojo(e)));
+
+		return objects;
+	}
+
+	@Override
 	public Pojo queryObject(String sql) {
-		return null;
+		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql);
+
+		if(result.isEmpty()) {
+			return null;
+		}
+
+		return new Pojo(result.get(0));
+	}
+
+	@Override
+	public Pojo queryObject(String sql, Object... args) {
+		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql, args);
+
+		if(result.isEmpty()) {
+			return null;
+		}
+
+		return new Pojo(result.get(0));
 	}
 
 }

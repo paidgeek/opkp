@@ -19,13 +19,11 @@ $(function () {
             return;
         }
 
-        var html = "<thead><tr>";
+        var html = "<thead><tr><th>...</th>";
 
         for (var prop in objects[0]) {
             html += "<th data-column-id='" + prop + "'>" + prop + "</th>";
         }
-
-        html += "<th data-column-id=\"commands\" data-formatter=\"commands\" data-sortable=\"false\">Commands</th>";
 
         html += "</tr></thead><tbody>";
 
@@ -33,6 +31,13 @@ $(function () {
             html += "<tr>";
 
             var obj = objects[i];
+
+            // assume first column is entity-id
+            var entityId = obj[Object.keys(obj)[0]];
+
+            html += "<td><button type=\"button\" class=\"btn btn-default\" aria-label=\"Left Align\" onclick=\"onFoodProfileClick('" + entityId + "')\">" +
+                "<span class=\"glyphicon glyphicon-align-left\" aria-hidden=\"true\"></span>" +
+                "</button></td>";
 
             for (var prop in obj) {
                 html += "<td>" + obj[prop] + "</td>";
@@ -52,6 +57,7 @@ $(function () {
 
         var stmt = {};
         stmt.from = "fir_food";
+        stmt.expr = "ORIGFDCD, ORIGFDNM, ENGFDNAM, SCINAM";
 
         var count = $entriesSelect.val();
 
