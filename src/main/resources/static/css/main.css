@@ -35,6 +35,7 @@ body {
 .nav-sidebar > li > a {
     padding-right: 20px;
     padding-left: 20px;
+    cursor: pointer;
 }
 
 .nav-sidebar > .active > a,
@@ -62,6 +63,14 @@ table.floatThead-table {
     border: none;
 }
 
+#result-table tbody tr td {
+    vertical-align: middle;
+}
+
+#result-table thead tr th {
+    border-bottom: 1px solid #eee;
+}
+
 /* Food profile modal */
 #food-profile-modal > .modal-body {
     padding: 10px;
@@ -74,4 +83,15 @@ table.floatThead-table {
 
 #food-profile-modal > .food-component-value {
     text-align: right;
+}
+
+/* Query builder */
+.query-builder .rules-group-container {
+    background: none;
+    /*border: 1px solid #eee;*/
+    border: none;
+}
+
+.query-builder .rule-container, .query-builder .rule-placeholder, .query-builder .rules-group-container {
+    margin: 0;
 }

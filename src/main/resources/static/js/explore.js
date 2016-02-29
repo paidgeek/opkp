@@ -3,7 +3,7 @@ $(function () {
     var $searchField = $("#search-field");
     var $resultTable = $("#result-table");
     var $entriesSelect = $("#entries-select");
-    var $header = $("#header")
+    var $queryBuilder = $("#query-builder");
 
     window.findFoods = function () {
         $findButton.button("loading");
@@ -33,12 +33,18 @@ $(function () {
             $findButton.button("reset");
 
             populateFoodTable($resultTable, data["objects"]);
-
-            $resultTable.floatThead();
         }, function () {
             $findButton.button("reset");
         });
     }
+
+    $queryBuilder.queryBuilder({
+        filters: [{
+            id: "name",
+            label: "Name",
+            type: "string"
+        }]
+    });
 
     $findButton.click(function (e) {
         findFoods();
