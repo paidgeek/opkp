@@ -33,4 +33,11 @@ public class FoodController {
 		return ResponseEntity.ok(food);
 	}
 
+	@RequestMapping(value = "/{foodId}", method = RequestMethod.PATCH)
+	public ResponseEntity setFood(@PathVariable("foodId") String foodId, @RequestBody Pojo food) {
+
+
+		return ResponseEntity.ok(null);
+	}
+
 }

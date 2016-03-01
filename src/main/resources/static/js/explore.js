@@ -13,12 +13,14 @@ $(function () {
         stmt.from = "fir_food";
         stmt.expr = "ORIGFDCD, ORIGFDNM, ENGFDNAM, SCINAM";
 
-        var query = $searchField.val().trim();
+        var keywords = $searchField.val().trim().split(/ +/);
 
-        if (query) {
-            stmt.where = "ORIGFDNM LIKE '%" + query;
-            stmt.where += "%' OR ENGFDNAM LIKE '%" + query;
-            stmt.where += "%' OR SCINAM LIKE '%" + query + "%'";
+        if (keywords.length > 0) {
+            keywords = keywords.join(" ");
+
+            stmt.where = "MATCH (ORIGFDNM) AGAINST('" + keywords + "') OR ";
+            stmt.where += "MATCH (ENGFDNAM) AGAINST('" + keywords + "') OR ";
+            stmt.where += "MATCH (SCINAM) AGAINST('" + keywords + "') ";
         }
 
         var count = $entriesSelect.val();

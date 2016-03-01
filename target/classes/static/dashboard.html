@@ -9,8 +9,8 @@
 
     <title>OPKP Dashboard</title>
 
-    <link href="css/bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="css/query-builder.min.css">
+    <link href="vendor/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="vendor/query-builder.min.css">
     <link href="css/main.css" rel="stylesheet"/>
 </head>
 
@@ -31,10 +31,8 @@
     <div class="row">
         <div class="col-md-1 no-float sidebar">
             <ul class="nav nav-sidebar">
-                <li class="active"><a href="explore">Explore<span class="sr-only">(current)</span></a></li>
-                <li><a href="graphs">Graphs</a></li>
-                <li><a href="#">Tab 3</a></li>
-                <li><a href="#">Tab 4</a></li>
+                <li class="active"><a>Explore</a></li>
+                <li><a>Graphs</a></li>
             </ul>
         </div>
         <div class="col-md-11 col-md-offset-1 main">
@@ -43,37 +41,6 @@
             </div>
             <div id="page-content"></div>
         </div>
-        <!--
-        <div class="col-md-11 col-md-offset-1 main">
-            <div class="row">
-                <form action="">
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input type="text" class="form-control" placeholder="Search..." id="search-field"
-                                       onkeyup="findFoods()">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button type="button" class="btn btn-default" id="find-button"
-                                        data-loading-text="Loading...">
-                                    Find
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6" id="query-builder"></div>
-                </form>
-            </div>
-            <div class="row">
-                <div class="table-content" id="result-table-container">
-                    <table class="table table-hover table-condensed table-borderless" id="result-table">
-                    </table>
-                </div>
-            </div>
-        </div>
-        -->
     </div>
 </div>
 
@@ -125,21 +92,21 @@
             </div>
         </div>
     </div>
+    <script type="text/html" id="food-component">
+        <tr>
+            <td data-bind="text: ORIGCPNM" class="food-component-name"></td>
+            <td data-bind="text: SELVAL" class="food-component-value"></td>
+        </tr>
+    </script>
 </div>
-<script type="text/html" id="food-component">
-    <tr>
-        <td data-bind="text: ORIGCPNM" class="food-component-name"></td>
-        <td data-bind="text: SELVAL" class="food-component-value"></td>
-    </tr>
-</script>
 
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/doT.min.js"></script>
-<script src="js/extendext.min.js"></script>
-<script src="js/moment-with-locales.min.js"></script>
-<script src="js/query-builder.min.js"></script>
-<script src="js/knockout.js"></script>
+<script src="vendor/jquery.min.js"></script>
+<script src="vendor/bootstrap.min.js"></script>
+<script src="vendor/doT.min.js"></script>
+<script src="vendor/extendext.min.js"></script>
+<script src="vendor/moment-with-locales.min.js"></script>
+<script src="vendor/query-builder.min.js"></script>
+<script src="vendor/knockout.js"></script>
 <script src="js/populate-table.js"></script>
 <script src="js/service.js"></script>
 <script src="js/pages.js"></script>

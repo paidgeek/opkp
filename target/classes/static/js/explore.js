@@ -4,7 +4,6 @@ $(function () {
     var $resultTable = $("#result-table");
     var $entriesSelect = $("#entries-select");
     var $queryBuilder = $("#query-builder");
-    var $header = $("#header")
 
     window.findFoods = function () {
         $findButton.button("loading");
@@ -14,13 +13,16 @@ $(function () {
         stmt.from = "fir_food";
         stmt.expr = "ORIGFDCD, ORIGFDNM, ENGFDNAM, SCINAM";
 
-        var query = $searchField.val().trim();
+        var keywords = $searchField.val().trim().split(" +");
 
+        console.log(keywords);
+        /*
         if (query) {
             stmt.where = "ORIGFDNM LIKE '%" + query;
             stmt.where += "%' OR ENGFDNAM LIKE '%" + query;
             stmt.where += "%' OR SCINAM LIKE '%" + query + "%'";
         }
+        */
 
         var count = $entriesSelect.val();
 

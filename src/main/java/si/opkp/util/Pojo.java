@@ -3,6 +3,7 @@ package si.opkp.util;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializable;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonDeserialize(using = PojoDeserializer.class)
 public class Pojo implements JsonSerializable {
 
 	private Map<String, Object> properties;

@@ -20,9 +20,12 @@ public class SQLController {
 	public ResponseEntity<Pojo> select(@RequestBody SQLSelect select) {
 		List<Pojo> objects = db.queryObjects(select.getStatement());
 
+		select.setExpr("SQL_NO_CACHE COUNT(*) AS total");
+		Pojo total = db.queryObject(select.getStatement());
+
 		Pojo result = new Pojo();
 
-		result.setProperty("count", objects.size());
+		result.setProperty("total", total.getProperty("total"));
 		result.setProperty("objects", objects);
 
 		return ResponseEntity.ok(result);
