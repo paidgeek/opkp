@@ -1,5 +1,8 @@
 $(function () {
-    window.populateFoodTable = function (table, rows) {
+    window.populateFoodTable = function (table, data) {
+        var rows = data["rows"];
+        var total = data["total"];
+
         var html = "<thead><tr><th style='text-align: center'>...</th>";
 
         for (var prop in rows[0]) {

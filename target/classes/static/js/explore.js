@@ -9,36 +9,22 @@ $(function () {
         $findButton.button("loading");
         $resultTable.html("");
 
-        var stmt = {};
-        stmt.from = "fir_food";
-        stmt.expr = "ORIGFDCD, ORIGFDNM, ENGFDNAM, SCINAM";
-
-        var keywords = $searchField.val().trim().split(" +");
-
-        console.log(keywords);
-        /*
-        if (query) {
-            stmt.where = "ORIGFDNM LIKE '%" + query;
-            stmt.where += "%' OR ENGFDNAM LIKE '%" + query;
-            stmt.where += "%' OR SCINAM LIKE '%" + query + "%'";
-        }
-        */
-
+        var keywords = $searchField.val().trim().split(/ +/);
         var count = $entriesSelect.val();
 
         if (!count) {
-            stmt.count = 100;
+            count = 100;
         } else {
-            stmt.count = parseInt(count);
+            count = parseInt(count);
         }
 
-        OPKP.select(stmt, function (data) {
+        OPKP.findFoods(keywords, function (data) {
             $findButton.button("reset");
 
-            populateFoodTable($resultTable, data["objects"]);
+            populateFoodTable($resultTable, data);
         }, function () {
             $findButton.button("reset");
-        });
+        })
     }
 
     $queryBuilder.queryBuilder({

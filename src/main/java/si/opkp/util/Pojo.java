@@ -29,8 +29,24 @@ public class Pojo implements JsonSerializable {
 		return properties.get(name);
 	}
 
+	public Integer getInteger(String name) {
+		return (Integer) properties.get(name);
+	}
+
+	public String getString(String name) {
+		return (String) properties.get(name);
+	}
+
+	public Boolean getBoolean(String name) {
+		return (Boolean) properties.get(name);
+	}
+
 	public void setProperty(String name, Object value) {
 		properties.put(name, value);
+	}
+
+	public void removeProperty(String name) {
+		properties.remove(name);
 	}
 
 	@Override
