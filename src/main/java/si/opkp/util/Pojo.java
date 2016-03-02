@@ -49,6 +49,10 @@ public class Pojo implements JsonSerializable {
 		properties.remove(name);
 	}
 
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
 	@Override
 	public void serialize(JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 		jsonGenerator.writeStartObject();

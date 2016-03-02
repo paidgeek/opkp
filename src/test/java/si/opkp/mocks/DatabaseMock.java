@@ -32,4 +32,15 @@ public class DatabaseMock implements Database {
 	public Pojo queryObject(String sql, Object... args) {
 		return null;
 	}
+
+	@Override
+	public int update(String sql) {
+		return 0;
+	}
+
+	@Override
+	public int update(String sql, Object... args) {
+		return 0;
+	}
+
 }

@@ -61,4 +61,14 @@ public class OPKPDatabase implements Database {
 		return new Pojo(result.get(0));
 	}
 
+	@Override
+	public int update(String sql) {
+		return jdbcTemplate.update(sql);
+	}
+
+	@Override
+	public int update(String sql, Object... args) {
+		return jdbcTemplate.update(sql, args);
+	}
+
 }

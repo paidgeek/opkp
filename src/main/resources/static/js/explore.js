@@ -21,7 +21,9 @@ $(function () {
         OPKP.findFoods(keywords, 0, count, function (data) {
             $findButton.button("reset");
 
-            populateFoodTable($resultTable, data);
+            if(data["total"] > 0) {
+                populateFoodTable($resultTable, data);
+            }
         }, function () {
             $findButton.button("reset");
         })

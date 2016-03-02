@@ -17,4 +17,8 @@ public interface Database {
 
 	Pojo queryObject(String sql, Object... args);
 
+	int update(String sql);
+
+	int update(String sql, Object... args);
+
 }

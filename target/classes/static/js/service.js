@@ -20,9 +20,11 @@ OPKP.getFood = function (foodId, success, error) {
 OPKP.findFoods = function (keywords, offset, count, success, error) {
     keywords = keywords.join(",");
 
+    var url = OPKP.host + "food/search?keywords=" + keywords + "&offset=" + offset + "&count=" + count;
+
     $.ajax({
         type: "GET",
-        url: OPKP.host + "food/search" + keywords,
+        url: url,
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json"
