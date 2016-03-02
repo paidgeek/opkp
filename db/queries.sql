@@ -64,3 +64,12 @@ CALL search_foods('world*', 0, 10)
 
 
 
+SELECT *
+FROM fir_food
+ORDER BY ORIGFDNM
+LIMIT 0, 20
+
+
+
+
+

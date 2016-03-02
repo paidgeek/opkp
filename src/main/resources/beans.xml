@@ -13,4 +13,12 @@
         <property name="password" value="1234"/>
     </bean>
 
+    <bean id="tableNames" class="java.util.HashMap">
+        <constructor-arg>
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="Food" value="fir_food"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
 </beans>
