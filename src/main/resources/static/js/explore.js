@@ -21,8 +21,10 @@ $(function () {
         OPKP.findFoods(keywords, 0, count, function (data) {
             $findButton.button("reset");
 
-            if(data["total"] > 0) {
-                populateFoodTable($resultTable, data);
+            var meta = data["meta"];
+
+            if (meta["count"] > 0) {
+                populateFoodTable($resultTable, data["result"]);
             }
         }, function () {
             $findButton.button("reset");
@@ -30,14 +32,14 @@ $(function () {
     }
 
     /*
-    $queryBuilder.queryBuilder({
-        filters: [{
-            id: "name",
-            label: "Name",
-            type: "string"
-        }]
-    });
-    */
+     $queryBuilder.queryBuilder({
+     filters: [{
+     id: "name",
+     label: "Name",
+     type: "string"
+     }]
+     });
+     */
 
     $findButton.click(function (e) {
         findFoods();

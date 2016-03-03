@@ -1,6 +1,6 @@
 $(function () {
     window.populateFoodTable = function (table, data) {
-        var objects = data["objects"];
+        var objects = data["result"];
         var total = data["total"];
 
         var html = "<thead><tr><th style='text-align: center'>...</th>";

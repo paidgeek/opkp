@@ -1,8 +1,18 @@
 package si.opkp.util;
 
+import java.util.List;
+
 public class SQLSelectBuilder {
 
 	private StringBuilder query;
+
+	public SQLSelectBuilder(Iterable<? extends CharSequence> columns) {
+		query = new StringBuilder();
+
+		query.append("SELECT ");
+		query.append(String.join(",", columns));
+		query.append("\n");
+	}
 
 	public SQLSelectBuilder(String... columns) {
 		query = new StringBuilder();
@@ -21,13 +31,13 @@ public class SQLSelectBuilder {
 	}
 
 	public SQLSelectBuilder join(String table, String joinType, String condition) {
-		if(joinType.equals("<>")) {
+		if (joinType.equals("<>")) {
 			query.append("FULL JOIN ");
-		} else if(joinType.equals("><")) {
+		} else if (joinType.equals("><")) {
 			query.append("INNER JOIN ");
-		} else if(joinType.equals("<")) {
+		} else if (joinType.equals("<")) {
 			query.append("LEFT JOIN ");
-		} else if(joinType.equals(">")) {
+		} else if (joinType.equals(">")) {
 			query.append("RIGHT JOIN ");
 		}
 
@@ -52,11 +62,11 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
-	public SQLSelectBuilder orderByPrefixedColumns(String... columns) {
+	public SQLSelectBuilder orderByPrefixedColumns(List<String> columns) {
 		query.append("ORDER BY ");
 
-		for (int i = 0; i < columns.length; i++) {
-			String column = columns[i];
+		for (int i = 0; i < columns.size(); i++) {
+			String column = columns.get(i);
 			char prefix = column.charAt(0);
 
 			if (prefix == '-') {
@@ -67,7 +77,7 @@ public class SQLSelectBuilder {
 				query.append(" DESC");
 			}
 
-			if (i < columns.length - 1) {
+			if (i < columns.size() - 1) {
 				query.append(", ");
 			}
 		}
@@ -77,15 +87,15 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
-	public SQLSelectBuilder limit(int... bounds) {
+	public SQLSelectBuilder limit(List<Integer> bounds) {
 		query.append("LIMIT ");
 
-		if (bounds.length == 1) {
-			query.append(bounds[0]);
+		if (bounds.size() == 1) {
+			query.append(bounds.get(0));
 		} else {
-			query.append(bounds[0]);
+			query.append(bounds.get(0));
 			query.append(", ");
-			query.append(bounds[1]);
+			query.append(bounds.get(1));
 		}
 
 		query.append("\n");

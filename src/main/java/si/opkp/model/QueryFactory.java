@@ -7,25 +7,27 @@ import si.opkp.util.RelationMap;
 import si.opkp.util.SQLSelectBuilder;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 public class QueryFactory {
 
-	public static String select(String[] fields, String[] tables, String[] joins, String query, String[] orderBy, int[] boundary) {
-		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(fields);
+	public static String select(List<String> columns, List<String> tables, List<String> joins, String query, List<String> orderBy, List<Integer> limit) {
+		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(columns);
 		RelationMap relationMap = RelationMap.getInstance();
 
-		selectBuilder.from(tables[0]);
+		selectBuilder.from(tables.get(0));
 
-		for (int i = 1; i < tables.length; i++) {
-			String a = tables[i - 1];
-			String b = tables[i];
+		for (int i = 1; i < tables.size(); i++) {
+			String a = tables.get(i - 1);
+			String b = tables.get(i);
+
 			String edge = relationMap.getEdge(a, b);
 
 			if (edge == null) {
 				return null;
 			}
 
-			selectBuilder.join(b, joins[i - 1], edge);
+			selectBuilder.join(b, joins.get(i - 1), edge);
 		}
 
 		if (query != null) {
@@ -40,7 +42,9 @@ public class QueryFactory {
 			selectBuilder.orderByPrefixedColumns(orderBy);
 		}
 
-		selectBuilder.limit(boundary);
+		if (limit != null) {
+			selectBuilder.limit(limit);
+		}
 
 		return selectBuilder.build();
 	}

@@ -4,9 +4,11 @@ $(function () {
     $foodProfileModal.focus();
 
     window.onFoodProfileClick = function (foodId) {
-        OPKP.getFood(foodId, function (data) {
+        OPKP.getFood(foodId, function (food) {
+            console.log(food);
+
             ko.cleanNode(document.body);
-            ko.applyBindings(data);
+            ko.applyBindings(food);
 
             $foodProfileModal.modal("show");
         }, function () {

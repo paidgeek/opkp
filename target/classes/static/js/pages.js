@@ -7,7 +7,7 @@ $(function () {
         $pageContent.load(name.toLowerCase() + ".html", function () {
             $pageTitle.text(name);
 
-            $.getScript("js/" + name + ".js", function () {
+            $.getScript("js/" + name.toLowerCase() + ".js", function () {
                 $pageContent.fadeIn(300);
             });
         });
