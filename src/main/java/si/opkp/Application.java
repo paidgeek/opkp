@@ -11,11 +11,17 @@ import org.springframework.context.annotation.ImportResource;
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan
-@ImportResource({"beans.xml", "sql.xml"})
+@ImportResource({"beans.xml"})
 public class Application {
 
+	private static ApplicationContext context;
+
+	public static ApplicationContext getContext() {
+		return context;
+	}
+
 	public static void main(String[] args) {
-		ApplicationContext context = new SpringApplicationBuilder()
+		context = new SpringApplicationBuilder()
 				.bannerMode(Banner.Mode.OFF)
 				.sources(Application.class)
 				.run(args);

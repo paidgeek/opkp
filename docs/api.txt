@@ -25,7 +25,8 @@ Ends with: (:*suffix)
 Contains: (:*substring*)
 
 // query examples
-x!:42,y<10
+?q=x!:42,y<10
+
 
 // CRUD
 POST   /{resource}
