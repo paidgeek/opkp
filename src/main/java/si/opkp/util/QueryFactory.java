@@ -1,5 +1,6 @@
-package si.opkp.model;
+package si.opkp.util;
 
+import com.moybl.restql.RestQL;
 import com.moybl.restql.RestQLLexer;
 import com.moybl.restql.RestQLParser;
 import com.moybl.restql.generators.SQLGenerator;
@@ -7,11 +8,16 @@ import si.opkp.util.RelationMap;
 import si.opkp.util.SQLSelectBuilder;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.List;
 
 public class QueryFactory {
 
-	public static String select(List<String> columns, List<String> tables, List<String> joins, String query, List<String> orderBy, List<Integer> limit) {
+	public static String count(List<String> tables, List<String> joins, String query) {
+		return select(Arrays.asList("COUNT(*) as count"), tables, joins, query, null, null);
+	}
+
+	public static String select(List<String> columns, List<String> tables, List<String> joins, String query, List<String> orderBy, List<Long> limit) {
 		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(columns);
 		RelationMap relationMap = RelationMap.getInstance();
 
@@ -31,11 +37,7 @@ public class QueryFactory {
 		}
 
 		if (query != null) {
-			SQLGenerator sqlGenerator = new SQLGenerator();
-			new RestQLParser().parse(new RestQLLexer(new ByteArrayInputStream(query.getBytes()))).accept(sqlGenerator);
-			query = sqlGenerator.getResult();
-
-			selectBuilder.where(query);
+			selectBuilder.where(RestQL.parseToSQL(query));
 		}
 
 		if (orderBy != null) {

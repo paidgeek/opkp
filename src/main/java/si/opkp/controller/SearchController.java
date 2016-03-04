@@ -37,15 +37,20 @@ public class SearchController {
 	                                @RequestParam(name = "limit", required = false) String limitList) {
 		List<String> columns = Util.parseStringList(columnList);
 		List<String> keywords = Util.parseStringList(keywordList);
-		List<Integer> limit = Util.parseIntegerList(limitList);
+		List<Long> limit = Util.parseLongList(limitList);
 
 		return perform(model, columns, keywords, limit);
 	}
 
-	public ResponseEntity<Pojo> perform(String model, List<String> columns, List<String> keywords, List<Integer> limit) {
-		String kw = String.join(" ", keywords);
+	public ResponseEntity<Pojo> perform(String model, List<String> columns, List<String> keywords, List<Long> limit) {
+		String kw = "";
+
+		if (keywords != null) {
+			kw = String.join(" ", keywords);
+		}
+
 		List<Pojo> objects = null;
-		int offset = 0, count = Integer.MAX_VALUE, total = 0;
+		long offset = 0, count = Long.MAX_VALUE, total = 0;
 
 		if (limit != null) {
 			if (limit.size() == 1) {
@@ -65,7 +70,7 @@ public class SearchController {
 		}
 
 		if (!objects.isEmpty()) {
-			total = objects.get(0).getInteger("total");
+			total = objects.get(0).getLong("total");
 		}
 
 		if (!(columns.size() == 1 && columns.contains("*"))) {
@@ -80,6 +85,7 @@ public class SearchController {
 		Pojo meta = new Pojo();
 
 		meta.setProperty("count", objects.size());
+		meta.setProperty("total", total);
 
 		result.setProperty("meta", meta);
 		result.setProperty("result", objects);

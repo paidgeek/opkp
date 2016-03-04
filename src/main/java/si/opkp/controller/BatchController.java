@@ -4,12 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import si.opkp.Application;
 import si.opkp.model.Database;
-import si.opkp.model.QueryFactory;
 import si.opkp.util.Pojo;
-import si.opkp.util.RelationMap;
-import si.opkp.util.SQLSelectBuilder;
 import si.opkp.util.Util;
 
 import java.util.*;
@@ -39,7 +35,7 @@ public class BatchController {
 				HashMap<String, Object> params = (HashMap) command.get("params");
 
 				List<String> columns = (ArrayList) params.get("columns");
-				List<Integer> limit = (ArrayList) params.get("limit");
+				List<Long> limit = (ArrayList) params.get("limit");
 
 				if (columns == null) {
 					columns = Arrays.asList("*");
@@ -69,11 +65,7 @@ public class BatchController {
 				}
 
 				if (response.getStatusCode() != HttpStatus.OK) {
-					Pojo error = new Pojo();
-
-					error.setProperty("code", response.getStatusCode());
-
-					result.setProperty((String) command.get("name"), error);
+					result.setProperty((String) command.get("name"), response.getBody());
 
 					break;
 				}

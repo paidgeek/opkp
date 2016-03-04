@@ -1,20 +1,17 @@
 $(function () {
-    window.populateFoodTable = function (table, data) {
-        var objects = data["result"];
-        var total = data["total"];
-
+    window.populateFoodTable = function (table, foods) {
         var html = "<thead><tr><th style='text-align: center'>...</th>";
 
-        for (var prop in objects[0]) {
+        for (var prop in foods[0]) {
             html += "<th>" + prop + "</th>";
         }
 
         html += "</tr></thead><tbody>";
 
-        for (var i = 0; i < objects.length; i++) {
+        for (var i = 0; i < foods.length; i++) {
             html += "<tr>";
 
-            var obj = objects[i];
+            var obj = foods[i];
 
             // assume first column is foodId
             var foodId = obj[Object.keys(obj)[0]];

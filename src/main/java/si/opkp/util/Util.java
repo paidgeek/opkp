@@ -20,16 +20,16 @@ public class Util {
 		return Arrays.asList(stringList.split(","));
 	}
 
-	public static List<Integer> parseIntegerList(String integerList) {
+	public static List<Long> parseLongList(String integerList) {
 		if (integerList == null || integerList.isEmpty()) {
 			return null;
 		}
 
-		List<Integer> list = new ArrayList<>();
+		List<Long> list = new ArrayList<>();
 		String[] ints = integerList.split(",");
 
 		for (int i = 0; i < ints.length; i++) {
-			list.add(Integer.parseInt(ints[i]));
+			list.add(Long.parseLong(ints[i]));
 		}
 
 		return list;
@@ -61,7 +61,8 @@ public class Util {
 		Pojo body = new Pojo();
 
 		body.setProperty("message", message);
-		body.setProperty("code", httpStatus);
+		body.setProperty("status", httpStatus);
+		body.setProperty("code", httpStatus.value());
 
 		return new ResponseEntity(body, httpStatus);
 	}

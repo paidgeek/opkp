@@ -10,7 +10,6 @@ public class DatabaseMock implements Database {
 
 	@Override
 	public void setDataSource(DataSource dataSource) {
-
 	}
 
 	@Override

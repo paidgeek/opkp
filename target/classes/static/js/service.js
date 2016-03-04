@@ -12,9 +12,9 @@ OPKP.batch = function (commands, success, error) {
             "Accept": "application/json",
             "Content-Type": "application/json"
         },
-        data: {
+        data: JSON.stringify({
             commands: commands
-        },
+        }),
         timeout: OPKP.timeout,
         success: success,
         error: error
@@ -29,7 +29,7 @@ OPKP.getFood = function (foodId, success, error) {
             model: "fir_food>fir_value>fir_component",
             params: {
                 q: "ORIGFDCD:'" + foodId + "'",
-                fields: "ORIGFDNM,ORIGCPNM,SELVAL"
+                columns: ["ORIGFDNM", "ORIGCPNM", "SELVAL"]
             }
         },
         {
@@ -41,15 +41,21 @@ OPKP.getFood = function (foodId, success, error) {
             }
         }
     ], function (data) {
-        var food = data["food"];
+        var food = data["food"]["result"][0];
 
-        food.components = data["components"];
+        food.components = data["components"]["result"];
 
         success(food);
     }, error);
 }
 
 OPKP.findFoods = function (keywords, offset, count, success, error) {
+    if(!keywords || keywords.length == 0) {
+        success(null);
+
+        return;
+    }
+
     keywords = keywords.join(",");
 
     var url = OPKP.host + "search/fir_food?columns=ORIGFDCD,ORIGFDNM,ENGFDNAM,SCINAM&keywords=" + keywords + "&limit=" + offset + "," + count;

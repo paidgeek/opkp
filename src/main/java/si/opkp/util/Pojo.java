@@ -33,6 +33,10 @@ public class Pojo implements JsonSerializable {
 		return (Integer) properties.get(name);
 	}
 
+	public Long getLong(String name) {
+		return (Long) properties.get(name);
+	}
+
 	public String getString(String name) {
 		return (String) properties.get(name);
 	}

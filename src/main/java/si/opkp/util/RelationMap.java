@@ -5,6 +5,7 @@ import si.opkp.Application;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class RelationMap {
 
@@ -40,12 +41,18 @@ public class RelationMap {
 		}
 	}
 
+	public boolean containsNode(String a) {
+		return map.containsKey(a);
+	}
+
 	public String getEdge(String a, String b) {
-		if (!map.containsKey(a)) {
-			return null;
+		if (map.containsKey(a)) {
+			return map.get(a).get(b);
+		} else if (map.containsKey(b)) {
+			return map.get(b).get(a);
 		}
 
-		return map.get(a).get(b);
+		return null;
 	}
 
 }

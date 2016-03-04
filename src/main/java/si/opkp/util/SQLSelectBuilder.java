@@ -71,10 +71,10 @@ public class SQLSelectBuilder {
 
 			if (prefix == '-') {
 				query.append(column.substring(1));
-				query.append(" ASC");
+				query.append(" DESC");
 			} else {
 				query.append(column);
-				query.append(" DESC");
+				query.append(" ASC");
 			}
 
 			if (i < columns.size() - 1) {
@@ -87,7 +87,7 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
-	public SQLSelectBuilder limit(List<Integer> bounds) {
+	public SQLSelectBuilder limit(List<Long> bounds) {
 		query.append("LIMIT ");
 
 		if (bounds.size() == 1) {

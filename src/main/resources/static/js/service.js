@@ -29,7 +29,7 @@ OPKP.getFood = function (foodId, success, error) {
             model: "fir_food>fir_value>fir_component",
             params: {
                 q: "ORIGFDCD:'" + foodId + "'",
-                fields: "ORIGFDNM,ORIGCPNM,SELVAL"
+                columns: ["ORIGFDNM", "ORIGCPNM", "SELVAL"]
             }
         },
         {
@@ -50,6 +50,12 @@ OPKP.getFood = function (foodId, success, error) {
 }
 
 OPKP.findFoods = function (keywords, offset, count, success, error) {
+    if(!keywords || keywords.length == 0) {
+        success(null);
+
+        return;
+    }
+
     keywords = keywords.join(",");
 
     var url = OPKP.host + "search/fir_food?columns=ORIGFDCD,ORIGFDNM,ENGFDNAM,SCINAM&keywords=" + keywords + "&limit=" + offset + "," + count;

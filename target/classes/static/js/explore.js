@@ -21,12 +21,10 @@ $(function () {
         OPKP.findFoods(keywords, 0, count, function (data) {
             $findButton.button("reset");
 
-            console.log(data);
-
             var meta = data["meta"];
 
             if (meta["count"] > 0) {
-                populateFoodTable($resultTable, data);
+                populateFoodTable($resultTable, data["result"]);
             }
         }, function () {
             $findButton.button("reset");
