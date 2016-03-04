@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class WebController {
 
-	@RequestMapping("/")
-	public String index() {
-		return "index";
-	}
+   @RequestMapping("/")
+   public String index() {
+      return "index";
+   }
 
-	@RequestMapping("/dashboard")
-	public String dashboard() {
-		return "dashboard";
-	}
+   @RequestMapping("/dashboard")
+   public String dashboard() {
+      return "dashboard";
+   }
 
 }

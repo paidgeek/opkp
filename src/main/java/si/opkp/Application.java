@@ -14,17 +14,17 @@ import org.springframework.context.annotation.ImportResource;
 @ImportResource({"beans.xml"})
 public class Application {
 
-	private static ApplicationContext context;
+   private static ApplicationContext context;
 
-	public static ApplicationContext getContext() {
-		return context;
-	}
+   public static ApplicationContext getContext() {
+      return context;
+   }
 
-	public static void main(String[] args) {
-		context = new SpringApplicationBuilder()
-				.bannerMode(Banner.Mode.OFF)
-				.sources(Application.class)
-				.run(args);
-	}
+   public static void main(String[] args) {
+      context = new SpringApplicationBuilder()
+            .bannerMode(Banner.Mode.OFF)
+            .sources(Application.class)
+            .run(args);
+   }
 
 }

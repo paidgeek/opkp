@@ -1,6 +1,7 @@
 *.class
 build/*
 out/*
+target/*
 .idea/*
 .gradle/2.2/*
 

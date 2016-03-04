@@ -10,11 +10,11 @@ import java.util.HashMap;
 
 public class PojoDeserializer extends JsonDeserializer<Pojo> {
 
-	@Override
-	public Pojo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-		HashMap map = jsonParser.readValuesAs(HashMap.class).next();
+   @Override
+   public Pojo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+      HashMap map = jsonParser.readValuesAs(HashMap.class).next();
 
-		return new Pojo(map);
-	}
+      return new Pojo(map);
+   }
 
 }

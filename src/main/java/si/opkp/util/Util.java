@@ -9,64 +9,74 @@ import java.util.List;
 
 public class Util {
 
-	private Util() {
-	}
+   private Util() {
+   }
 
-	public static List<String> parseStringList(String stringList) {
-		if (stringList == null || stringList.isEmpty()) {
-			return null;
-		}
+   public static List<String> parseStringList(String stringList) {
+      if (stringList == null || stringList.isEmpty()) {
+         return null;
+      }
 
-		return Arrays.asList(stringList.split(","));
-	}
+      return Arrays.asList(stringList.split(","));
+   }
 
-	public static List<Long> parseLongList(String integerList) {
-		if (integerList == null || integerList.isEmpty()) {
-			return null;
-		}
+   public static List<Long> parseLongList(String integerList) {
+      if (integerList == null || integerList.isEmpty()) {
+         return null;
+      }
 
-		List<Long> list = new ArrayList<>();
-		String[] ints = integerList.split(",");
+      List<Long> list = new ArrayList<>();
+      String[] ints = integerList.split(",");
 
-		for (int i = 0; i < ints.length; i++) {
-			list.add(Long.parseLong(ints[i]));
-		}
+      for (int i = 0; i < ints.length; i++) {
+         list.add(Long.parseLong(ints[i]));
+      }
 
-		return list;
-	}
+      return list;
+   }
 
-	public static <T> T[] listToArray(List<T> list) {
-		T[] array = (T[]) new Object[list.size()];
+   public static <T> T[] listToArray(List<T> list) {
+      T[] array = (T[]) new Object[list.size()];
 
-		list.toArray(array);
+      list.toArray(array);
 
-		return array;
-	}
+      return array;
+   }
 
-	public static List<Integer> integerList(int... array) {
-		List<Integer> list = new ArrayList<>();
+   public static List<Integer> integerList(int... array) {
+      List<Integer> list = new ArrayList<>();
 
-		for (int i = 0; i < array.length; i++) {
-			list.add(array[i]);
-		}
+      for (int i = 0; i < array.length; i++) {
+         list.add(array[i]);
+      }
 
-		return list;
-	}
+      return list;
+   }
 
-	public static Pojo createError(String message) {
-		Pojo error = new Pojo();
+   public static List<String> stringList(String... array) {
+      List<String> list = new ArrayList<>();
 
-		error.setProperty("message", message);
+      for (int i = 0; i < array.length; i++) {
+         list.add(array[i]);
+      }
 
-		return error;
-	}
+      return list;
+   }
 
-	public static ResponseEntity<Pojo> responseError(HttpStatus httpStatus) {
-		return responseError("undefined error", httpStatus);
-	}
+   public static Pojo createError(String message) {
+      Pojo error = new Pojo();
 
-	public static ResponseEntity<Pojo> responseError(String message, HttpStatus httpStatus) {
-		return new ResponseEntity(createError(message), httpStatus);
-	}
+      error.setProperty("message", message);
+
+      return error;
+   }
+
+   public static ResponseEntity<Pojo> responseError(HttpStatus httpStatus) {
+      return responseError("undefined error", httpStatus);
+   }
+
+   public static ResponseEntity<Pojo> responseError(String message, HttpStatus httpStatus) {
+      return new ResponseEntity(createError(message), httpStatus);
+   }
 
 }

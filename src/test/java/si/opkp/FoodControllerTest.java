@@ -3,7 +3,6 @@ package si.opkp;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,12 +12,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ImportResource("beans.xml")
 public class FoodControllerTest {
 
-	@Before
-	public void setup() {
-	}
+   @Before
+   public void setup() {
+   }
 
-	@Test
-	public void simple() throws Exception {
-	}
+   @Test
+   public void simple() throws Exception {
+   }
 
 }

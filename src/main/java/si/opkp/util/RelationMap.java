@@ -5,54 +5,48 @@ import si.opkp.Application;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class RelationMap {
 
-	private static RelationMap instance;
+   private static RelationMap instance;
+   private Map<String, Map<String, String>> map;
 
-	public static RelationMap getInstance() {
-		if (instance == null) {
-			synchronized (RelationMap.class) {
-				if (instance == null) {
-					instance = new RelationMap();
+   private RelationMap() {
+      try {
+         instance = this;
 
-					return instance;
-				}
-			}
-		}
+         map = new ObjectMapper().readValue(Application.getContext()
+                     .getResource("classpath:relationships.json")
+                     .getInputStream(),
+               HashMap.class);
+      } catch (Exception e) {
+         e.printStackTrace();
+         System.exit(1);
+      }
+   }
 
-		return instance;
-	}
+   public static RelationMap getInstance() {
+      if (instance == null) {
+         synchronized (RelationMap.class) {
+            if (instance == null) {
+               instance = new RelationMap();
 
-	private Map<String, Map<String, String>> map;
+               return instance;
+            }
+         }
+      }
 
-	private RelationMap() {
-		try {
-			instance = this;
+      return instance;
+   }
 
-			map = new ObjectMapper().readValue(Application.getContext()
-							.getResource("classpath:relationships.json")
-							.getInputStream(),
-					HashMap.class);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
+   public String getEdge(String a, String b) {
+      if (map.containsKey(a)) {
+         return map.get(a).get(b);
+      } else if (map.containsKey(b)) {
+         return map.get(b).get(a);
+      }
 
-	public boolean containsNode(String a) {
-		return map.containsKey(a);
-	}
-
-	public String getEdge(String a, String b) {
-		if (map.containsKey(a)) {
-			return map.get(a).get(b);
-		} else if (map.containsKey(b)) {
-			return map.get(b).get(a);
-		}
-
-		return null;
-	}
+      return null;
+   }
 
 }

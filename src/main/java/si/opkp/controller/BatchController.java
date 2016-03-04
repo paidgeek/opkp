@@ -11,88 +11,91 @@ import si.opkp.util.Pojo;
 import si.opkp.util.Util;
 import si.opkp.util.Validator;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/v1/batch")
 @CrossOrigin
 public class BatchController {
 
-	@Autowired
-	private Database db;
+   @Autowired
+   private Database db;
 
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Pojo> post(@RequestBody Batch batch) {
-		String errorMessage = Validator.validate(batch);
+   @RequestMapping(method = RequestMethod.POST)
+   public ResponseEntity<Pojo> post(@RequestBody Batch batch) {
+      String errorMessage = Validator.validate(batch);
 
-		if (errorMessage != null) {
-			return Util.responseError(errorMessage, HttpStatus.BAD_REQUEST);
-		}
+      if (errorMessage != null) {
+         return Util.responseError(errorMessage, HttpStatus.BAD_REQUEST);
+      }
 
-		try {
-			Pojo result = new Pojo();
-			List<Command> commands = batch.sortedCommands();
-			Set<String> failed = new HashSet<>();
+      try {
+         Pojo result = new Pojo();
+         List<Command> commands = batch.sortedCommands();
+         Set<String> failed = new HashSet<>();
 
-			for (int i = 0; i < commands.size(); i++) {
-				Command command = commands.get(i);
-				Optional<String> failedDependency = command.getDependencies().stream().filter(failed::contains).findAny();
+         for (int i = 0; i < commands.size(); i++) {
+            Command command = commands.get(i);
+            Optional<String> failedDependency = command.getDependencies()
+                  .stream()
+                  .filter(failed::contains)
+                  .findAny();
 
-				if (failedDependency.isPresent()) {
-					failed.add(command.getName());
+            if (failedDependency.isPresent()) {
+               failed.add(command.getName());
 
-					String message = "command '" + command.getName() + "' terminated, because '" + failedDependency.get() + "' failed";
-					result.setProperty(command.getName(), Util.createError(message));
+               result.setProperty(command.getName(), Util.createError(
+                     String.format("command '%s' was terminated, because '%s' failed",
+                           command.getName(),
+                           failedDependency.get())));
 
-					continue;
-				}
+               continue;
+            }
 
-				String controller = command.getController();
-				String model = command.getModel();
+            String controller = command.getController();
+            String model = command.getModel();
 
-				List<String> columns = (ArrayList) command.getParam("columns");
-				List<Long> limit = (ArrayList) command.getParam("limit");
+            ResponseEntity<Pojo> response;
 
-				if (columns == null) {
-					columns = Arrays.asList("*");
-				}
+            if (controller.equals("path")) {
+               response = PathController.getInstance()
+                     .perform(model,
+                           command.getColumns(),
+                           command.getQuery(),
+                           command.getSort(),
+                           command.getLimit());
+            } else if (controller.equals("get")) {
+               response = SearchController.getInstance()
+                     .perform(model,
+                           command.getColumns(),
+                           command.getKeywords(),
+                           command.getLimit());
+            } else {
+               failed.add(command.getName());
+               result.setProperty(command.getName(), Util.createError("invalid controller"));
 
-				ResponseEntity<Pojo> response = null;
+               continue;
+            }
 
-				if (controller.equals("path")) {
-					String query = (String) command.getParam("q");
-					List<String> sort = (ArrayList) command.getParam("sort");
+            if (response.getStatusCode() != HttpStatus.OK) {
+               failed.add(command.getName());
+               result.setProperty(command.getName(), response.getBody());
 
-					response = PathController.getInstance()
-							.perform(model, columns, query, sort, limit);
-				} else if (controller.equals("get")) {
-					List<String> keywords = (ArrayList) command.getParam("keywords");
+               continue;
+            }
 
-					response = SearchController.getInstance()
-							.perform(model, columns, keywords, limit);
-				} else {
-					failed.add(command.getName());
-					result.setProperty(command.getName(), Util.createError("invalid controller"));
+            result.setProperty(command.getName(), response.getBody());
+         }
 
-					continue;
-				}
+         return ResponseEntity.ok(result);
+      } catch (Exception e) {
+         e.printStackTrace();
 
-				if (response.getStatusCode() != HttpStatus.OK) {
-					failed.add(command.getName());
-					result.setProperty(command.getName(), response.getBody());
-
-					continue;
-				}
-
-				result.setProperty(command.getName(), response.getBody());
-			}
-
-			return ResponseEntity.ok(result);
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return Util.responseError(HttpStatus.BAD_REQUEST);
-		}
-	}
+         return Util.responseError(HttpStatus.BAD_REQUEST);
+      }
+   }
 
 }

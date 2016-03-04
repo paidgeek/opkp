@@ -1,64 +1,70 @@
 package si.opkp.batch;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.*;
 
 public class Batch {
 
-	private List<Command> commands;
+   private List<Command> commands;
 
-	public List<Command> getCommands() {
-		return commands;
-	}
+   @JsonCreator
+   public Batch(@JsonProperty("commands") List<Command> commands) {
+      this.commands = commands;
+   }
 
-	public List<Command> sortedCommands() {
-		Map<String, List<String>> graph = new HashMap<>();
+   public List<Command> getCommands() {
+      return commands;
+   }
 
-		commands.forEach(cmd -> {
-			if (cmd.getDependencies() == null) {
-				graph.put(cmd.getName(), Collections.emptyList());
-			} else {
-				graph.put(cmd.getName(), cmd.getDependencies());
-			}
-		});
+   public List<Command> sortedCommands() {
+      Map<String, List<String>> graph = new HashMap<>();
 
-		List<String> sorted = topologicalSort(graph);
-		List<Command> sortedCommands = new ArrayList<>();
+      commands.forEach(cmd -> {
+         if (cmd.getDependencies() == null) {
+            graph.put(cmd.getName(), Collections.emptyList());
+         } else {
+            graph.put(cmd.getName(), cmd.getDependencies());
+         }
+      });
 
-		sorted.forEach(name -> sortedCommands.add(commands.stream()
-				.filter(cmd -> cmd.getName().equals(name))
-				.findFirst()
-				.get()));
+      List<String> sorted = topologicalSort(graph);
+      List<Command> sortedCommands = new ArrayList<>();
 
-		return sortedCommands;
-	}
+      sorted.forEach(name -> sortedCommands.add(commands.stream()
+            .filter(cmd -> cmd.getName().equals(name))
+            .findFirst()
+            .get()));
 
-	private List<String> topologicalSort(Map<String, List<String>> graph) {
-		Map<String, Boolean> used = new HashMap<>();
-		List<String> sorted = new ArrayList<>();
+      return sortedCommands;
+   }
 
-		graph.keySet().forEach(node -> used.put(node, false));
+   private List<String> topologicalSort(Map<String, List<String>> graph) {
+      Map<String, Boolean> used = new HashMap<>();
+      List<String> sorted = new ArrayList<>();
 
-		graph.keySet().forEach(node -> {
-			if (!used.get(node)) {
-				dfs(graph, used, sorted, node);
-			}
-		});
+      graph.keySet().forEach(node -> used.put(node, false));
 
-		//Collections.reverse(sorted);
+      graph.keySet().forEach(node -> {
+         if (!used.get(node)) {
+            dfs(graph, used, sorted, node);
+         }
+      });
 
-		return sorted;
-	}
+      return sorted;
+   }
 
-	private void dfs(Map<String, List<String>> graph, Map<String, Boolean> used, List<String> sorted, String u) {
-		used.put(u, true);
+   private void dfs(Map<String, List<String>> graph, Map<String, Boolean> used, List<String> sorted, String u) {
+      used.put(u, true);
 
-		graph.get(u).forEach(v -> {
-			if (!used.get(v)) {
-				dfs(graph, used, sorted, v);
-			}
-		});
+      graph.get(u).forEach(v -> {
+         if (!used.get(v)) {
+            dfs(graph, used, sorted, v);
+         }
+      });
 
-		sorted.add(u);
-	}
+      sorted.add(u);
+   }
 
 }

@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: si.opkp.ApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.466 sec - in si.opkp.ApplicationTests

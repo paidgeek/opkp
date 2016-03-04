@@ -10,17 +10,15 @@ import si.opkp.util.SQLInsertBuilder;
 @CrossOrigin
 public class CreateController {
 
-	@RequestMapping(value = "/{model}", method = RequestMethod.POST)
-	public ResponseEntity<Pojo> create(@PathVariable("model") String model,
-	                                   @RequestBody Pojo body) {
-		SQLInsertBuilder insertBuilder = new SQLInsertBuilder(model);
+   @RequestMapping(value = "/{model}", method = RequestMethod.POST)
+   public ResponseEntity<Pojo> create(@PathVariable("model") String model,
+                                      @RequestBody Pojo body) {
+      SQLInsertBuilder insertBuilder = new SQLInsertBuilder(model);
 
-		body.getProperties().entrySet()
-				.forEach(prop -> insertBuilder.insert(prop.getKey(), prop.getValue()));
+      body.getProperties().entrySet()
+            .forEach(prop -> insertBuilder.insert(prop.getKey(), prop.getValue()));
 
-		System.out.println(insertBuilder.build());
-
-		return ResponseEntity.ok(body);
-	}
+      return ResponseEntity.ok(body);
+   }
 
 }
