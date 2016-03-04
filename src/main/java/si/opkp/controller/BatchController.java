@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import si.opkp.batch.Batch;
+import si.opkp.batch.Command;
 import si.opkp.model.Database;
 import si.opkp.util.Pojo;
 import si.opkp.util.Util;
+import si.opkp.util.Validator;
 
 import java.util.*;
 
@@ -19,58 +22,49 @@ public class BatchController {
 	private Database db;
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Pojo> post(@RequestBody Pojo batch) {
-		try {
-			List<HashMap<String, Object>> commands = (ArrayList) batch.getProperty("commands");
+	public ResponseEntity<Pojo> post(@RequestBody Batch batch) {
+		String errorMessage = Validator.validate(batch);
 
+		if (errorMessage != null) {
+			return Util.responseError(errorMessage, HttpStatus.BAD_REQUEST);
+		}
+
+		try {
 			Pojo result = new Pojo();
 
-			for (HashMap<String, Object> command : commands) {
-				if (!(command.containsKey("name") && command.containsKey("controller") && command.containsKey("params"))) {
-					return Util.responseError("command must have a 'name', 'controller' and 'params' fields", HttpStatus.BAD_REQUEST);
-				}
+			for (Command command : batch.getCommands()) {
+				String controller = command.getController();
+				String model = command.getModel();
 
-				String controller = (String) command.get("controller");
-				String model = (String) command.get("model");
-				HashMap<String, Object> params = (HashMap) command.get("params");
-
-				List<String> columns = (ArrayList) params.get("columns");
-				List<Long> limit = (ArrayList) params.get("limit");
+				List<String> columns = (ArrayList) command.getParam("columns");
+				List<Long> limit = (ArrayList) command.getParam("limit");
 
 				if (columns == null) {
 					columns = Arrays.asList("*");
 				}
 
-				if (limit != null && limit.isEmpty()) {
-					return Util.responseError("empty limit array", HttpStatus.BAD_REQUEST);
-				}
-
-				if (columns.isEmpty()) {
-					return Util.responseError("no columns selected", HttpStatus.BAD_REQUEST);
-				}
-
 				ResponseEntity<Pojo> response = null;
 
 				if (controller.equals("path")) {
-					String query = (String) params.get("q");
-					List<String> sort = (ArrayList) params.get("sort");
+					String query = (String) command.getParam("q");
+					List<String> sort = (ArrayList) command.getParam("sort");
 
 					response = PathController.getInstance()
 							.perform(model, columns, query, sort, limit);
 				} else if (controller.equals("get")) {
-					List<String> keywords = (ArrayList) params.get("keywords");
+					List<String> keywords = (ArrayList) command.getParam("keywords");
 
 					response = SearchController.getInstance()
 							.perform(model, columns, keywords, limit);
 				}
 
 				if (response.getStatusCode() != HttpStatus.OK) {
-					result.setProperty((String) command.get("name"), response.getBody());
+					result.setProperty(command.getName(), response.getBody());
 
 					break;
 				}
 
-				result.setProperty((String) command.get("name"), response.getBody());
+				result.setProperty(command.getName(), response.getBody());
 			}
 
 			return ResponseEntity.ok(result);
