@@ -53,18 +53,20 @@ public class Util {
 		return list;
 	}
 
+	public static Pojo createError(String message) {
+		Pojo error = new Pojo();
+
+		error.setProperty("message", message);
+
+		return error;
+	}
+
 	public static ResponseEntity<Pojo> responseError(HttpStatus httpStatus) {
 		return responseError("undefined error", httpStatus);
 	}
 
 	public static ResponseEntity<Pojo> responseError(String message, HttpStatus httpStatus) {
-		Pojo body = new Pojo();
-
-		body.setProperty("message", message);
-		body.setProperty("status", httpStatus);
-		body.setProperty("code", httpStatus.value());
-
-		return new ResponseEntity(body, httpStatus);
+		return new ResponseEntity(createError(message), httpStatus);
 	}
 
 }

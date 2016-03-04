@@ -1,5 +1,7 @@
 package si.opkp.batch;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +12,14 @@ public class Command {
 	private String model;
 	private Map<String, Object> params;
 	private List<String> dependencies;
+
+	private Command() {
+		name = "";
+		controller = "";
+		model = "";
+		params = new HashMap<>();
+		dependencies = new ArrayList<>();
+	}
 
 	public String getName() {
 		return name;
@@ -33,6 +43,10 @@ public class Command {
 
 	public Map<String, Object> getParams() {
 		return params;
+	}
+
+	public List<String> getDependencies() {
+		return dependencies;
 	}
 
 }

@@ -1,6 +1,5 @@
 package si.opkp.util;
 
-import org.springframework.http.HttpStatus;
 import si.opkp.batch.Batch;
 import si.opkp.batch.Command;
 
@@ -14,15 +13,15 @@ public class Validator {
 		}
 
 		for (Command command : batch.getCommands()) {
-			if (command.getName() == null || command.getName().isEmpty()) {
+			if (command.getName().isEmpty()) {
 				return "command must have a name";
 			}
 
-			if (command.getController() == null || command.getController().isEmpty()) {
+			if (command.getController().isEmpty()) {
 				return "command must have a controller specified";
 			}
 
-			if (command.getModel() == null || command.getModel().isEmpty()) {
+			if (command.getModel().isEmpty()) {
 				return "command must have a model specified";
 			}
 

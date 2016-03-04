@@ -31,8 +31,22 @@ public class BatchController {
 
 		try {
 			Pojo result = new Pojo();
+			List<Command> commands = batch.sortedCommands();
+			Set<String> failed = new HashSet<>();
 
-			for (Command command : batch.getCommands()) {
+			for (int i = 0; i < commands.size(); i++) {
+				Command command = commands.get(i);
+				Optional<String> failedDependency = command.getDependencies().stream().filter(failed::contains).findAny();
+
+				if (failedDependency.isPresent()) {
+					failed.add(command.getName());
+
+					String message = "command '" + command.getName() + "' terminated, because '" + failedDependency.get() + "' failed";
+					result.setProperty(command.getName(), Util.createError(message));
+
+					continue;
+				}
+
 				String controller = command.getController();
 				String model = command.getModel();
 
@@ -56,12 +70,18 @@ public class BatchController {
 
 					response = SearchController.getInstance()
 							.perform(model, columns, keywords, limit);
+				} else {
+					failed.add(command.getName());
+					result.setProperty(command.getName(), Util.createError("invalid controller"));
+
+					continue;
 				}
 
 				if (response.getStatusCode() != HttpStatus.OK) {
+					failed.add(command.getName());
 					result.setProperty(command.getName(), response.getBody());
 
-					break;
+					continue;
 				}
 
 				result.setProperty(command.getName(), response.getBody());
