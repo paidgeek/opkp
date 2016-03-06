@@ -1,52 +1,45 @@
 package si.opkp.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import si.opkp.Application;
-
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class RelationMap {
 
-   private static RelationMap instance;
-   private Map<String, Map<String, String>> map;
+	private static RelationMap instance;
+	private HashMap map;
 
-   private RelationMap() {
-      try {
-         instance = this;
+	private RelationMap() {
+		try {
+			instance = this;
 
-         map = new ObjectMapper().readValue(Application.getContext()
-                     .getResource("classpath:relationships.json")
-                     .getInputStream(),
-               HashMap.class);
-      } catch (Exception e) {
-         e.printStackTrace();
-         System.exit(1);
-      }
-   }
+			map = (HashMap) Util.readFile("classpath:relationships.json");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
 
-   public static RelationMap getInstance() {
-      if (instance == null) {
-         synchronized (RelationMap.class) {
-            if (instance == null) {
-               instance = new RelationMap();
+	public static RelationMap getInstance() {
+		if (instance == null) {
+			synchronized (RelationMap.class) {
+				if (instance == null) {
+					instance = new RelationMap();
 
-               return instance;
-            }
-         }
-      }
+					return instance;
+				}
+			}
+		}
 
-      return instance;
-   }
+		return instance;
+	}
 
-   public String getEdge(String a, String b) {
-      if (map.containsKey(a)) {
-         return map.get(a).get(b);
-      } else if (map.containsKey(b)) {
-         return map.get(b).get(a);
-      }
+	public String getEdge(String a, String b) {
+		if (map.containsKey(a)) {
+			return (String) ((HashMap) map.get(a)).get(b);
+		} else if (map.containsKey(b)) {
+			return (String) ((HashMap) map.get(b)).get(a);
+		}
 
-      return null;
-   }
+		return null;
+	}
 
 }

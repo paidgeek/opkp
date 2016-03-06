@@ -1,8 +1,8 @@
 {
-	"fir_food": {
-		"fir_value": "ORIGFDCD"
-	},
-	"fir_value": {
-		"fir_component": "COMPID=ECOMPID"
-	}
+  "fir_food": {
+	 "fir_value": "ORIGFDCD"
+  },
+  "fir_value": {
+	 "fir_component": "COMPID=ECOMPID"
+  }
 }

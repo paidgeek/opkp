@@ -1,12 +1,10 @@
 package si.opkp;
 
-import org.springframework.boot.Banner;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.boot.builder.*;
+import org.springframework.context.*;
+import org.springframework.context.annotation.*;
 
 @Configuration
 @EnableAutoConfiguration
@@ -14,17 +12,17 @@ import org.springframework.context.annotation.ImportResource;
 @ImportResource({"beans.xml"})
 public class Application {
 
-   private static ApplicationContext context;
+	private static ApplicationContext context;
 
-   public static ApplicationContext getContext() {
-      return context;
-   }
+	public static ApplicationContext getContext() {
+		return context;
+	}
 
-   public static void main(String[] args) {
-      context = new SpringApplicationBuilder()
-            .bannerMode(Banner.Mode.OFF)
-            .sources(Application.class)
-            .run(args);
-   }
+	public static void main(String[] args) {
+		context = new SpringApplicationBuilder()
+				.bannerMode(Banner.Mode.OFF)
+				.sources(Application.class)
+				.run(args);
+	}
 
 }

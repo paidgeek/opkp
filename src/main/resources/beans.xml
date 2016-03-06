@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="http://www.springframework.org/schema/beans"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		 xmlns="http://www.springframework.org/schema/beans"
+		 xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url"
-                  value="jdbc:mysql://localhost:3306/food?zeroDateTimeBehavior=convertToNull&amp;useSSL=false"/>
-        <property name="username" value="root"/>
-        <property name="password" value="1234"/>
-    </bean>
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url"
+					 value="jdbc:mysql://33.33.33.10/food?zeroDateTimeBehavior=convertToNull&amp;useSSL=false"/>
+		<property name="username" value="root"/>
+		<property name="password" value="root"/>
+	</bean>
 
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix">
-            <value>/templates/</value>
-        </property>
-        <property name="suffix">
-            <value></value>
-        </property>
-    </bean>
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/templates/</value>
+		</property>
+		<property name="suffix">
+			<value></value>
+		</property>
+	</bean>
 
 </beans>

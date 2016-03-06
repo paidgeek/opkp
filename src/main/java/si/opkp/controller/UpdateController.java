@@ -1,28 +1,27 @@
 package si.opkp.controller;
 
-import com.moybl.restql.RestQL;
-import org.springframework.http.ResponseEntity;
+import com.moybl.restql.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import si.opkp.util.Pojo;
-import si.opkp.util.SQLUpdateBuilder;
+import si.opkp.util.*;
 
 @RestController
 @RequestMapping("/v1/update")
 @CrossOrigin
 public class UpdateController {
 
-   @RequestMapping(value = "/{model}", method = RequestMethod.PUT)
-   public ResponseEntity<Pojo> update(@PathVariable("model") String model,
-                                      @RequestParam("q") String query,
-                                      @RequestBody Pojo body) {
-      SQLUpdateBuilder updateBuilder = new SQLUpdateBuilder(model);
+	@RequestMapping(value = "/{model}", method = RequestMethod.PUT)
+	public ResponseEntity<Pojo> update(@PathVariable("model") String model,
+												  @RequestParam("q") String query,
+												  @RequestBody Pojo body) {
+		SQLUpdateBuilder updateBuilder = new SQLUpdateBuilder(model);
 
-      body.getProperties().entrySet()
-            .forEach(prop -> updateBuilder.set(prop.getKey(), prop.getValue()));
+		body.getProperties().entrySet()
+				.forEach(prop -> updateBuilder.set(prop.getKey(), prop.getValue()));
 
-      updateBuilder.where(RestQL.parseToSQL(query));
+		updateBuilder.where(RestQL.parseToSQL(query));
 
-      return ResponseEntity.ok(body);
-   }
+		return ResponseEntity.ok(body);
+	}
 
 }

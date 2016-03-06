@@ -1,82 +1,95 @@
 package si.opkp.util;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.databind.*;
+import org.springframework.http.*;
+import si.opkp.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Util {
 
-   private Util() {
-   }
+	private Util() {
+	}
 
-   public static List<String> parseStringList(String stringList) {
-      if (stringList == null || stringList.isEmpty()) {
-         return null;
-      }
+	public static List<String> parseStringList(String stringList) {
+		if (stringList == null || stringList.isEmpty()) {
+			return null;
+		}
 
-      return Arrays.asList(stringList.split(","));
-   }
+		return Arrays.asList(stringList.split(","));
+	}
 
-   public static List<Long> parseLongList(String integerList) {
-      if (integerList == null || integerList.isEmpty()) {
-         return null;
-      }
+	public static List<Integer> parseIntegerList(String integerList) {
+		if (integerList == null || integerList.isEmpty()) {
+			return null;
+		}
 
-      List<Long> list = new ArrayList<>();
-      String[] ints = integerList.split(",");
+		List<Integer> list = new ArrayList<>();
+		String[] ints = integerList.split(",");
 
-      for (int i = 0; i < ints.length; i++) {
-         list.add(Long.parseLong(ints[i]));
-      }
+		for (String i : ints) {
+			list.add(Integer.parseInt(i));
+		}
 
-      return list;
-   }
+		return list;
+	}
 
-   public static <T> T[] listToArray(List<T> list) {
-      T[] array = (T[]) new Object[list.size()];
+	public static <T> T[] listToArray(List<T> list) {
+		T[] array = (T[]) new Object[list.size()];
 
-      list.toArray(array);
+		list.toArray(array);
 
-      return array;
-   }
+		return array;
+	}
 
-   public static List<Integer> integerList(int... array) {
-      List<Integer> list = new ArrayList<>();
+	public static List<Integer> integerList(int... array) {
+		List<Integer> list = new ArrayList<>();
 
-      for (int i = 0; i < array.length; i++) {
-         list.add(array[i]);
-      }
+		for (int i = 0; i < array.length; i++) {
+			list.add(array[i]);
+		}
 
-      return list;
-   }
+		return list;
+	}
 
-   public static List<String> stringList(String... array) {
-      List<String> list = new ArrayList<>();
+	public static List<String> stringList(String... array) {
+		List<String> list = new ArrayList<>();
 
-      for (int i = 0; i < array.length; i++) {
-         list.add(array[i]);
-      }
+		for (int i = 0; i < array.length; i++) {
+			list.add(array[i]);
+		}
 
-      return list;
-   }
+		return list;
+	}
 
-   public static Pojo createError(String message) {
-      Pojo error = new Pojo();
+	public static Pojo createError(String message) {
+		Pojo error = new Pojo();
 
-      error.setProperty("message", message);
+		error.setProperty("message", message);
 
-      return error;
-   }
+		return error;
+	}
 
-   public static ResponseEntity<Pojo> responseError(HttpStatus httpStatus) {
-      return responseError("undefined error", httpStatus);
-   }
+	public static ResponseEntity<Pojo> responseError(HttpStatus httpStatus) {
+		return responseError("undefined error", httpStatus);
+	}
 
-   public static ResponseEntity<Pojo> responseError(String message, HttpStatus httpStatus) {
-      return new ResponseEntity(createError(message), httpStatus);
-   }
+	public static ResponseEntity<Pojo> responseError(String message, HttpStatus httpStatus) {
+		return new ResponseEntity(createError(message), httpStatus);
+	}
+
+	public static Object readFile(String pathname) {
+		try {
+			return new ObjectMapper().readValue(Application.getContext()
+							.getResource(pathname)
+							.getInputStream(),
+					HashMap.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		return null;
+	}
 
 }

@@ -1,92 +1,100 @@
 package si.opkp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import si.opkp.model.Database;
-import si.opkp.util.Pojo;
-import si.opkp.util.Util;
+import si.opkp.model.*;
+import si.opkp.util.*;
 
-import javax.annotation.PostConstruct;
-import java.util.List;
+import javax.annotation.*;
+import java.util.*;
+import java.util.stream.*;
 
 @RestController
 @RequestMapping("/v1/search")
 @CrossOrigin
 public class SearchController {
 
-   private static SearchController instance;
+	private static SearchController instance;
+	@Autowired
+	private Database db;
 
-   public static SearchController getInstance() {
-      return instance;
-   }
+	public static SearchController getInstance() {
+		return instance;
+	}
 
-   @Autowired
-   private Database db;
+	@PostConstruct
+	private void init() {
+		instance = this;
+	}
 
-   @PostConstruct
-   private void init() {
-      instance = this;
-   }
+	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
+	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
+											  @RequestParam(name = "columns", required = false) String columnList,
+											  @RequestParam(name = "keywords", required = true) String keywordList,
+											  @RequestParam(name = "limit", required = false) String limitList,
+											  @RequestParam(name = "lang", required = false) String language) {
+		List<String> columns = Util.parseStringList(columnList);
+		List<String> keywords = Util.parseStringList(keywordList);
+		List<Integer> limit = Util.parseIntegerList(limitList);
 
-   @RequestMapping(value = "/{model}", method = RequestMethod.GET)
-   public ResponseEntity<Pojo> get(@PathVariable("model") String model,
-                                   @RequestParam(name = "columns", required = false, defaultValue = "*") String columnList,
-                                   @RequestParam(name = "keywords", required = true) String keywordList,
-                                   @RequestParam(name = "limit", required = false) String limitList) {
-      List<String> columns = Util.parseStringList(columnList);
-      List<String> keywords = Util.parseStringList(keywordList);
-      List<Long> limit = Util.parseLongList(limitList);
+		return perform(model, columns, keywords, limit, language);
+	}
 
-      return perform(model, columns, keywords, limit);
-   }
+	public ResponseEntity<Pojo> perform(String model, List<String> columns, List<String> keywords, List<Integer> limit, String language) {
+		if (columns.isEmpty()) {
+			columns.add("*");
+		}
 
-   public ResponseEntity<Pojo> perform(String model, List<String> columns, List<String> keywords, List<Long> limit) {
-      String kw = String.join(" ", keywords);
+		if (language == null) {
+			language = "en";
+		}
 
-      List<Pojo> objects;
-      long offset = 0, count = Long.MAX_VALUE, total = 0;
+		Set<String> stopwords = StopWords.getInstance().getStopWords(language);
+		String kw = keywords.stream()
+				.map(String::toLowerCase)
+				.filter(word -> !stopwords.contains(word))
+				.collect(Collectors.joining(" "));
 
-      if (limit != null) {
-         if (limit.size() == 1) {
-            offset = limit.get(0);
-         }
+		List<Pojo> objects;
+		int offset = 0, count = Integer.MAX_VALUE, total = 0;
 
-         if (limit.size() == 2) {
-            count = limit.get(1);
-         }
-      }
+		if (limit != null) {
+			if (limit.size() == 1) {
+				count = limit.get(0);
+			} else if (limit.size() == 2) {
+				offset = limit.get(0);
+				count = limit.get(1);
+			}
+		}
 
-      // TODO clean up
-      if (model.equals("fir_food")) {
-         objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, offset, count);
-      } else {
-         return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
-      }
+		// TODO clean up
+		if (model.equals("fir_food")) {
+			objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, offset, count);
+		} else {
+			return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
+		}
 
-      if (!objects.isEmpty()) {
-         total = objects.get(0).getLong("total");
-      }
+		if (!objects.isEmpty()) {
+			total = objects.get(0).getInteger("total");
+		}
 
-      if (!(columns.size() == 1 && columns.contains("*"))) {
-         for (int i = 0; i < objects.size(); i++) {
-            Pojo pojo = objects.get(i);
+		if (!(columns.size() == 1 && columns.contains("*"))) {
+			for (Pojo pojo : objects) {
+				pojo.getProperties().entrySet().removeIf(e -> !columns.contains(e.getKey()));
+			}
+		}
 
-            pojo.getProperties().entrySet().removeIf(e -> !columns.contains(e.getKey()));
-         }
-      }
+		Pojo result = new Pojo();
+		Pojo meta = new Pojo();
 
-      Pojo result = new Pojo();
-      Pojo meta = new Pojo();
+		meta.setProperty("count", objects.size());
+		meta.setProperty("total", total);
 
-      meta.setProperty("count", objects.size());
-      meta.setProperty("total", total);
+		result.setProperty("meta", meta);
+		result.setProperty("result", objects);
 
-      result.setProperty("meta", meta);
-      result.setProperty("result", objects);
-
-      return ResponseEntity.ok(result);
-   }
+		return ResponseEntity.ok(result);
+	}
 
 }

@@ -19,14 +19,16 @@
       </profile>
       <profile default="false" name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <sourceTestOutputDir name="target\generated-test-sources\test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="opkp" />
+        <module name="restql" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="opkp" target="1.8" />
+      <module name="restql" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -2,102 +2,102 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
 
-    <title>OPKP Dashboard</title>
+	<title>OPKP Dashboard</title>
 
-    <link href="vendor/bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="vendor/query-builder.min.css"/>
-    <link href="css/main.css" rel="stylesheet"/>
+	<link href="vendor/bootstrap.min.css" rel="stylesheet"/>
+	<link rel="stylesheet" href="vendor/query-builder.min.css"/>
+	<link href="css/main.css" rel="stylesheet"/>
 </head>
 
 <body>
 
 <div class="navbar navbar-default navbar-fixed-top" id="header">
-    <div class="container-fluid">
-        <div class="navbar-brand">OPKP</div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Log out</a></li>
-            </ul>
-        </div>
-    </div>
+	<div class="container-fluid">
+		<div class="navbar-brand">OPKP</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#">Log out</a></li>
+			</ul>
+		</div>
+	</div>
 </div>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-1 no-float sidebar">
-            <ul class="nav nav-sidebar">
-                <li class="active"><a>Explore</a></li>
-                <li><a>Graphs</a></li>
-            </ul>
-        </div>
-        <div class="col-md-11 col-md-offset-1 main">
-            <div class="page-header">
-                <h1 id="page-title"></h1>
-            </div>
-            <div id="page-content"></div>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-1 no-float sidebar">
+			<ul class="nav nav-sidebar">
+				<li class="active"><a>Explore</a></li>
+				<li><a>Graphs</a></li>
+			</ul>
+		</div>
+		<div class="col-md-11 col-md-offset-1 main">
+			<div class="page-header">
+				<h1 id="page-title"></h1>
+			</div>
+			<div id="page-content"></div>
+		</div>
+	</div>
 </div>
 
 <!-- Food profile modal -->
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel" id="food-profile-modal">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="gridSystemModalLabel">Food profile</h4>
-            </div>
-            <div class="modal-body" style="min-height: 50vh;">
-                <div class="row">
-                    <div class="col-md-4">
-                        <img src="#" alt="#" class="img-rounded" style="background-color: gray;"/>
-                    </div>
-                    <div class="col-md-8">
-                        <table class="table table-responsive borderless">
-                            <tr>
-                                <td data-bind="text: ORIGFDNM"></td>
-                            </tr>
-                            <tr>
-                                <td data-bind="text: ENGFDNAM"></td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Components</h3>
-                            </div>
-                            <div class="panel-body">
-                                <table class="table table-hover table-condensed table-borderless"
-                                       id="food-components-table">
-                                    <tbody data-bind="template: {name: 'food-component', foreach: components}">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-    <script type="text/html" id="food-component">
-        <tr>
-            <td data-bind="text: ORIGCPNM" class="food-component-name"></td>
-            <td data-bind="text: SELVAL" class="food-component-value"></td>
-        </tr>
-    </script>
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+						aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="gridSystemModalLabel">Food profile</h4>
+			</div>
+			<div class="modal-body" style="min-height: 50vh;">
+				<div class="row">
+					<div class="col-md-4">
+						<img src="#" alt="#" class="img-rounded" style="background-color: gray;"/>
+					</div>
+					<div class="col-md-8">
+						<table class="table table-responsive borderless">
+							<tr>
+								<td data-bind="text: ORIGFDNM"></td>
+							</tr>
+							<tr>
+								<td data-bind="text: ENGFDNAM"></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Components</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table table-hover table-condensed table-borderless"
+										 id="food-components-table">
+									<tbody data-bind="template: {name: 'food-component', foreach: components}">
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary">Save changes</button>
+			</div>
+		</div>
+	</div>
+	<script type="text/html" id="food-component">
+		<tr>
+			<td data-bind="text: ORIGCPNM" class="food-component-name"></td>
+			<td data-bind="text: SELVAL" class="food-component-value"></td>
+		</tr>
+	</script>
 </div>
 
 <script src="vendor/jquery.min.js"></script>

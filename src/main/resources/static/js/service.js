@@ -30,7 +30,8 @@ OPKP.getFood = function (foodId, success, error) {
             params: {
                 q: "ORIGFDCD:'" + foodId + "'",
                 columns: ["ORIGFDNM", "ORIGCPNM", "SELVAL"]
-            }
+            },
+            dependencies: ["food"]
         },
         {
             name: "food",
@@ -50,7 +51,7 @@ OPKP.getFood = function (foodId, success, error) {
 }
 
 OPKP.findFoods = function (keywords, offset, count, success, error) {
-    if(!keywords || keywords.length == 0) {
+    if (!keywords || keywords.length == 0) {
         success(null);
 
         return;
