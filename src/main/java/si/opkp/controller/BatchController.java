@@ -61,7 +61,7 @@ public class BatchController {
 										command.getSort(),
 										command.getLimit());
 						break;
-					case "get":
+					case "search":
 						response = SearchController.getInstance()
 								.perform(model,
 										command.getColumns(),

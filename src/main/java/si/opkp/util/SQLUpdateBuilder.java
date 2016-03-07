@@ -6,6 +6,7 @@ public class SQLUpdateBuilder {
 
 	private StringBuilder query;
 	private List<Pair<String, Object>> delta;
+	private String condition;
 
 	public SQLUpdateBuilder(String table) {
 		query = new StringBuilder();
@@ -23,9 +24,7 @@ public class SQLUpdateBuilder {
 	}
 
 	public SQLUpdateBuilder where(String condition) {
-		query.append("WHERE ");
-		query.append(condition);
-		query.append("\n");
+		this.condition = condition;
 
 		return this;
 	}
@@ -52,6 +51,10 @@ public class SQLUpdateBuilder {
 				query.append(", ");
 			}
 		}
+
+		query.append("\nWHERE ");
+		query.append(condition);
+		query.append("\n");
 
 		return query.toString();
 	}

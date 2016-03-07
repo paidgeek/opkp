@@ -1,6 +1,7 @@
 package si.opkp.batch;
 
 import com.fasterxml.jackson.annotation.*;
+import si.opkp.util.*;
 
 import java.util.*;
 
@@ -9,6 +10,7 @@ public class Command {
 	private String name;
 	private String controller;
 	private String model;
+	private Pojo body;
 	private String query;
 	private List<String> columns;
 	private List<Integer> limit;
@@ -21,11 +23,13 @@ public class Command {
 	public Command(@JsonProperty("name") String name,
 						@JsonProperty("controller") String controller,
 						@JsonProperty("model") String model,
+						@JsonProperty("body") Pojo body,
 						@JsonProperty("params") HashMap<String, Object> params,
 						@JsonProperty("dependencies") List<String> dependencies) {
 		this.name = name == null ? "" : name;
 		this.controller = controller == null ? "" : controller;
 		this.model = model == null ? "" : model;
+		this.body = body;
 		this.dependencies = dependencies == null ? new ArrayList<>() : dependencies;
 
 		query = (String) params.get("q");
@@ -46,6 +50,10 @@ public class Command {
 
 	public String getModel() {
 		return model;
+	}
+
+	public Pojo getBody() {
+		return body;
 	}
 
 	public List<Integer> getLimit() {

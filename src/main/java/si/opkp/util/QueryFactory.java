@@ -6,8 +6,32 @@ import java.util.*;
 
 public class QueryFactory {
 
+	public static Optional<String> count(String table, String query) {
+		return select(Arrays.asList("COUNT(*) as count"), table, query, null, null);
+	}
+
 	public static Optional<String> count(List<String> tables, List<String> joins, String query) {
 		return select(Arrays.asList("COUNT(*) as count"), tables, joins, query, null, null);
+	}
+
+	public static Optional<String> select(List<String> columns, String table, String query, List<String> orderBy, List<Integer> limit) {
+		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(columns);
+
+		selectBuilder.from(table);
+
+		if (query != null) {
+			selectBuilder.where(RestQL.parseToSQL(query));
+		}
+
+		if (orderBy != null) {
+			selectBuilder.orderByPrefixedColumns(orderBy);
+		}
+
+		if (limit != null) {
+			selectBuilder.limit(limit);
+		}
+
+		return Optional.of(selectBuilder.build());
 	}
 
 	public static Optional<String> select(List<String> columns, List<String> tables, List<String> joins, String query, List<String> orderBy, List<Integer> limit) {

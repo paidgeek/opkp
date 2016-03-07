@@ -50,7 +50,9 @@ SELECT SQL_CALC_FOUND_ROWS *, 0 AS total,
 	(
 		MATCH(ORIGFDNM, ENGFDNAM, SCINAM)
 		AGAINST(keywords IN BOOLEAN MODE)
-	) / (LENGTH(ORIGFDNM) + LENGTH(ENGFDNAM) + LENGTH(SCINAM))
+	) / (LENGTH(ORIGFDNM) - LENGTH(REPLACE(ORIGFDNM, ' ', '')) +
+		 LENGTH(ENGFDNAM) - LENGTH(REPLACE(ENGFDNAM, ' ', '')) +
+		 LENGTH(SCINAM) - LENGTH(REPLACE(SCINAM, ' ', '')))
     AS score
 FROM fir_food
 ORDER BY score DESC
@@ -67,7 +69,7 @@ END
 //
 DELIMITER ;
 
-CALL search_foods('world*', 0, 10);
+CALL search_foods('world', 0, 10);
 
 SELECT SQL_CALC_FOUND_ROWS ORIGFDCD,ORIGFDNM,ACTIVE
 FROM fir_food
@@ -76,5 +78,7 @@ LIMIT 0, 100
 
 SELECT FOUND_ROWS() as total;
 
-
+INSERT INTO fir_food
+VALUES('xxxx', 'hello world', 'hello world', '', '', '', '', '', '0100', '37', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '100', '1.00000', '', '0', '', '', '', '', '', '', '', '', '', '', '0003', NULL, NULL, NULL, NULL, NULL, NULL, 'USDA', 'T', NULL, NULL
+);
 
