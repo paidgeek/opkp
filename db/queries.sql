@@ -82,3 +82,13 @@ INSERT INTO fir_food
 VALUES('xxxx', 'hello world', 'hello world', '', '', '', '', '', '0100', '37', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '100', '1.00000', '', '0', '', '', '', '', '', '', '', '', '', '', '0003', NULL, NULL, NULL, NULL, NULL, NULL, 'USDA', 'T', NULL, NULL
 );
 
+SHOW CREATE TABLE fir_food;
+
+SELECT * FROM fitbit_user;
+
+
+
+
+
+
+

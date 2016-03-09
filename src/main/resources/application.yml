@@ -1,0 +1,13 @@
+security:
+  oauth2:
+    client:
+      clientId: 227NR4
+      clientSecret: 5c126a5e376a076df5bec1a566ac37f2
+      accessTokenUri: https://api.fitbit.com/oauth2/token
+      userAuthorizationUri: https://www.fitbit.com/oauth2/authorize
+      scope: profile
+      tokenName: access_token
+      authenticationScheme: query
+      clientAuthenticationScheme: form
+    resource:
+      userInfoUri: https://api.fitbit.com/1/user/-/profile.json

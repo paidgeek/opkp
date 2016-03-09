@@ -19,7 +19,81 @@ OPKP.batch = function (commands, success, error) {
         success: success,
         error: error
     });
-}
+};
+
+OPKP.create = function (model, body, success, error) {
+    $.ajax({
+        type: "POST",
+        url: OPKP.host + "crud/" + model,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        data: JSON.stringify(body),
+        timeout: OPKP.timeout,
+        success: success,
+        error: error
+    });
+};
+
+OPKP.read = function (model, params, success, error) {
+    var url = OPKP.host + "crud/" + model + "?";
+
+    if (params) {
+        if (params["columns"]) {
+            url += "&columns=" + params.columns.join(",")
+        }
+
+        if (params["sort"]) {
+            url += "&sort=" + params.sort.join(",");
+        }
+
+        if (params["query"]) {
+            url += "&q=" + params.query;
+        }
+    }
+
+    $.ajax({
+        type: "GET",
+        url: url,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        timeout: OPKP.timeout,
+        success: success,
+        error: error
+    });
+};
+
+OPKP.update = function (model, query, body, success, error) {
+    $.ajax({
+        type: "GET",
+        url: OPKP.host + "crud/" + model + "?q=" + query,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        data: JSON.stringify(body),
+        timeout: OPKP.timeout,
+        success: success,
+        error: error
+    });
+};
+
+OPKP.delete = function (model, query, success, error) {
+    $.ajax({
+        type: "DELETE",
+        url: OPKP.host + "crud/" + model + "?q=" + query,
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        timeout: OPKP.timeout,
+        success: success,
+        error: error
+    });
+};
 
 OPKP.getFood = function (foodId, success, error) {
     OPKP.batch([
@@ -48,7 +122,7 @@ OPKP.getFood = function (foodId, success, error) {
 
         success(food);
     }, error);
-}
+};
 
 OPKP.findFoods = function (keywords, offset, count, success, error) {
     if (!keywords || keywords.length == 0) {
@@ -72,4 +146,4 @@ OPKP.findFoods = function (keywords, offset, count, success, error) {
         success: success,
         error: error
     });
-}
+};
