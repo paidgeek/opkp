@@ -1,9 +1,10 @@
-package si.opkp.controller;
+package si.opkp;
 
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.*;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.event.*;
+import si.opkp.controller.*;
 import si.opkp.model.*;
 import si.opkp.util.*;
 
