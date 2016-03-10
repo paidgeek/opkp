@@ -1,13 +1,15 @@
 security:
   oauth2:
     client:
-      clientId: 227NR4
-      clientSecret: 5c126a5e376a076df5bec1a566ac37f2
-      accessTokenUri: https://api.fitbit.com/oauth2/token
-      userAuthorizationUri: https://www.fitbit.com/oauth2/authorize
+      client-id: 227NR4
+      client-secret: d5814fcb58e78a16528a3fcf6cb0a3bd
+      access-token-uri: https://api.fitbit.com/oauth2/token
+      user-authorization-uri: https://www.fitbit.com/oauth2/authorize
+      token-name: access_token
+      authentication-scheme: header
+      client-authentication-scheme: header
       scope: profile
-      tokenName: access_token
-      authenticationScheme: query
-      clientAuthenticationScheme: form
     resource:
-      userInfoUri: https://api.fitbit.com/1/user/-/profile.json
+      token-type: Bearer
+      user-info-uri: https://api.fitbit.com/1/user/-/profile.json
+spring.resources.chain.enabled: true
