@@ -70,6 +70,8 @@ public class CRUDController {
 		try {
 			db.update(insertBuilder.build());
 		} catch (Exception e) {
+			e.printStackTrace();
+
 			return Util.responseError(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 

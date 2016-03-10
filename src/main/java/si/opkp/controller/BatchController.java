@@ -1,10 +1,8 @@
 package si.opkp.controller;
 
-import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import si.opkp.batch.*;
-import si.opkp.model.*;
 import si.opkp.util.*;
 
 import java.util.*;
@@ -13,9 +11,6 @@ import java.util.*;
 @RequestMapping("/v1/batch")
 @CrossOrigin
 public class BatchController {
-
-	@Autowired
-	private Database db;
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Pojo> post(@RequestBody Batch batch) {

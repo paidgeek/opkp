@@ -16,13 +16,15 @@ import javax.servlet.http.*;
 import java.io.*;
 
 @Configuration
-@EnableAutoConfiguration
+@EnableAutoConfiguration/*(exclude = {
+		org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class
+})*/
 @ComponentScan
 @EnableOAuth2Sso
 @ImportResource({"beans.xml"})
 @PropertySources({
 		@PropertySource("/application.yml"),
-		@PropertySource("/credentials.yml")
+		@PropertySource("/credentials.properties")
 })
 public class Application extends WebSecurityConfigurerAdapter {
 
@@ -37,7 +39,7 @@ public class Application extends WebSecurityConfigurerAdapter {
 		http
 				.antMatcher("/**")
 				.authorizeRequests()
-				.antMatchers("/", "/login**", "/webjars/**")
+				.antMatchers("/", "/login**", "/webjars/**", "/v1/**")
 				.permitAll()
 				.anyRequest()
 				.authenticated()
@@ -52,15 +54,18 @@ public class Application extends WebSecurityConfigurerAdapter {
 			protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 													  FilterChain filterChain) throws ServletException, IOException {
 				CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
 				if (csrf != null) {
 					Cookie cookie = WebUtils.getCookie(request, "XSRF-TOKEN");
 					String token = csrf.getToken();
+
 					if (cookie == null || token != null && !token.equals(cookie.getValue())) {
 						cookie = new Cookie("XSRF-TOKEN", token);
 						cookie.setPath("/");
 						response.addCookie(cookie);
 					}
 				}
+
 				filterChain.doFilter(request, response);
 			}
 		};
@@ -69,6 +74,7 @@ public class Application extends WebSecurityConfigurerAdapter {
 	private CsrfTokenRepository csrfTokenRepository() {
 		HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
 		repository.setHeaderName("X-XSRF-TOKEN");
+
 		return repository;
 	}
 
