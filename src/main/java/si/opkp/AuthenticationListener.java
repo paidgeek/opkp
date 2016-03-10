@@ -23,10 +23,12 @@ public class AuthenticationListener implements ApplicationListener<AbstractAuthe
 
 	@Override
 	public void onApplicationEvent(AbstractAuthenticationEvent event) {
+		/*
 		Pojo user = new Pojo((HashMap) event.getAuthentication().getPrincipal());
 
 		CRUDController.getInstance().performCreate(FITBIT_USER_MODEL, user);
 		CRUDController.getInstance().performCreate("test", new Pojo.Builder().setProperty("name", "AWPJOFOAFWOF").build());
+		*/
 	}
 
 }

@@ -8,6 +8,24 @@ public class DataDefinition {
 
 	private static DataDefinition instance;
 
+	public static DataDefinition getInstance() {
+		if (instance == null) {
+			synchronized (DataDefinition.class) {
+				if (instance == null) {
+					instance = new DataDefinition();
+
+					return instance;
+				}
+			}
+		}
+
+		return instance;
+	}
+
+	static {
+		getInstance();
+	}
+
 	private Map<String, Map<String, FieldDefinition>> definitions;
 
 	private DataDefinition() {
@@ -25,7 +43,7 @@ public class DataDefinition {
 
 				if (typeString.startsWith("varchar") || typeString.equalsIgnoreCase("text")) {
 					type = FieldDefinition.Type.STRING;
-				} else if (typeString.startsWith("int")) {
+				} else if (typeString.startsWith("int") || typeString.startsWith("tinyint")) {
 					type = FieldDefinition.Type.INTEGER;
 				} else if (typeString.startsWith("datetime")) {
 					type = FieldDefinition.Type.DATETIME;
@@ -51,20 +69,6 @@ public class DataDefinition {
 		}
 
 		return null;
-	}
-
-	public static DataDefinition getInstance() {
-		if (instance == null) {
-			synchronized (DataDefinition.class) {
-				if (instance == null) {
-					instance = new DataDefinition();
-
-					return instance;
-				}
-			}
-		}
-
-		return instance;
 	}
 
 }

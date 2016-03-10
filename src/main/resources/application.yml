@@ -10,4 +10,3 @@ security:
     resource:
       token-type: Bearer
       user-info-uri: https://api.fitbit.com/1/user/-/profile.json
-spring.resources.chain.enabled: true

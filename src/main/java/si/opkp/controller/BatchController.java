@@ -48,8 +48,8 @@ public class BatchController {
 				ResponseEntity<Pojo> response;
 
 				switch (controller) {
-					case "path":
-						response = PathController.getInstance()
+					case "graph":
+						response = GraphController.getInstance()
 								.perform(model,
 										command.getColumns(),
 										command.getQuery(),

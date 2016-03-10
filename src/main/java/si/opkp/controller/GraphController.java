@@ -11,14 +11,14 @@ import java.util.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/v1/path")
-public class PathController {
+@RequestMapping("/v1/graph")
+public class GraphController {
 
-	private static PathController instance;
+	private static GraphController instance;
 	@Autowired
 	private Database db;
 
-	public static PathController getInstance() {
+	public static GraphController getInstance() {
 		return instance;
 	}
 
