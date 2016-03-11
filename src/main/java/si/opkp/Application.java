@@ -16,30 +16,30 @@ import javax.servlet.http.*;
 import java.io.*;
 
 @Configuration
-@EnableAutoConfiguration(exclude = {
+@EnableAutoConfiguration/*(exclude = {
 		org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class
-})
+})*/
 @ComponentScan
-//@EnableOAuth2Sso
+@EnableOAuth2Sso
 @ImportResource({"beans.xml"})
 @PropertySources({
 		@PropertySource("/application.yml"),
 		@PropertySource("/credentials.properties")
 })
-public class Application /*extends WebSecurityConfigurerAdapter*/ {
+public class Application extends WebSecurityConfigurerAdapter {
 
 	private static ApplicationContext context;
 
 	public static ApplicationContext getContext() {
 		return context;
 	}
-/*
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 				.antMatcher("/**")
 				.authorizeRequests()
-				.antMatchers("/", "/login**", "/webjars/**", "/v1/**")
+				.antMatchers("/", "/login**", "/v1/**", "/js**", "/css**")
 				.permitAll()
 				.anyRequest()
 				.authenticated()
@@ -47,7 +47,7 @@ public class Application /*extends WebSecurityConfigurerAdapter*/ {
 				.and().csrf().csrfTokenRepository(csrfTokenRepository())
 				.and().addFilterAfter(csrfHeaderFilter(), CsrfFilter.class);
 	}
-*/
+
 	private Filter csrfHeaderFilter() {
 		return new OncePerRequestFilter() {
 			@Override
@@ -79,7 +79,7 @@ public class Application /*extends WebSecurityConfigurerAdapter*/ {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		context = SpringApplication.run(Application.class, args);
 	}
 
 }

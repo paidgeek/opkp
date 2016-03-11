@@ -3,54 +3,31 @@
    <head>
       <meta charset="utf-8"/>
       <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-      <title>OPKP</title>
+      <title>fitbit</title>
       <meta name="description" content=""/>
       <meta name="viewport" content="width=device-width"/>
       <base href="/"/>
-      <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
-      <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-      <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+      <link rel="stylesheet" href="css/bootstrap.css"/>
+      <link rel="stylesheet" href="css/bootstrap-material-design.css"/>
+      <link rel="stylesheet" href="css/ripples.css"/>
+      <link rel="stylesheet" href="css/main.css"/>
+      <link rel="stylesheet" href="css/login.css"/>
    </head>
-   <body ng-app="app" ng-controller="home as home">
-      <div class="container" ng-show="!home.authenticated">
-         Login with:
-         <a href="/login">Fitbit</a>
-      </div>
-      <div class="container" ng-show="home.authenticated">
-         <div class="container" ng-show="home.authenticated">
-            Logged in as:
-            <span ng-bind="home.user"></span>
-            <div>
-               <button ng-click="home.logout()" class="btn btn-primary">Logout</button>
-            </div>
+   <body ng-app="app" ng-controller="login">
+
+      <div class="container">
+         <div class="form-signin">
+            <h2 class="form-signin-heading">Fitbit Demo</h2>
+            <a class="btn btn-lg btn-primary" href="/login">Sign in with Fitbit</a>
          </div>
       </div>
 
-      <script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
-      <script type="text/javascript">
-         angular.module("app", []).controller("home", function($http) {
-            var self = this;
-            $http.get("/v1/me").success(function(data) {
-               console.log(data);
-               self.user = data.fullName;
-               self.authenticated = true;
-            }).error(function() {
-               self.user = "N/A";
-               self.authenticated = false;
-            });
-
-            self.logout = function() {
-               $http.post('/logout', {}).success(function() {
-                  self.authenticated = false;
-                  $location.path("/");
-               }).error(function(data) {
-                  console.log("Logout failed")
-                  self.authenticated = false;
-               });
-            };
-
-         });
-      </script>
+      <script type="text/javascript" src="js/jquery.js"></script>
+      <script type="text/javascript" src="js/bootstrap.js"></script>
+      <script type="text/javascript" src="js/angular.js"></script>
+      <script type="text/javascript" src="js/material.js"></script>
+      <script type="text/javascript" src="js/ripples.js"></script>
+      <script type="text/javascript" src="js/login.js"></script>
 
    </body>
 </html>

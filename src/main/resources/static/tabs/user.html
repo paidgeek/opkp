@@ -1,0 +1,40 @@
+<div ng-controller="user">
+   <!-- nav -->
+   <ul class="nav nav-pills">
+      <li class="active" ng-click="getProfile()">
+         <a href="javascript:void(0)">Get Profile</a>
+      </li>
+      <li>
+         <a href="javascript:void(0)">Update Profile</a>
+      </li>
+      <li>
+         <a href="javascript:void(0)">Get Badges</a>
+      </li>
+   </ul>
+
+   <!-- parameters -->
+
+   <!-- results -->
+   <div class="panel panel-default" ng-if="responseData">
+      <div class="panel-heading">Result table</div>
+      <div class="panel-body">
+         <table class="table table-condensed">
+            <tr ng-repeat="(key, value) in responseData">
+               <td>
+                  {{key}}
+               </td>
+               <td>
+                  {{value}}
+               </td>
+            </tr>
+         </table>
+      </div>
+   </div>
+
+   <div class="panel panel-default" ng-if="responseData">
+      <div class="panel-heading">JSON Response</div>
+      <div class="panel-body">
+         <pre pretty-json="responseData"></pre>
+      </div>
+   </div>
+</div>
