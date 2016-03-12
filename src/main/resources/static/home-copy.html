@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ng-cloak>
+
+   <head>
+      <meta charset="utf-8"/>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+      <title>home</title>
+      <meta name="description" content=""/>
+      <meta name="viewport" content="width=device-width"/>
+      <base href="/"/>
+      <link rel="stylesheet" href="css/bootstrap.css"/>
+      <link rel="stylesheet" href="css/bootstrap-material-design.css"/>
+      <link rel="stylesheet" href="css/ripples.css"/>
+      <link rel="stylesheet" href="css/main.css"/>
+      <link rel="stylesheet" href="css/home.css"/>
+
+      <style>
+         [ng\:cloak],
+         [ng-cloak],
+         .ng-cloak {
+            display: none;
+         }
+
+      </style>
+   </head>
+   <body>
+
+      <div class="navbar navbar navbar-fixed-top" ng-controller="home">
+         <div class="container-fluid">
+            <div class="navbar-brand">Fitbit Demo</div>
+            <div class="navbar-collapse collapse">
+               <ul class="nav navbar-nav navbar-right">
+                  <li>
+                     <a ng-click="home.logout()" href="#">Log out</a>
+                  </li>
+               </ul>
+            </div>
+         </div>
+      </div>
+
+      <div class="container-fluid" ng-controller="content">
+         <div class="row">
+            <div class="col-md-1 col-sm-2 no-float sidebar">
+               <ul class="nav nav-sidebar">
+                  <li ng-repeat="tab in tabs" ng-class="{active:isActiveTab(tab)}">
+                     <a class="btn-link" ng-click="onClickTab(tab)">{{tab.title}}</a>
+                  </li>
+               </ul>
+            </div>
+            <div class="col-md-11 col-sm-10 col-md-offset-1 col-sm-offset-2 main">
+               <div class="page-header">
+                  <h1>{{selectedTab.title}}</h1>
+               </div>
+               <div>
+                  <div ng-include="selectedTab.url">content</div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <script type="text/javascript" src="js/jquery.js"></script>
+      <script type="text/javascript" src="js/bootstrap.js"></script>
+      <script type="text/javascript" src="js/angular.js"></script>
+      <script type="text/javascript" src="js/material.js"></script>
+      <script type="text/javascript" src="js/ripples.js"></script>
+      <script type="text/javascript" src="js/main.js"></script>
+      <script type="text/javascript" src="js/ng-prettyjson.js"></script>
+      <script type="text/javascript" src="js/fitbit.js"></script>
+      <script type="text/javascript" src="js/home.js"></script>
+
+   </body>
+</html>

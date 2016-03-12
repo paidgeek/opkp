@@ -46,6 +46,10 @@ app.controller("user", function($scope) {
    $scope.getProfile = function() {
       fitbit.getProfile(function(data) {
          $scope.responseData = data.user;
+         tableCreator(data.user, "#resultTable");
       });
+   }
+   $scope.getTypeOf = function(obj) {
+      return typeof obj;
    }
 });

@@ -4,7 +4,7 @@
       <li class="active" ng-click="getProfile()">
          <a href="javascript:void(0)">Get Profile</a>
       </li>
-      <li>
+      <li class="disabled">
          <a href="javascript:void(0)">Update Profile</a>
       </li>
       <li>
@@ -16,15 +16,27 @@
 
    <!-- results -->
    <div class="panel panel-default" ng-if="responseData">
-      <div class="panel-heading">Result table</div>
+      <div class="panel-heading">Result Table</div>
       <div class="panel-body">
          <table class="table table-condensed">
             <tr ng-repeat="(key, value) in responseData">
                <td>
                   {{key}}
                </td>
-               <td>
-                  {{value}}
+               <td ng-switch on="getTypeOf(value)">
+                  <div ng-switch-when="object">
+                     <tr ng-repeat="obj in value">
+                        <td>
+                           awf
+                        </td>
+                        <td>
+                           aw
+                        </td>
+                     </tr>
+                  </div>
+                  <div ng-switch-when="number">
+                     {{value}}
+                  </div>
                </td>
             </tr>
          </table>
