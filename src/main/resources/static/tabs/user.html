@@ -24,19 +24,19 @@
                   {{key}}
                </td>
                <td ng-switch on="getTypeOf(value)">
-                  <div ng-switch-when="object">
-                     <tr ng-repeat="obj in value">
+                  <table class="table table-condensed" ng-switch-when="object">
+                     <tr ng-repeat="(key1, value1) in value">
+                        <td>{{key1}}</td>
                         <td>
-                           awf
-                        </td>
-                        <td>
-                           aw
+                           <span ng-class="{string:getTypeOf(value1)=='string',number:getTypeOf(value1)=='number',boolean:getTypeOf(value1)=='boolean'}">
+                              {{value1}}
+                           </span>
                         </td>
                      </tr>
-                  </div>
-                  <div ng-switch-when="number">
+                  </table>
+                  <span ng-switch-default ng-class="{string:getTypeOf(value)=='string',number:getTypeOf(value)=='number',boolean:getTypeOf(value)=='boolean'}">
                      {{value}}
-                  </div>
+                  </span>
                </td>
             </tr>
          </table>

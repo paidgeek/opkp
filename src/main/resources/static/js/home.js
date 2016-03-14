@@ -39,6 +39,9 @@ app.controller("content", function($scope, $http) {
    $scope.isActiveTab = function(tab) {
       return $scope.selectedTab.url == tab.url;
    }
+   $scope.getTypeOf = function(obj) {
+      return typeof obj;
+   }
 });
 
 app.controller("user", function($scope) {
@@ -49,7 +52,13 @@ app.controller("user", function($scope) {
          tableCreator(data.user, "#resultTable");
       });
    }
-   $scope.getTypeOf = function(obj) {
-      return typeof obj;
+});
+
+app.controller("heart-rate", function($scope) {
+   $scope.responseData = null;
+   $scope.getHeartRate = function() {
+      fitbit.getHeartRate(function(data) {
+         console.log(data);
+      });
    }
 });

@@ -6,21 +6,25 @@ pre.pretty-json {
    background: none;
    border: none;
 }
-pre.pretty-json span.string {
+span.string {
    color: green
 }
-pre.pretty-json span.number {
+span.number {
    color: #ff8c00
 }
-pre.pretty-json span.boolean {
+span.boolean {
    color: #00f
 }
-pre.pretty-json span.null {
+span.null {
    color: #ff00ff
 }
-pre.pretty-json span.key {
+span.key {
    color: #666;
 }
-pre.pretty-json span.sep {
+span.sep {
    color: #000
+}
+table td {
+   border: none !important;
+   border-bottom: 1px solid #eee !important;
 }
