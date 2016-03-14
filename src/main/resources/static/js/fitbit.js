@@ -1,6 +1,6 @@
 var Fitbit = function(accessToken) {
    this.accessToken = accessToken;
-   this.accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTc5NjQzNTIsInNjb3BlcyI6Indsb2Mgd3BybyB3bnV0IHdzZXQgd3NsZSB3d2VpIHdociB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTc5NjA3NTJ9.bivDSSI6YAI4uwZZWy3KxdYbz13N0TioYrKllwIyr5w";
+   this.accessToken = "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTc5Njc5OTgsInNjb3BlcyI6Indsb2Mgd3BybyB3bnV0IHdzZXQgd3NsZSB3aHIgd3dlaSB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTc5NjQzOTh9.o5pGgMtwDkce97Y3CwsP7-MC7nlw1-edgSg5NiJylIw";
 };
 
 Fitbit.prototype.getProfile = function(success, error) {

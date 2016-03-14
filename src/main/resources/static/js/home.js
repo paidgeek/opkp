@@ -2,6 +2,9 @@ $.material.init();
 
 var app = angular.module("app", ["ngPrettyJson"]);
 var fitbit = new Fitbit();
+google.charts.load('current', {
+   'packages': ['line']
+});
 
 app.controller("home", function($scope, $http) {
    $http.get("/v1/me").success(function(data) {
@@ -70,19 +73,26 @@ app.controller("heart-rate", function($scope) {
       fitbit.getHeartRate($scope.selectedDate, $scope.selectedPeriod, function(data) {
          $scope.responseData = data["activities-heart"];
 
-         createChart($scope.responseData, $("#heart-rate-chart"));
+         createChart($scope.responseData, "#heart-rate-chart");
       }, function(err) {
          $scope.error = JSON.stringify(err, null, 4);
       });
    }
 
    $("#heart-rate-chart").parent().resize(function() {
-      createChart($scope.responseData, this);
+      createChart($scope.responseData, "#heart-rate-chart");
    });
 
-   function createChart(data, canvas) {
+   function createChart(data, chartId) {
       var labels = [];
-      var caloriesOut = [];
+
+      var dataTable = new google.visualization.DataTable();
+      dataTable.addColumn("date", "Day");
+      dataTable.addColumn("number", "Out of Range");
+      dataTable.addColumn("number", "Fat Burn");
+      dataTable.addColumn("number", "Cardio");
+      dataTable.addColumn("number", "Peak");
+      dataTable.addRows(data.length);
 
       for (var i = 0; i < data.length; i++) {
          var entry = data[i];
@@ -93,34 +103,34 @@ app.controller("heart-rate", function($scope) {
          for (var j = 0; j < heartRateZones.length; j++) {
             var dataset = heartRateZones[j];
 
-            var min = dataset["min"];
-            var max = dataset["max"];
-            var name = dataset["name"];
-
-            if (dataset["caloriesOut"]) {
-               caloriesOut.push(dataset["caloriesOut"]);
-            } else {
-               caloriesOut.push(Math.random() * (max - min) + min);
+            switch (dataset["name"]) {
+               case "Out of Range":
+                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
+                  break;
+               case "Fat Burn":
+                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
+                  break;
+               case "Cardio":
+                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
+                  break;
+               case "Peak":
+                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
+                  break;
             }
          }
       }
 
-      var chartData = {
-         labels: labels,
-         datasets: [{
-            label: "Calories Out",
-            fillColor: "rgba(220,220,220,0.5)",
-            strokeColor: "rgba(220,220,220,0.8)",
-            highlightFill: "rgba(220,220,220,0.75)",
-            highlightStroke: "rgba(220,220,220,1)",
-            data: caloriesOut
-         }]
+      var options = {
+         chart: {
+            title: 'Calories Out',
+            subtitle: "subtitle"
+         },
+         width: "100%",
+         height: 500
       };
 
-      canvas.attr("width", canvas.parent().width());
-      canvas.attr("height", canvas.parent().height());
+      var chart = new google.charts.Line($(chartId)[0]);
 
-      var ctx = canvas[0].getContext("2d");
-      new Chart(ctx).Bar(chartData, {});
+      chart.draw(dataTable, options);
    }
 });
