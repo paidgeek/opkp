@@ -48,17 +48,79 @@ app.controller("user", function($scope) {
    $scope.responseData = null;
    $scope.getProfile = function() {
       fitbit.getProfile(function(data) {
-         $scope.responseData = data.user;
+         $scope.responseData = data["user"];
          tableCreator(data.user, "#resultTable");
       });
    }
 });
 
 app.controller("heart-rate", function($scope) {
+   $scope.periods = ["1d", "7d", "30d", "1w", "1m"];
+
+   $scope.periodChanged = function() {
+      $scope.getHeartRate();
+   };
+   $scope.dateChanged = function() {
+      $scope.getHeartRate();
+   }
+
    $scope.responseData = null;
+   $scope.error = null;
    $scope.getHeartRate = function() {
-      fitbit.getHeartRate(function(data) {
-         console.log(data);
+      fitbit.getHeartRate($scope.selectedDate, $scope.selectedPeriod, function(data) {
+         $scope.responseData = data["activities-heart"];
+
+         createChart($scope.responseData, $("#heart-rate-chart"));
+      }, function(err) {
+         $scope.error = JSON.stringify(err, null, 4);
       });
+   }
+
+   $("#heart-rate-chart").parent().resize(function() {
+      createChart($scope.responseData, this);
+   });
+
+   function createChart(data, canvas) {
+      var labels = [];
+      var caloriesOut = [];
+
+      for (var i = 0; i < data.length; i++) {
+         var entry = data[i];
+         var heartRateZones = entry["value"]["heartRateZones"];
+
+         labels.push(entry["dateTime"]);
+
+         for (var j = 0; j < heartRateZones.length; j++) {
+            var dataset = heartRateZones[j];
+
+            var min = dataset["min"];
+            var max = dataset["max"];
+            var name = dataset["name"];
+
+            if (dataset["caloriesOut"]) {
+               caloriesOut.push(dataset["caloriesOut"]);
+            } else {
+               caloriesOut.push(Math.random() * (max - min) + min);
+            }
+         }
+      }
+
+      var chartData = {
+         labels: labels,
+         datasets: [{
+            label: "Calories Out",
+            fillColor: "rgba(220,220,220,0.5)",
+            strokeColor: "rgba(220,220,220,0.8)",
+            highlightFill: "rgba(220,220,220,0.75)",
+            highlightStroke: "rgba(220,220,220,1)",
+            data: caloriesOut
+         }]
+      };
+
+      canvas.attr("width", canvas.parent().width());
+      canvas.attr("height", canvas.parent().height());
+
+      var ctx = canvas[0].getContext("2d");
+      new Chart(ctx).Bar(chartData, {});
    }
 });

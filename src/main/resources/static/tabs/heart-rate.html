@@ -1,46 +1,58 @@
 <div ng-controller="heart-rate">
-   <!-- nav -->
-   <ul class="nav nav-pills">
-      <li class="active" ng-click="getHeartRate()">
-         <a href="javascript:void(0)">Get Heart Rate Time Series</a>
-      </li>
-   </ul>
+   <div class="row">
+      <div class="col-md-6">
+         <ul class="nav nav-pills">
+            <li class="active" ng-click="getHeartRate()">
+               <a href="javascript:void(0)">Get Heart Rate Time Series</a>
+            </li>
+         </ul>
 
-   <!-- parameters -->
+         <div class="alert alert-dismissible alert-danger" ng-if="error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Error!</strong>
+            <pre>{{error}}</pre>
+         </div>
+      </div>
 
-   <!-- results -->
-   <div class="panel panel-default" ng-if="responseData">
-      <div class="panel-heading">Result Table</div>
-      <div class="panel-body">
-         <table class="table table-condensed">
-            <tr ng-repeat="(key, value) in responseData">
-               <td>
-                  {{key}}
-               </td>
-               <td ng-switch on="getTypeOf(value)">
-                  <table class="table table-condensed" ng-switch-when="object">
-                     <tr ng-repeat="(key1, value1) in value">
-                        <td>{{key1}}</td>
-                        <td>
-                           <span ng-class="{string:getTypeOf(value1)=='string',number:getTypeOf(value1)=='number',boolean:getTypeOf(value1)=='boolean'}">
-                              {{value1}}
-                           </span>
-                        </td>
-                     </tr>
-                  </table>
-                  <span ng-switch-default ng-class="{string:getTypeOf(value)=='string',number:getTypeOf(value)=='number',boolean:getTypeOf(value)=='boolean'}">
-                     {{value}}
-                  </span>
-               </td>
-            </tr>
-         </table>
+      <div class="col-md-6">
+         <!-- parameters -->
+         <form class="form-horizontal col-md-4">
+            <h3>Parameters</h3>
+            <fieldset>
+               <div class="form-group">
+                  <label class="control-label">Date
+                  </label>
+                  <input id="date-picker" ng-model="selectedDate" type="text" class="form-control"/>
+               </div>
+               <div class="form-group">
+                  <label class="control-label">Period
+                  </label>
+                  <select class="form-control" ng-options="period for period in periods" ng-model="selectedPeriod" ng-change="periodChanged()"></select>
+
+               </div>
+            </fieldset>
+         </form>
       </div>
    </div>
 
-   <div class="panel panel-default" ng-if="responseData">
-      <div class="panel-heading">JSON Response</div>
-      <div class="panel-body">
-         <pre pretty-json="responseData"></pre>
+   <div class="row" ng-if="responseData">
+      <!-- results -->
+      <div class="panel panel-default">
+         <div class="panel-heading">Charts</div>
+         <div class="panel-body">
+            <canvas id="heart-rate-chart" class="img-responsive"></canvas>
+         </div>
+      </div>
+
+      <div class="panel panel-default">
+         <div class="panel-heading">JSON Response</div>
+         <div class="panel-body">
+            <pre pretty-json="responseData"></pre>
+         </div>
       </div>
    </div>
 </div>
+
+<script type="text/javascript">
+   $('#date-picker').datepicker({todayBtn: "linked", orientation: "bottom auto"});
+</script>

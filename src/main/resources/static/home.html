@@ -11,6 +11,7 @@
       <link rel="stylesheet" href="css/bootstrap.css"/>
       <link rel="stylesheet" href="css/bootstrap-material-design.css"/>
       <link rel="stylesheet" href="css/ripples.css"/>
+      <link rel="stylesheet" href="css/bootstrap-datepicker3.css"/>
       <link rel="stylesheet" href="css/main.css"/>
       <link rel="stylesheet" href="css/home.css"/>
 
@@ -51,9 +52,7 @@
                <div class="page-header">
                   <h1>{{selectedTab.title}}</h1>
                </div>
-               <div>
-                  <div ng-include="selectedTab.url"></div>
-               </div>
+               <div ng-model="selectedTab" ng-include="selectedTab.url"></div>
             </div>
          </div>
       </div>
@@ -63,6 +62,8 @@
       <script type="text/javascript" src="js/angular.js"></script>
       <script type="text/javascript" src="js/material.js"></script>
       <script type="text/javascript" src="js/ripples.js"></script>
+      <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+      <script type="text/javascript" src="js/chart.js"></script>
       <script type="text/javascript" src="js/main.js"></script>
       <script type="text/javascript" src="js/ng-prettyjson.js"></script>
       <script type="text/javascript" src="js/fitbit.js"></script>
