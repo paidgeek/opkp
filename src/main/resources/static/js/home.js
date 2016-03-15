@@ -7,14 +7,15 @@ var fitbit = null;
 
 app.controller("home", ["$scope", "$http", "$cookies", function($scope, $http, $cookies) {
    var user = $cookies.get("user");
-
-   if (!user) {
-      window.location.href = "/";
-      return;
-   }
+   /*
+      if (!user) {
+         window.location.href = "/";
+         return;
+      }*/
 
    console.log(user);
-   fitbit = new Fitbit(user.accessToken);
+   //fitbit = new Fitbit(user.accessToken);
+   fitbit = new Fitbit("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgwNTQ5MjMsInNjb3BlcyI6Indwcm8gd2xvYyB3bnV0IHdzZXQgd3NsZSB3aHIgd3dlaSB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTgwNTEzMjN9.BWTQeUd-yAk_TK6Yw0QqLp0TftVnGi_V24Pb5M_kFbQ");
 
    $scope.logout = function() {
       $http.post('/logout', {}).success(function() {
@@ -58,7 +59,6 @@ app.controller("user", function($scope) {
    $scope.getProfile = function() {
       fitbit.getProfile(function(data) {
          $scope.responseData = data["user"];
-         tableCreator(data.user, "#resultTable");
       }, function(err) {
          if (err.status == 401) {
             $scope.logout();
@@ -159,11 +159,7 @@ app.controller("sleep", function($scope) {
          for (var i = 0; i < data["sleep-" + $scope.selectedSleepResource.name].length; i++) {
             var row = data["sleep-" + $scope.selectedSleepResource.name][i];
 
-            if (row["value"]) {
-               rows.push([new Date(row["dateTime"]), parseInt(row["value"])]);
-            } else {
-               rows.push([new Date(row["dateTime"]), Math.random() * 100000000]);
-            }
+            rows.push([new Date(row["dateTime"]), parseInt(row["value"])]);
          }
 
          createChart($("#sleep-chart")[0], rows, columns, $scope.selectedSleepResource.title);
@@ -209,7 +205,7 @@ function extractHeartRateRows(data, columnName) {
       var entry = data[i];
       var heartRateZones = entry["value"]["heartRateZones"];
 
-      var row = [null, Math.random() * 300 + 600, Math.random() * 300 + 600, Math.random() * 300 + 600, Math.random() * 300 + 600];
+      var row = [null, 0, 0, 0];
       row[0] = new Date(entry["dateTime"]);
 
       for (var j = 0; j < heartRateZones.length; j++) {
