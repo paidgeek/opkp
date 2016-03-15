@@ -10,8 +10,8 @@ public class QueryFactory {
 		return select(Arrays.asList("COUNT(*) as count"), table, query, null, null);
 	}
 
-	public static Optional<String> count(List<String> tables, List<String> joins, String query) {
-		return select(Arrays.asList("COUNT(*) as count"), tables, joins, query, null, null);
+	public static Optional<String> count(List<String> tables, String query) {
+		return select(Arrays.asList("COUNT(*) as count"), tables, query, null, null);
 	}
 
 	public static Optional<String> select(List<String> columns, String table, String query, List<String> orderBy, List<Integer> limit) {
@@ -34,7 +34,7 @@ public class QueryFactory {
 		return Optional.of(selectBuilder.build());
 	}
 
-	public static Optional<String> select(List<String> columns, List<String> tables, List<String> joins, String query, List<String> orderBy, List<Integer> limit) {
+	public static Optional<String> select(List<String> columns, List<String> tables, String query, List<String> orderBy, List<Integer> limit) {
 		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(columns);
 		RelationMap relationMap = RelationMap.getInstance();
 
@@ -50,7 +50,7 @@ public class QueryFactory {
 				return Optional.empty();
 			}
 
-			selectBuilder.join(b, joins.get(i - 1), edge);
+			selectBuilder.join(b, edge);
 		}
 
 		if (query != null) {

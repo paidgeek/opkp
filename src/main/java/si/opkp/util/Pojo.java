@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.*;
 import com.fasterxml.jackson.databind.jsontype.*;
+
 import sun.reflect.generics.reflectiveObjects.*;
 
 import java.io.*;
@@ -20,6 +21,10 @@ public class Pojo implements JsonSerializable {
 
 	public Pojo(Map<String, Object> properties) {
 		this.properties = properties;
+	}
+
+	public void addProperties(Map<String, Object> properties) {
+		this.properties.putAll(properties);
 	}
 
 	public Object getProperty(String name) {

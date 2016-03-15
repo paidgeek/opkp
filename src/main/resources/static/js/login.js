@@ -1,12 +1,12 @@
 $.material.init();
 
-var app = angular.module("app", []);
+var app = angular.module("app", ["ngCookies"]);
 
-app.controller("login", function($scope, $http) {
+app.controller("login", ["$scope", "$http", "$cookies", function($scope, $http, $cookies) {
    $http.get("/v1/me").success(function(data) {
-      console.log(data);
-      //window.location.href = "/home.html";
+      $cookies.put("user", data);
+      window.location.href = "/home.html";
    }).error(function() {
       $scope.user = "N/A";
    });
-});
+}]);

@@ -1,11 +1,17 @@
-<div ng-controller="heart-rate">
+<div ng-controller="sleep">
    <div class="row" style="margin-bottom:30px">
       <div class="col-md-6">
          <ul class="nav nav-pills">
-            <li class="active" ng-click="getHeartRate()">
-               <a href="javascript:void(0)">Get Heart Rate Time Series</a>
+            <li class="active" ng-click="getSleep()">
+               <a href="javascript:void(0)">Get Sleep Time Series</a>
             </li>
          </ul>
+
+         <div class="alert alert-dismissible alert-danger" ng-if="error">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            <strong>Error!</strong>
+            <pre>{{error}}</pre>
+         </div>
       </div>
       <div class="col-md-6">
          <!-- parameters -->
@@ -21,7 +27,6 @@
                   <label class="control-label">Period
                   </label>
                   <select class="form-control" ng-options="period for period in periods" ng-model="selectedPeriod" ng-change="periodChanged()"></select>
-
                </div>
             </fieldset>
          </form>
@@ -32,14 +37,7 @@
       <!-- results -->
       <div class="panel panel-default">
          <div class="panel-heading">Charts</div>
-         <div class="panel-body">
-            <div class="col-md-12">
-               <div id="heart-rate-chart" class="chart"></div>
-            </div>
-            <div class="col-md-12">
-               <div id="minutes-chart" class="chart"></div>
-            </div>
-         </div>
+         <div class="panel-body"></div>
       </div>
 
       <div class="panel panel-default">

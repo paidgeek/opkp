@@ -28,7 +28,21 @@ Fitbit.prototype.getHeartRate = function(date, period, success, error) {
       success: success,
       error: error
    });
-}
+};
+
+Fitbit.prototype.getSleep = function(resource, date, period, success, error) {
+   var url = "https://api.fitbit.com/1/user/-/sleep/" + resource + "/date/" + formatDate(date) + "/" + period + ".json";
+
+   $.ajax({
+      url: url,
+      type: "GET",
+      headers: {
+         "Authorization": "Bearer " + this.accessToken
+      },
+      success: success,
+      error: error
+   });
+};
 
 function formatDate(date) {
    var d = new Date(date),
@@ -40,4 +54,4 @@ function formatDate(date) {
    if (day.length < 2) day = '0' + day;
 
    return [year, month, day].join('-');
-}
+};

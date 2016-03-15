@@ -3,10 +3,12 @@ package si.opkp.controller;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
 import si.opkp.model.*;
 import si.opkp.util.*;
 
 import javax.annotation.*;
+
 import java.util.*;
 
 @RestController
@@ -46,16 +48,10 @@ public class GraphController {
 				columns = Util.stringList("*");
 			}
 
-			List<String> path = Arrays.asList(model.split("><|<>|<|>"));
+			List<String> path = Arrays.asList(model.split(","));
 
-			for (String node : path) {
-				model = model.replaceAll(node, ",");
-			}
-
-			List<String> joins = Arrays.asList(model.substring(1).split(","));
-
-			Optional<String> sqlQuery = QueryFactory.select(columns, path, joins, query, sort, limit);
-			Optional<String> sqlCount = QueryFactory.count(path, joins, query);
+			Optional<String> sqlQuery = QueryFactory.select(columns, path, query, sort, limit);
+			Optional<String> sqlCount = QueryFactory.count(path, query);
 
 			if (!(sqlCount.isPresent() && sqlQuery.isPresent())) {
 				return Util.responseError("invalid model path", HttpStatus.BAD_REQUEST);

@@ -2,25 +2,18 @@ $.material.init();
 google.charts.load('current', {
    'packages': ['line']
 });
-var app = angular.module("app", ["ngPrettyJson"]);
-var fitbit = new Fitbit("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgwMzE3MzQsInNjb3BlcyI6Indwcm8gd2xvYyB3bnV0IHdzbGUgd3NldCB3aHIgd3dlaSB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTgwMjgxMzR9.dsAZDDRTup3mc1jYvT1np6oVBWuVQcEOQ5Pm9q9oZmo");
+var app = angular.module("app", ["ngPrettyJson", "ngCookies"]);
+var fitbit = new Fitbit("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgwNDUxNTEsInNjb3BlcyI6Indsb2Mgd3BybyB3bnV0IHdzbGUgd3NldCB3aHIgd3dlaSB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTgwNDE1NTF9.YASioakmUBBn0e0Pad_qxXrWGofLvXlOo5pzTof4gYo");
 
-app.controller("home", function($scope, $http) {
-   $http.get("/v1/me").success(function(data) {
-      $scope.user = data;
-   }).error(function() {
-      $scope.user = "N/A";
-      //window.location.href = "/";
-   });
-
+app.controller("home", ["$scope", "$http", function($scope, $http) {
    $scope.logout = function() {
       $http.post('/logout', {}).success(function() {
-         $scope.authenticated = false;
+         window.location.href = "/";
       }).error(function(data) {
-         $scope.authenticated = false;
+         window.location.href = "/";
       });
    };
-});
+}]);
 
 app.controller("content", function($scope, $http) {
    $scope.tabs = [{
@@ -30,8 +23,8 @@ app.controller("content", function($scope, $http) {
       title: "Heart Rate",
       url: "tabs/heart-rate.html"
    }, {
-      title: "Food Logging",
-      url: "tabs/food-logging.html"
+      title: "Sleep",
+      url: "tabs/sleep.html"
    }];
 
    $scope.selectedTab = $scope.tabs[0];
@@ -52,6 +45,12 @@ app.controller("user", function($scope) {
       fitbit.getProfile(function(data) {
          $scope.responseData = data["user"];
          tableCreator(data.user, "#resultTable");
+      }, function(err) {
+         if (err.status == 401) {
+            window.location.href = "/";
+         } else {
+            console.error(err.responseText);
+         }
       });
    }
 });
@@ -74,7 +73,11 @@ app.controller("heart-rate", function($scope) {
          createChart(data["activities-heart"], $("#minutes-chart")[0], "minutes", "Time", "in minutes");
          $scope.responseData = data;
       }, function(err) {
-         $scope.error = JSON.stringify(err, null, 4);
+         if (err.status == 401) {
+            window.location.href = "/";
+         } else {
+            console.error(err.responseText);
+         }
       });
    }
 
@@ -122,5 +125,27 @@ app.controller("heart-rate", function($scope) {
       var chart = new google.charts.Line(chartDiv);
 
       chart.draw(dataTable, options);
+   }
+});
+
+app.controller("sleep", function($scope) {
+   $scope.periods = ["1d", "7d", "30d", "1w", "1m"];
+   $scope.periodChanged = function() {
+      $scope.getSleep();
+   };
+   $scope.dateChanged = function() {
+      $scope.getSleep();
+   };
+
+   $scope.getSleep = function() {
+      fitbit.getSleep("startTime", $scope.selectedDate, $scope.selectedPeriod, function(data) {
+         console.log(data);
+      }, function(err) {
+         if (err.status == 401) {
+            window.location.href = "/";
+         } else {
+            console.error(err.responseText);
+         }
+      });
    }
 });

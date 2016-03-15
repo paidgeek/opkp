@@ -2,7 +2,9 @@ package si.opkp.controller;
 
 import org.springframework.http.*;
 import org.springframework.security.oauth2.provider.*;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.web.bind.annotation.*;
+
 import si.opkp.util.*;
 
 import java.security.*;
@@ -16,8 +18,14 @@ public class MeController {
 	public ResponseEntity<Pojo> me(Principal principal) {
 		if (principal instanceof OAuth2Authentication) {
 			OAuth2Authentication auth = (OAuth2Authentication) principal;
+			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
-			return ResponseEntity.ok(new Pojo((Map) auth.getPrincipal()));
+			Pojo me = new Pojo();
+
+			me.addProperties((Map) auth.getUserAuthentication().getPrincipal());
+			me.setProperty("accessToken", details.getTokenValue());
+
+			return ResponseEntity.ok(me);
 		} else {
 			return Util.responseError(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

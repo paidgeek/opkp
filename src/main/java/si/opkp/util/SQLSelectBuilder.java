@@ -30,17 +30,8 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
-	public SQLSelectBuilder join(String table, String joinType, String condition) {
-		if (joinType.equals("<>")) {
-			query.append("FULL JOIN ");
-		} else if (joinType.equals("><")) {
-			query.append("INNER JOIN ");
-		} else if (joinType.equals("<")) {
-			query.append("LEFT JOIN ");
-		} else if (joinType.equals(">")) {
-			query.append("RIGHT JOIN ");
-		}
-
+	public SQLSelectBuilder join(String table, String condition) {
+		query.append("FULL JOIN ");
 		query.append(table);
 
 		if (condition.contains("=")) {
