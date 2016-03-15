@@ -1,10 +1,9 @@
 $.material.init();
-
-var app = angular.module("app", ["ngPrettyJson"]);
-var fitbit = new Fitbit();
 google.charts.load('current', {
    'packages': ['line']
 });
+var app = angular.module("app", ["ngPrettyJson"]);
+var fitbit = new Fitbit("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgwMzE3MzQsInNjb3BlcyI6Indwcm8gd2xvYyB3bnV0IHdzbGUgd3NldCB3aHIgd3dlaSB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTgwMjgxMzR9.dsAZDDRTup3mc1jYvT1np6oVBWuVQcEOQ5Pm9q9oZmo");
 
 app.controller("home", function($scope, $http) {
    $http.get("/v1/me").success(function(data) {
@@ -65,27 +64,21 @@ app.controller("heart-rate", function($scope) {
    };
    $scope.dateChanged = function() {
       $scope.getHeartRate();
-   }
+   };
 
-   $scope.responseData = null;
-   $scope.error = null;
    $scope.getHeartRate = function() {
-      fitbit.getHeartRate($scope.selectedDate, $scope.selectedPeriod, function(data) {
-         $scope.responseData = data["activities-heart"];
+      $scope.error = null;
 
-         createChart($scope.responseData, "#heart-rate-chart");
+      fitbit.getHeartRate($scope.selectedDate, $scope.selectedPeriod, function(data) {
+         createChart(data["activities-heart"], $("#heart-rate-chart")[0], "caloriesOut", "Calories Out");
+         createChart(data["activities-heart"], $("#minutes-chart")[0], "minutes", "Time", "in minutes");
+         $scope.responseData = data;
       }, function(err) {
          $scope.error = JSON.stringify(err, null, 4);
       });
    }
 
-   $("#heart-rate-chart").parent().resize(function() {
-      createChart($scope.responseData, "#heart-rate-chart");
-   });
-
-   function createChart(data, chartId) {
-      var labels = [];
-
+   function createChart(data, chartDiv, columnName, title, subtitle) {
       var dataTable = new google.visualization.DataTable();
       dataTable.addColumn("date", "Day");
       dataTable.addColumn("number", "Out of Range");
@@ -98,38 +91,35 @@ app.controller("heart-rate", function($scope) {
          var entry = data[i];
          var heartRateZones = entry["value"]["heartRateZones"];
 
-         labels.push(entry["dateTime"]);
+         dataTable.setCell(i, 0, new Date(entry["dateTime"]));
 
          for (var j = 0; j < heartRateZones.length; j++) {
             var dataset = heartRateZones[j];
+            var k = {
+               "Out of Range": 1,
+               "Fat Burn": 2,
+               "Cardio": 3,
+               "Peak": 4,
+            }[dataset["name"]];
 
-            switch (dataset["name"]) {
-               case "Out of Range":
-                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
-                  break;
-               case "Fat Burn":
-                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
-                  break;
-               case "Cardio":
-                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
-                  break;
-               case "Peak":
-                  dataTable.setCell(i, 0, dataset["caloriesOut"]);
-                  break;
+            if (dataset[columnName]) {
+               dataTable.setCell(i, k, dataset[columnName]);
+            } else {
+               dataTable.setCell(i, k, Math.random() * 300 + 600);
             }
          }
       }
 
       var options = {
          chart: {
-            title: 'Calories Out',
-            subtitle: "subtitle"
+            title: title,
+            subtitle: subtitle
          },
          width: "100%",
          height: 500
       };
 
-      var chart = new google.charts.Line($(chartId)[0]);
+      var chart = new google.charts.Line(chartDiv);
 
       chart.draw(dataTable, options);
    }
