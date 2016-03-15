@@ -28,6 +28,11 @@
                   </label>
                   <select class="form-control" ng-options="period for period in periods" ng-model="selectedPeriod" ng-change="periodChanged()"></select>
                </div>
+               <div class="form-group">
+                  <label class="control-label">Resource
+                  </label>
+                  <select class="form-control" ng-options="res.title for res in sleepResources" ng-model="selectedSleepResource" ng-change="sleepResourceChanged()"></select>
+               </div>
             </fieldset>
          </form>
       </div>
@@ -37,13 +42,15 @@
       <!-- results -->
       <div class="panel panel-default">
          <div class="panel-heading">Charts</div>
-         <div class="panel-body"></div>
+         <div class="panel-body">
+            <div id="sleep-chart"></div>
+         </div>
       </div>
 
       <div class="panel panel-default">
          <div class="panel-heading">JSON Response</div>
          <div class="panel-body">
-            <pre pretty-json="responseData"/>
+            <json-formatter json="responseData" open="1"></json-formatter>
          </div>
       </div>
    </div>

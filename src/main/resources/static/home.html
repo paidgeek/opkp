@@ -12,6 +12,7 @@
       <link rel="stylesheet" href="css/bootstrap-material-design.css"/>
       <link rel="stylesheet" href="css/ripples.css"/>
       <link rel="stylesheet" href="css/bootstrap-datepicker3.css"/>
+      <link rel="stylesheet" href="css/json-formatter.css"/>
       <link rel="stylesheet" href="css/main.css"/>
       <link rel="stylesheet" href="css/home.css"/>
 
@@ -26,13 +27,13 @@
    </head>
    <body>
 
-      <div class="navbar navbar navbar-fixed-top" ng-controller="home">
+      <div class="navbar navbar-inverse navbar-fixed-top" ng-controller="home">
          <div class="container-fluid">
             <div class="navbar-brand">Fitbit Demo</div>
             <div class="navbar-collapse collapse">
                <ul class="nav navbar-nav navbar-right">
                   <li>
-                     <a ng-click="home.logout()" href="#">Log out</a>
+                     <a ng-click="logout()" href="#">Log out</a>
                   </li>
                </ul>
             </div>
@@ -59,14 +60,14 @@
 
       <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
       <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
-      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular-cookies.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-cookies.min.js"></script>
       <script type="text/javascript" src="js/material.js"></script>
       <script type="text/javascript" src="js/ripples.js"></script>
       <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+      <script type="text/javascript" src="js/json-formatter.js"></script>
       <script type="text/javascript" src="//www.gstatic.com/charts/loader.js"></script>
       <script type="text/javascript" src="js/main.js"></script>
-      <script type="text/javascript" src="js/ng-prettyjson.js"></script>
       <script type="text/javascript" src="js/fitbit.js"></script>
       <script type="text/javascript" src="js/home.js"></script>
 

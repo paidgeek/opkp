@@ -2,14 +2,28 @@ $.material.init();
 google.charts.load('current', {
    'packages': ['line']
 });
-var app = angular.module("app", ["ngPrettyJson", "ngCookies"]);
-var fitbit = new Fitbit("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgwNDUxNTEsInNjb3BlcyI6Indsb2Mgd3BybyB3bnV0IHdzbGUgd3NldCB3aHIgd3dlaSB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTgwNDE1NTF9.YASioakmUBBn0e0Pad_qxXrWGofLvXlOo5pzTof4gYo");
+var app = angular.module("app", ["ngCookies", "jsonFormatter"]);
+var fitbit = null;
 
-app.controller("home", ["$scope", "$http", function($scope, $http) {
+app.controller("home", ["$scope", "$http", "$cookies", function($scope, $http, $cookies) {
+   var user = $cookies.get("user");
+
+   if (!user) {
+      window.location.href = "/";
+      return;
+   }
+
+   console.log(user);
+   fitbit = new Fitbit(user.accessToken);
+
    $scope.logout = function() {
       $http.post('/logout', {}).success(function() {
+         $cookies.remove("user");
+         $cookies.remove("JSESSIONID");
          window.location.href = "/";
       }).error(function(data) {
+         $cookies.remove("user");
+         $cookies.remove("JSESSIONID");
          window.location.href = "/";
       });
    };
@@ -47,7 +61,7 @@ app.controller("user", function($scope) {
          tableCreator(data.user, "#resultTable");
       }, function(err) {
          if (err.status == 401) {
-            window.location.href = "/";
+            $scope.logout();
          } else {
             console.error(err.responseText);
          }
@@ -56,7 +70,7 @@ app.controller("user", function($scope) {
 });
 
 app.controller("heart-rate", function($scope) {
-   $scope.periods = ["1d", "7d", "30d", "1w", "1m"];
+   $scope.periods = ["7d", "30d", "1w", "1m"];
 
    $scope.periodChanged = function() {
       $scope.getHeartRate();
@@ -69,83 +83,151 @@ app.controller("heart-rate", function($scope) {
       $scope.error = null;
 
       fitbit.getHeartRate($scope.selectedDate, $scope.selectedPeriod, function(data) {
-         createChart(data["activities-heart"], $("#heart-rate-chart")[0], "caloriesOut", "Calories Out");
-         createChart(data["activities-heart"], $("#minutes-chart")[0], "minutes", "Time", "in minutes");
          $scope.responseData = data;
+         var columns = [{
+            name: "Day",
+            type: "date"
+         }, {
+            name: "Out of Range",
+            type: "number"
+         }, {
+            name: "Fat Burn",
+            type: "number"
+         }, {
+            name: "Cardio",
+            type: "number"
+         }, {
+            name: "Peak",
+            type: "number"
+         }];
+         createChart($("#heart-rate-chart")[0], extractHeartRateRows(data["activities-heart"], "caloriesOut"), columns, "Calories Out");
+         createChart($("#minutes-chart")[0], extractHeartRateRows(data["activities-heart"], "minutes"), columns, "Time", "in minutes");
       }, function(err) {
          if (err.status == 401) {
-            window.location.href = "/";
+            $scope.logout();
          } else {
             console.error(err.responseText);
          }
       });
-   }
-
-   function createChart(data, chartDiv, columnName, title, subtitle) {
-      var dataTable = new google.visualization.DataTable();
-      dataTable.addColumn("date", "Day");
-      dataTable.addColumn("number", "Out of Range");
-      dataTable.addColumn("number", "Fat Burn");
-      dataTable.addColumn("number", "Cardio");
-      dataTable.addColumn("number", "Peak");
-      dataTable.addRows(data.length);
-
-      for (var i = 0; i < data.length; i++) {
-         var entry = data[i];
-         var heartRateZones = entry["value"]["heartRateZones"];
-
-         dataTable.setCell(i, 0, new Date(entry["dateTime"]));
-
-         for (var j = 0; j < heartRateZones.length; j++) {
-            var dataset = heartRateZones[j];
-            var k = {
-               "Out of Range": 1,
-               "Fat Burn": 2,
-               "Cardio": 3,
-               "Peak": 4,
-            }[dataset["name"]];
-
-            if (dataset[columnName]) {
-               dataTable.setCell(i, k, dataset[columnName]);
-            } else {
-               dataTable.setCell(i, k, Math.random() * 300 + 600);
-            }
-         }
-      }
-
-      var options = {
-         chart: {
-            title: title,
-            subtitle: subtitle
-         },
-         width: "100%",
-         height: 500
-      };
-
-      var chart = new google.charts.Line(chartDiv);
-
-      chart.draw(dataTable, options);
    }
 });
 
 app.controller("sleep", function($scope) {
-   $scope.periods = ["1d", "7d", "30d", "1w", "1m"];
-   $scope.periodChanged = function() {
-      $scope.getSleep();
-   };
-   $scope.dateChanged = function() {
-      $scope.getSleep();
+   $scope.periods = ["7d", "30d", "1w", "1m"];
+   $scope.sleepResources = [{
+      name: "startTime",
+      title: "Start Time"
+   }, {
+      name: "timeInBed",
+      title: "Time in bed"
+   }, {
+      name: "minutesAsleep",
+      title: "Minutes asleep"
+   }, {
+      name: "awakeningsCount",
+      title: "Awakenings Count"
+   }, {
+      name: "minutesAwake",
+      title: "Minutes Awake"
+   }, {
+      name: "minutesToFallAsleep",
+      title: "Minutes to fall asleep"
+   }, {
+      name: "minutesAfterWakeup",
+      title: "Minutes after wakeup"
+   }, {
+      name: "efficiency",
+      title: "Efficiency"
+   }];
+   $scope.periodChanged = $scope.dateChanged = $scope.sleepResourceChanged = function() {
+      if ($scope.selectedPeriod && $scope.selectedSleepResource && $scope.selectedDate) {
+         $scope.getSleep();
+      }
    };
 
    $scope.getSleep = function() {
-      fitbit.getSleep("startTime", $scope.selectedDate, $scope.selectedPeriod, function(data) {
-         console.log(data);
+      fitbit.getSleep($scope.selectedSleepResource.name, $scope.selectedDate, $scope.selectedPeriod, function(data) {
+         $scope.responseData = data;
+         var columns = [{
+            name: "Day",
+            type: "date"
+         }, {
+            name: "Value",
+            type: "number"
+         }];
+         var rows = [];
+         for (var i = 0; i < data["sleep-" + $scope.selectedSleepResource.name].length; i++) {
+            var row = data["sleep-" + $scope.selectedSleepResource.name][i];
+
+            if (row["value"]) {
+               rows.push([new Date(row["dateTime"]), parseInt(row["value"])]);
+            } else {
+               rows.push([new Date(row["dateTime"]), Math.random() * 100000000]);
+            }
+         }
+
+         createChart($("#sleep-chart")[0], rows, columns, $scope.selectedSleepResource.title);
       }, function(err) {
          if (err.status == 401) {
-            window.location.href = "/";
+            $scope.logout();
          } else {
             console.error(err.responseText);
          }
       });
    }
 });
+
+function createChart(chartDiv, rows, columns, title, subtitle) {
+   var dataTable = new google.visualization.DataTable();
+
+   for (var i = 0; i < columns.length; i++) {
+      var col = columns[i];
+
+      dataTable.addColumn(col.type, col.name);
+   }
+
+   dataTable.addRows(rows);
+
+   var options = {
+      chart: {
+         title: title,
+         subtitle: subtitle
+      },
+      width: "100%",
+      height: 500
+   };
+
+   var chart = new google.charts.Line(chartDiv);
+
+   chart.draw(dataTable, options);
+}
+
+function extractHeartRateRows(data, columnName) {
+   var rows = [];
+
+   for (var i = 0; i < data.length; i++) {
+      var entry = data[i];
+      var heartRateZones = entry["value"]["heartRateZones"];
+
+      var row = [null, Math.random() * 300 + 600, Math.random() * 300 + 600, Math.random() * 300 + 600, Math.random() * 300 + 600];
+      row[0] = new Date(entry["dateTime"]);
+
+      for (var j = 0; j < heartRateZones.length; j++) {
+         var dataset = heartRateZones[j];
+         var k = {
+            "Out of Range": 1,
+            "Fat Burn": 2,
+            "Cardio": 3,
+            "Peak": 4,
+         }[dataset["name"]];
+
+         if (dataset[columnName]) {
+            row[k] = dataset[columnName];
+         }
+      }
+
+      rows.push(row);
+   }
+
+   return rows;
+}
