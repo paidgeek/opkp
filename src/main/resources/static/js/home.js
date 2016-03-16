@@ -6,27 +6,17 @@ var app = angular.module("app", ["ngCookies", "jsonFormatter"]);
 var fitbit = null;
 
 app.controller("home", ["$scope", "$http", "$cookies", function($scope, $http, $cookies) {
-   var user = $cookies.get("user");
-   /*
-      if (!user) {
-         window.location.href = "/";
-         return;
-      }*/
+   var user = $cookies.getObject("user");
 
-   console.log(user);
-   //fitbit = new Fitbit(user.accessToken);
-   fitbit = new Fitbit("eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0NTgwNTQ5MjMsInNjb3BlcyI6Indwcm8gd2xvYyB3bnV0IHdzZXQgd3NsZSB3aHIgd3dlaSB3YWN0IHdzb2MiLCJzdWIiOiI0REg5SEciLCJhdWQiOiIyMjdOUjQiLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJpYXQiOjE0NTgwNTEzMjN9.BWTQeUd-yAk_TK6Yw0QqLp0TftVnGi_V24Pb5M_kFbQ");
+   if (!user) {
+      window.location.href = "/";
+      return;
+   }
+
+   fitbit = new Fitbit(user.accessToken);
 
    $scope.logout = function() {
-      $http.post('/logout', {}).success(function() {
-         $cookies.remove("user");
-         $cookies.remove("JSESSIONID");
-         window.location.href = "/";
-      }).error(function(data) {
-         $cookies.remove("user");
-         $cookies.remove("JSESSIONID");
-         window.location.href = "/";
-      });
+      logout($http, $cookies);
    };
 }]);
 
@@ -54,14 +44,14 @@ app.controller("content", function($scope, $http) {
    }
 });
 
-app.controller("user", function($scope) {
+app.controller("user", function($scope, $http, $cookies) {
    $scope.responseData = null;
    $scope.getProfile = function() {
       fitbit.getProfile(function(data) {
          $scope.responseData = data["user"];
       }, function(err) {
          if (err.status == 401) {
-            $scope.logout();
+            logout($http, $cookies);
          } else {
             console.error(err.responseText);
          }
@@ -69,7 +59,7 @@ app.controller("user", function($scope) {
    }
 });
 
-app.controller("heart-rate", function($scope) {
+app.controller("heart-rate", function($scope, $http, $cookies) {
    $scope.periods = ["7d", "30d", "1w", "1m"];
 
    $scope.periodChanged = function() {
@@ -104,7 +94,7 @@ app.controller("heart-rate", function($scope) {
          createChart($("#minutes-chart")[0], extractHeartRateRows(data["activities-heart"], "minutes"), columns, "Time", "in minutes");
       }, function(err) {
          if (err.status == 401) {
-            $scope.logout();
+            logout($http, $cookies);
          } else {
             console.error(err.responseText);
          }
@@ -112,7 +102,7 @@ app.controller("heart-rate", function($scope) {
    }
 });
 
-app.controller("sleep", function($scope) {
+app.controller("sleep", function($scope, $http, $cookies) {
    $scope.periods = ["7d", "30d", "1w", "1m"];
    $scope.sleepResources = [{
       name: "startTime",
@@ -165,7 +155,7 @@ app.controller("sleep", function($scope) {
          createChart($("#sleep-chart")[0], rows, columns, $scope.selectedSleepResource.title);
       }, function(err) {
          if (err.status == 401) {
-            $scope.logout();
+            logout($http, $cookies);
          } else {
             console.error(err.responseText);
          }
@@ -198,6 +188,18 @@ function createChart(chartDiv, rows, columns, title, subtitle) {
    chart.draw(dataTable, options);
 }
 
+function logout($http, $cookies) {
+   $http.post('/logout', {}).success(function() {
+      $cookies.remove("user");
+      $cookies.remove("JSESSIONID");
+      window.location.href = "/";
+   }).error(function(data) {
+      $cookies.remove("user");
+      $cookies.remove("JSESSIONID");
+      window.location.href = "/";
+   });
+}
+
 function extractHeartRateRows(data, columnName) {
    var rows = [];
 
@@ -205,7 +207,7 @@ function extractHeartRateRows(data, columnName) {
       var entry = data[i];
       var heartRateZones = entry["value"]["heartRateZones"];
 
-      var row = [null, 0, 0, 0];
+      var row = [null, 0, 0, 0, 0];
       row[0] = new Date(entry["dateTime"]);
 
       for (var j = 0; j < heartRateZones.length; j++) {
