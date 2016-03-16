@@ -68,6 +68,37 @@ public class BatchController {
 										command.getLimit(),
 										command.getLanguage());
 						break;
+					case "crud":
+						switch (command.getMethod()) {
+							case GET:
+								response = CRUDController.getInstance()
+										.performRead(command.getModel(),
+												command.getColumns(),
+												command.getQuery(),
+												command.getSort(),
+												command.getLimit());
+								break;
+							case POST:
+								response = CRUDController.getInstance()
+										.performCreate(command.getModel(),
+												command.getBody());
+								break;
+							case PUT:
+								response = CRUDController.getInstance()
+										.performUpdate(command.getModel(),
+												command.getQuery(),
+												command.getBody());
+								break;
+							case DELETE:
+								response = CRUDController.getInstance()
+										.performDelete(command.getModel(),
+												command.getQuery());
+								break;
+							default:
+								response = Util.responseError("invalid method", HttpStatus.BAD_REQUEST);
+								break;
+						}
+						break;
 					default:
 						failed.add(command.getName());
 						result.setProperty(command.getName(), Util.createError("invalid controller"));

@@ -135,7 +135,14 @@ public class CRUDController {
 		String sqlQuery = RestQL.parseToSQL(query);
 		updateBuilder.where(sqlQuery);
 
-		int updated = db.update(updateBuilder.build());
+		int updated;
+		try {
+			updated = db.update(updateBuilder.build());
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return Util.responseError(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 
 		SQLSelectBuilder selectBuilder = new SQLSelectBuilder("*")
 				.from(model)
@@ -159,7 +166,14 @@ public class CRUDController {
 		String sqlQuery = RestQL.parseToSQL(query);
 		deleteBuilder.where(sqlQuery);
 
-		int deleted = db.update(deleteBuilder.build());
+		int deleted;
+		try {
+			deleted = db.update(deleteBuilder.build());
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return Util.responseError(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 
 		Pojo meta = new Pojo();
 		Pojo result = new Pojo();
