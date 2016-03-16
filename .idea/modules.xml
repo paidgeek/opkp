@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/opkp.iml" filepath="$PROJECT_DIR$/opkp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../restql/restql.iml" filepath="$PROJECT_DIR$/../restql/restql.iml" />
     </modules>
   </component>
 </project>
