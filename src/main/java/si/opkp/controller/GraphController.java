@@ -57,6 +57,12 @@ public class GraphController {
 				return Util.responseError("invalid model path", HttpStatus.BAD_REQUEST);
 			}
 
+			Optional<String> err = Validator.validate(path, columns, sort);
+
+			if (err.isPresent()) {
+				return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
+			}
+
 			List<Pojo> objects = db.queryObjects(sqlQuery.get());
 			long total = db.queryObject(sqlCount.get()).getLong("count");
 

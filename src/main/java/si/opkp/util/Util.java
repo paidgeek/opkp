@@ -1,7 +1,9 @@
 package si.opkp.util;
 
 import com.fasterxml.jackson.databind.*;
+
 import org.springframework.http.*;
+
 import si.opkp.*;
 
 import java.util.*;
@@ -16,7 +18,11 @@ public class Util {
 			return null;
 		}
 
-		return Arrays.asList(stringList.split(","));
+		List<String> list = new ArrayList<>();
+
+		Collections.addAll(list, stringList.split(","));
+
+		return list;
 	}
 
 	public static List<Integer> parseIntegerList(String integerList) {
@@ -45,8 +51,8 @@ public class Util {
 	public static List<Integer> integerList(int... array) {
 		List<Integer> list = new ArrayList<>();
 
-		for (int i = 0; i < array.length; i++) {
-			list.add(array[i]);
+		for (int anArray : array) {
+			list.add(anArray);
 		}
 
 		return list;
@@ -55,9 +61,7 @@ public class Util {
 	public static List<String> stringList(String... array) {
 		List<String> list = new ArrayList<>();
 
-		for (int i = 0; i < array.length; i++) {
-			list.add(array[i]);
-		}
+		Collections.addAll(list, array);
 
 		return list;
 	}

@@ -65,10 +65,10 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performCreate(String model, Pojo body) {
-		String err = Validator.validate(model, body);
+		Optional<String> err = Validator.validateFull(model, body);
 
-		if (err != null) {
-			return Util.responseError(err, HttpStatus.BAD_REQUEST);
+		if (err.isPresent()) {
+			return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
 		}
 
 		SQLInsertBuilder insertBuilder = new SQLInsertBuilder(model);
@@ -121,10 +121,10 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performUpdate(String model, String query, Pojo body) {
-		String err = Validator.validate(model, body);
+		Optional<String> err = Validator.validatePartial(model, body);
 
-		if (err != null) {
-			return Util.responseError(err, HttpStatus.BAD_REQUEST);
+		if (err.isPresent()) {
+			return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
 		}
 
 		SQLUpdateBuilder updateBuilder = new SQLUpdateBuilder(model);

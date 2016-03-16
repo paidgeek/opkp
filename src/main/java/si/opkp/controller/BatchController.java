@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import si.opkp.batch.*;
+import si.opkp.model.Validator;
 import si.opkp.util.*;
 
 import java.util.*;
@@ -17,10 +18,10 @@ public class BatchController {
 	@RequestMapping(method = RequestMethod.POST)
 	@Transactional
 	public ResponseEntity<Pojo> post(@RequestBody Batch batch) {
-		String errorMessage = Validator.validate(batch);
+		Optional<String> err = Validator.validate(batch);
 
-		if (errorMessage != null) {
-			return Util.responseError(errorMessage, HttpStatus.BAD_REQUEST);
+		if (err.isPresent()) {
+			return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
 		}
 
 		try {

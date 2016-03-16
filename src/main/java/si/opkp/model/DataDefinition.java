@@ -30,15 +30,16 @@ public class DataDefinition {
 
 	private DataDefinition() {
 		HashMap<String, Object> dd = (HashMap) Util.readFile("classpath:data-definition.json");
+		definitions = new HashMap<>();
 
 		// TODO "maybe" contains bugs
 		for (Map.Entry<String, Object> table : dd.entrySet()) {
-			HashMap<String, Pojo> cols = (HashMap) table.getValue();
+			HashMap<String, Map> cols = (HashMap) table.getValue();
 			Map<String, FieldDefinition> defs = new HashMap<>();
 
-			for (Map.Entry<String, Pojo> col : cols.entrySet()) {
-				Pojo info = col.getValue();
-				String typeString = info.getString("type");
+			for (Map.Entry<String, Map> col : cols.entrySet()) {
+				Map<String, Object> info = col.getValue();
+				String typeString = (String) info.get("type");
 				FieldDefinition.Type type = null;
 
 				if (typeString.startsWith("varchar") || typeString.equalsIgnoreCase("text")) {
@@ -51,10 +52,10 @@ public class DataDefinition {
 					type = FieldDefinition.Type.DECIMAL;
 				}
 
-				boolean notNull = info.getBoolean("notNull");
-				boolean key = !info.getString("key").isEmpty();
-				Object defaultValue = info.getProperty("defaultValue");
-				String extra = info.getString("extra");
+				boolean notNull = (Boolean) info.get("notNull");
+				boolean key = !((String) info.get("key")).isEmpty();
+				Object defaultValue = info.get("defaultValue");
+				String extra = (String) info.get("extra");
 
 				defs.put(col.getKey(), new FieldDefinition(type, notNull, key, defaultValue, extra));
 			}
