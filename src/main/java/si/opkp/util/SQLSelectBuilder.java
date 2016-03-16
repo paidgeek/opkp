@@ -31,7 +31,7 @@ public class SQLSelectBuilder {
 	}
 
 	public SQLSelectBuilder join(String table, String condition) {
-		query.append("FULL JOIN ");
+		query.append("JOIN ");
 		query.append(table);
 
 		if (condition.contains("=")) {

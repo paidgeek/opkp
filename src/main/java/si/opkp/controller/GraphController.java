@@ -13,7 +13,7 @@ import java.util.*;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/v1/graph")
+@RequestMapping("v1/graph")
 public class GraphController {
 
 	private static GraphController instance;

@@ -3,15 +3,17 @@ package si.opkp.controller;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
 import si.opkp.model.*;
 import si.opkp.util.*;
 
 import javax.annotation.*;
+
 import java.util.*;
 import java.util.stream.*;
 
 @RestController
-@RequestMapping("/v1/search")
+@RequestMapping("v1/search")
 @CrossOrigin
 public class SearchController {
 

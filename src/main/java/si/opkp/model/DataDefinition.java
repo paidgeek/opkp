@@ -71,4 +71,12 @@ public class DataDefinition {
 		return null;
 	}
 
+	public Map<String, FieldDefinition> getDefinitions(String table) {
+		if (definitions.containsKey(table)) {
+			return definitions.get(table);
+		}
+
+		return null;
+	}
+
 }

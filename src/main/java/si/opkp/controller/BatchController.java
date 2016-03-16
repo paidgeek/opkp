@@ -1,6 +1,7 @@
 package si.opkp.controller;
 
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import si.opkp.batch.*;
@@ -9,11 +10,12 @@ import si.opkp.util.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/v1/batch")
+@RequestMapping("v1/batch")
 @CrossOrigin
 public class BatchController {
 
 	@RequestMapping(method = RequestMethod.POST)
+	@Transactional
 	public ResponseEntity<Pojo> post(@RequestBody Batch batch) {
 		String errorMessage = Validator.validate(batch);
 

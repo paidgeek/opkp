@@ -1,13 +1,16 @@
 package si.opkp.controller;
 
 import com.moybl.restql.*;
+
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+
 import si.opkp.model.*;
 import si.opkp.util.*;
 
 import javax.annotation.*;
+
 import java.util.*;
 
 @RestController
@@ -62,6 +65,12 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performCreate(String model, Pojo body) {
+		String err = Validator.validate(model, body);
+
+		if (err != null) {
+			return Util.responseError(err, HttpStatus.BAD_REQUEST);
+		}
+
 		SQLInsertBuilder insertBuilder = new SQLInsertBuilder(model);
 
 		body.getProperties().entrySet()
@@ -112,6 +121,12 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performUpdate(String model, String query, Pojo body) {
+		String err = Validator.validate(model, body);
+
+		if (err != null) {
+			return Util.responseError(err, HttpStatus.BAD_REQUEST);
+		}
+
 		SQLUpdateBuilder updateBuilder = new SQLUpdateBuilder(model);
 
 		body.getProperties().entrySet()
