@@ -1,0 +1,40 @@
+<div ng-controller="explore">
+   <div class="row">
+      <div class="col-md-12">
+         <div class="panel panel-default">
+            <form class="panel-body form-horizontal" ng-submit="search()">
+               <fieldset>
+                  <div class="form-group">
+                     <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Search" ng-model="keywords">
+                     </div>
+                  </div>
+               </fieldset>
+            </form>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <div class="panel panel-default" cg-busy="searchPromise">
+            <table class="panel-body table table-condensed">
+               <thead>
+                  <tr>
+                     <th ng-repeat="(key, value) in results[0]">
+                        {{key}}
+                     </th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr ng-repeat="result in results">
+                     <td ng-repeat="value in result">
+                        {{value}}
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+         </div>
+      </div>
+   </div>
+
+</div>

@@ -52,43 +52,46 @@ public class SearchController {
 			language = "en";
 		}
 
-		Set<String> stopwords = StopWords.getInstance().getStopWords(language);
-		String kw = keywords.stream()
-				.map(String::toLowerCase)
-				.filter(word -> !stopwords.contains(word))
-				.collect(Collectors.joining(" "));
-
-		List<Pojo> objects;
-		int offset = 0, count = Integer.MAX_VALUE, total = 0;
-
-		if (limit != null) {
-			if (limit.size() == 1) {
-				count = limit.get(0);
-			} else if (limit.size() == 2) {
-				offset = limit.get(0);
-				count = limit.get(1);
-			}
-		}
-
-		// TODO clean up
-		if (model.equals("fir_food")) {
-			objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, offset, count);
-		} else {
-			return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
-		}
-
-		if (!objects.isEmpty()) {
-			total = objects.get(0).getInteger("total");
-		}
-
-		if (!(columns.size() == 1 && columns.contains("*"))) {
-			for (Pojo pojo : objects) {
-				pojo.getProperties().entrySet().removeIf(e -> !columns.contains(e.getKey()));
-			}
-		}
-
 		Pojo result = new Pojo();
 		Pojo meta = new Pojo();
+		int total = 0;
+		List<Pojo> objects = new ArrayList<>();
+
+		if (!(keywords == null || keywords.isEmpty())) {
+			Set<String> stopwords = StopWords.getInstance().getStopWords(language);
+			String kw = keywords.stream()
+					.map(String::toLowerCase)
+					.filter(word -> !stopwords.contains(word))
+					.collect(Collectors.joining(" "));
+
+			int offset = 0, count = Integer.MAX_VALUE;
+
+			if (limit != null) {
+				if (limit.size() == 1) {
+					count = limit.get(0);
+				} else if (limit.size() == 2) {
+					offset = limit.get(0);
+					count = limit.get(1);
+				}
+			}
+
+			// TODO clean up
+			if (model.equals("fir_food")) {
+				objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, offset, count);
+			} else {
+				return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
+			}
+
+			if (!objects.isEmpty()) {
+				total = objects.get(0).getInteger("total");
+			}
+
+			if (!(columns.size() == 1 && columns.contains("*"))) {
+				for (Pojo pojo : objects) {
+					pojo.getProperties().entrySet().removeIf(e -> !columns.contains(e.getKey()));
+				}
+			}
+		}
 
 		meta.setProperty("count", objects.size());
 		meta.setProperty("total", total);
