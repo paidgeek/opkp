@@ -9,18 +9,24 @@ public class FieldDefinition {
 		INTEGER
 	}
 
+	private String name;
 	private Type type;
 	private boolean notNull;
 	private boolean key;
 	private Object defaultValue;
 	private String extra;
 
-	public FieldDefinition(Type type, boolean notNull, boolean key, Object defaultValue, String extra) {
+	public FieldDefinition(String name, Type type, boolean notNull, boolean key, Object defaultValue, String extra) {
+		this.name = name;
 		this.type = type;
 		this.notNull = notNull;
 		this.key = key;
 		this.defaultValue = defaultValue;
 		this.extra = extra;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public Type getType() {

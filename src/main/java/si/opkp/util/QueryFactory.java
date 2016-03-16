@@ -14,6 +14,10 @@ public class QueryFactory {
 		return select(Arrays.asList("COUNT(*) as count"), tables, query, null, null);
 	}
 
+	public static Optional<String> select(List<String> columns, String table, String query) {
+		return select(columns, table, query, null, null);
+	}
+
 	public static Optional<String> select(List<String> columns, String table, String query, List<String> orderBy, List<Integer> limit) {
 		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(columns);
 

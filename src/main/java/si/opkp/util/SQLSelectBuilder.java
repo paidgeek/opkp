@@ -95,7 +95,6 @@ public class SQLSelectBuilder {
 	}
 
 	public String build() {
-		// TODO sql injection?
 		return query.toString();
 	}
 

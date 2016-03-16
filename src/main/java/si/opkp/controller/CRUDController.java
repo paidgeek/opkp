@@ -3,6 +3,7 @@ package si.opkp.controller;
 import com.moybl.restql.*;
 
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import si.opkp.util.*;
 
 import javax.annotation.*;
 
+import java.sql.SQLException;
 import java.util.*;
 
 @RestController
@@ -72,23 +74,49 @@ public class CRUDController {
 		}
 
 		SQLInsertBuilder insertBuilder = new SQLInsertBuilder(model);
-
 		body.getProperties().entrySet()
 				.forEach(prop -> insertBuilder.insert(prop.getKey(), prop.getValue()));
 
+		SQLSelectBuilder selectBuilder = new SQLSelectBuilder("*")
+				.from(model);
+		SQLConditionBuilder conditionBuilder = new SQLConditionBuilder();
+		Iterator<FieldDefinition> i = DataDefinition.getInstance()
+				.getDefinition(model)
+				.getPrimaryKeys()
+				.iterator();
+
+		if (i.hasNext()) {
+			FieldDefinition pk = i.next();
+
+			conditionBuilder.equal(pk, body.getProperty(pk.getName()));
+
+			if (i.hasNext()) {
+				conditionBuilder.and();
+			}
+		}
+
+		selectBuilder.where(conditionBuilder.build());
+
+		Pojo created;
+
 		try {
 			db.update(insertBuilder.build());
+			created = db.queryObject(selectBuilder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			return Util.responseError(e.getMessage(), HttpStatus.BAD_REQUEST);
+			if (e instanceof DuplicateKeyException) {
+				return Util.responseError("duplicate entry", HttpStatus.BAD_REQUEST);
+			}
+
+			return Util.responseError(HttpStatus.BAD_REQUEST);
 		}
 
 		Pojo meta = new Pojo();
 		Pojo result = new Pojo();
 
 		result.setProperty("meta", meta);
-		result.setProperty("created", body);
+		result.setProperty("created", created);
 
 		return ResponseEntity.ok(result);
 	}

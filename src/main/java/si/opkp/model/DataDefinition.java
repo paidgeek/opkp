@@ -26,7 +26,7 @@ public class DataDefinition {
 		getInstance();
 	}
 
-	private Map<String, Map<String, FieldDefinition>> definitions;
+	private Map<String, TableDefinition> definitions;
 
 	private DataDefinition() {
 		HashMap<String, Object> dd = (HashMap) Util.readFile("classpath:data-definition.json");
@@ -36,6 +36,7 @@ public class DataDefinition {
 		for (Map.Entry<String, Object> table : dd.entrySet()) {
 			HashMap<String, Map> cols = (HashMap) table.getValue();
 			Map<String, FieldDefinition> defs = new HashMap<>();
+			Set<FieldDefinition> primaryKeys = new HashSet<>();
 
 			for (Map.Entry<String, Map> col : cols.entrySet()) {
 				Map<String, Object> info = col.getValue();
@@ -53,31 +54,25 @@ public class DataDefinition {
 				}
 
 				boolean notNull = (Boolean) info.get("notNull");
-				boolean key = !((String) info.get("key")).isEmpty();
+				String key = (String) info.get("key");
 				Object defaultValue = info.get("defaultValue");
 				String extra = (String) info.get("extra");
 
-				defs.put(col.getKey(), new FieldDefinition(type, notNull, key, defaultValue, extra));
+				FieldDefinition fd = new FieldDefinition(col.getKey(), type, notNull, !key.isEmpty(), defaultValue, extra);
+
+				if (key.equals("PRI")) {
+					primaryKeys.add(fd);
+				}
+
+				defs.put(col.getKey(), fd);
 			}
 
-			definitions.put(table.getKey(), defs);
+			definitions.put(table.getKey(), new TableDefinition(table.getKey(), defs, primaryKeys));
 		}
 	}
 
-	public FieldDefinition getDefinition(String table, String column) {
-		if (definitions.containsKey(table)) {
-			return definitions.get(table).get(column);
-		}
-
-		return null;
-	}
-
-	public Map<String, FieldDefinition> getDefinitions(String table) {
-		if (definitions.containsKey(table)) {
-			return definitions.get(table);
-		}
-
-		return null;
+	public TableDefinition getDefinition(String table) {
+		return definitions.get(table);
 	}
 
 }

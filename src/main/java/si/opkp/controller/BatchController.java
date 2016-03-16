@@ -39,9 +39,7 @@ public class BatchController {
 					failed.add(command.getName());
 
 					result.setProperty(command.getName(), Util.createError(
-							String.format("command '%s' was terminated, because '%s' failed",
-									command.getName(),
-									failedDependency.get())));
+							String.format("command was terminated, because '%s' failed", failedDependency.get())));
 
 					continue;
 				}

@@ -8,19 +8,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import javafx.scene.control.Tab;
 import si.opkp.batch.*;
 import si.opkp.util.Pojo;
 
 public class Validator {
 
 	public static Optional<String> validatePartial(String table, Pojo body) {
-		Map<String, FieldDefinition> td = DataDefinition.getInstance().getDefinitions(table);
+		TableDefinition td = DataDefinition.getInstance().getDefinition(table);
 
 		if (td == null) {
 			return Optional.of("table does not exist");
 		}
 
-		Set<String> intersection = Sets.difference(body.getProperties().keySet(), td.keySet());
+		Set<String> intersection = Sets.difference(body.getProperties().keySet(), td.getFields().keySet());
 
 		if (!intersection.isEmpty()) {
 			StringBuilder err = new StringBuilder();
@@ -45,13 +46,13 @@ public class Validator {
 	}
 
 	public static Optional<String> validateFull(String table, Pojo body) {
-		Map<String, FieldDefinition> td = DataDefinition.getInstance().getDefinitions(table);
+		TableDefinition td = DataDefinition.getInstance().getDefinition(table);
 
 		if (td == null) {
 			return Optional.of("table does not exist");
 		}
 
-		for (Map.Entry<String, FieldDefinition> cd : td.entrySet()) {
+		for (Map.Entry<String, FieldDefinition> cd : td.getFields().entrySet()) {
 			FieldDefinition fd = cd.getValue();
 
 			if (fd.isNotNull() && fd.getDefaultValue() == null && body.getProperty(cd.getKey()) == null) {
@@ -59,7 +60,7 @@ public class Validator {
 			}
 		}
 
-		Set<String> intersection = Sets.difference(body.getProperties().keySet(), td.keySet());
+		Set<String> intersection = Sets.difference(body.getProperties().keySet(), td.getFields().keySet());
 
 		if (!intersection.isEmpty()) {
 			StringBuilder err = new StringBuilder();
@@ -85,13 +86,13 @@ public class Validator {
 
 	public static Optional<String> validate(List<String> path, List<String> columns, List<String> sort) {
 		for (String node : path) {
-			Map<String, FieldDefinition> td = DataDefinition.getInstance().getDefinitions(node);
+			TableDefinition td = DataDefinition.getInstance().getDefinition(node);
 
 			if (td == null) {
 				return Optional.of("unknown model '" + node + "'");
 			}
 
-			columns.removeAll(td.keySet());
+			columns.removeAll(td.getFields().keySet());
 		}
 
 		if (!columns.isEmpty()) {
