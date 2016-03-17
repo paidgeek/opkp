@@ -42,6 +42,9 @@ body {
 .main .page-header {
    margin-top: 0;
 }
+.row-number {
+   color: #aaa;
+}
 
 /* Food profile modal */
 

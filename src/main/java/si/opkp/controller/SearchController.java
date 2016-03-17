@@ -52,44 +52,48 @@ public class SearchController {
 			language = "en";
 		}
 
+		if (keywords == null) {
+			keywords = new ArrayList<>();
+		}
+
+		if (!keywords.isEmpty()) {
+			keywords.set(keywords.size() - 1, keywords.get(keywords.size() - 1) + "*");
+		}
+
+		Set<String> stopwords = StopWords.getInstance().getStopWords(language);
+		String kw = keywords.stream()
+				.map(String::toLowerCase)
+				.filter(word -> !stopwords.contains(word))
+				.collect(Collectors.joining(" "));
+
 		Pojo result = new Pojo();
 		Pojo meta = new Pojo();
-		int total = 0;
-		List<Pojo> objects = new ArrayList<>();
+		List<Pojo> objects;
+		int offset = 0, count = Integer.MAX_VALUE, total = 0;
 
-		if (!(keywords == null || keywords.isEmpty())) {
-			Set<String> stopwords = StopWords.getInstance().getStopWords(language);
-			String kw = keywords.stream()
-					.map(String::toLowerCase)
-					.filter(word -> !stopwords.contains(word))
-					.collect(Collectors.joining(" "));
-
-			int offset = 0, count = Integer.MAX_VALUE;
-
-			if (limit != null) {
-				if (limit.size() == 1) {
-					count = limit.get(0);
-				} else if (limit.size() == 2) {
-					offset = limit.get(0);
-					count = limit.get(1);
-				}
+		if (limit != null) {
+			if (limit.size() == 1) {
+				count = limit.get(0);
+			} else if (limit.size() == 2) {
+				offset = limit.get(0);
+				count = limit.get(1);
 			}
+		}
 
-			// TODO clean up
-			if (model.equals("fir_food")) {
-				objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, offset, count);
-			} else {
-				return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
-			}
+		// TODO clean up
+		if (model.equals("fir_food")) {
+			objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, offset, count);
+		} else {
+			return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
+		}
 
-			if (!objects.isEmpty()) {
-				total = objects.get(0).getInteger("total");
-			}
+		if (!objects.isEmpty()) {
+			total = objects.get(0).getInteger("total");
+		}
 
-			if (!(columns.size() == 1 && columns.contains("*"))) {
-				for (Pojo pojo : objects) {
-					pojo.getProperties().entrySet().removeIf(e -> !columns.contains(e.getKey()));
-				}
+		if (!(columns.size() == 1 && columns.contains("*"))) {
+			for (Pojo pojo : objects) {
+				pojo.getProperties().entrySet().removeIf(e -> !columns.contains(e.getKey()));
 			}
 		}
 

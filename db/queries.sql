@@ -55,6 +55,7 @@ SELECT SQL_CALC_FOUND_ROWS *, 0 AS total,
 		 LENGTH(SCINAM) - LENGTH(REPLACE(SCINAM, ' ', '')))
     AS score
 FROM fir_food
+HAVING score > 0
 ORDER BY score DESC
 LIMIT `offset`, `count`;
 

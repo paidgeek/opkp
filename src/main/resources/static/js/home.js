@@ -13,7 +13,7 @@ app.controller("home", ["$scope", "$http", "$cookies", function($scope, $http, $
       return;
    }
 
-   fitbit = new Fitbit(user.accessToken);
+   fitbit = new Fitbit(user);
 
    $scope.logout = function() {
       logout($http, $cookies);

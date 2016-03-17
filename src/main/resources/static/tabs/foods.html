@@ -1,0 +1,82 @@
+<div ng-controller="foods">
+   <div class="row">
+      <div class="col-md-12">
+         <div class="panel panel-default">
+            <form class="panel-body form-horizontal" ng-submit="search()">
+
+               <div class="form-group col-md-6">
+                  <div class="input-group">
+                     <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-search"></span>
+                     </span>
+                     <input class="form-control" ng-model="keywords" placeholder="Search" type="search"/>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="select-page-size" class="col-md-2 control-label">
+                     Rows count
+                  </label>
+                  <div class="col-md-2">
+                     <select id="select-page-size" class="form-control" ng-init="pageSize = 10" ng-options="i for i in pageSizes" ng-model="pageSize" ng-change="search()"></select>
+                  </div>
+               </div>
+
+            </form>
+         </div>
+      </div>
+   </div>
+   <div ng-if="data">
+      <div class="row">
+         <div class="col-md-12">
+            <div class="panel panel-default" cg-busy="searchPromise">
+               <table class="table table-hover">
+                  <thead>
+                     <tr>
+                        <th>
+                           #
+                        </th>
+                        <th ng-repeat="(key, value) in data.result[0]">
+                           {{key}}
+                        </th>
+                        <th></th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr ng-repeat="row in data.result">
+                        <td class="row-number">
+                           {{$index + 1 + (currentPage - 1) * pageSize}}
+                        </td>
+                        <td ng-repeat="value in row">
+                           {{value}}
+                        </td>
+                        <td>
+                           <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
+                              <i class="glyphicon glyphicon-edit"></i>
+                           </button>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+      </div>
+
+      <div class="row text-center">
+         <uib-pagination ng-change="onPageChanged(currentPage)" total-items="data.meta.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+      </div>
+   </div>
+
+   <script type="text/ng-template" id="food-modal.html">
+      <div class="modal-header">
+         <h3 class="modal-title">{{food.ORIGFDNM}}</h3>
+      </div>
+      <div class="modal-body">
+         {{food}}
+      </div>
+      <div class="modal-footer">
+         <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+         <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+      </div>
+   </script>
+
+</div>
