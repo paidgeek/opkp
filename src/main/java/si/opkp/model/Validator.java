@@ -84,6 +84,36 @@ public class Validator {
 		return Optional.empty();
 	}
 
+	public static Optional<String> validate(String model, List<String> columns) {
+		TableDefinition td = DataDefinition.getInstance().getDefinition(model);
+
+		if (td == null) {
+			return Optional.of("unknown model '" + model + "'");
+		}
+
+		columns.removeAll(td.getFields().keySet());
+
+		if (!columns.isEmpty()) {
+			StringBuilder err = new StringBuilder();
+
+			err.append("unknown columns: ");
+
+			for (int i = 0; i < columns.size(); i++) {
+				err.append('\'');
+				err.append(columns.get(i));
+				err.append('\'');
+
+				if (i < columns.size() - 1) {
+					err.append(", ");
+				}
+			}
+
+			return Optional.of(err.toString());
+		}
+
+		return Optional.empty();
+	}
+
 	public static Optional<String> validate(List<String> path, List<String> columns, List<String> sort) {
 		for (String node : path) {
 			TableDefinition td = DataDefinition.getInstance().getDefinition(node);

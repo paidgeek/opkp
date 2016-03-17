@@ -35,7 +35,7 @@
                         <th>
                            #
                         </th>
-                        <th ng-repeat="(key, value) in data.result[0]">
+                        <th ng-repeat="(key, value) in data.result[0]" ng-if="$index > 0">
                            {{key}}
                         </th>
                         <th></th>
@@ -46,7 +46,7 @@
                         <td class="row-number">
                            {{$index + 1 + (currentPage - 1) * pageSize}}
                         </td>
-                        <td ng-repeat="value in row">
+                        <td ng-repeat="value in row" ng-if="$index > 0">
                            {{value}}
                         </td>
                         <td>
@@ -80,15 +80,21 @@
                <table class="table table-hover">
                   <thead>
                      <tr>
-                        <th ng-repeat="(key, value) in data.components.result[0]">
+                        <th ng-repeat="(key, value) in data.components[0]">
                            {{key}}
                         </th>
+                        <th></th>
                      </tr>
                   </thead>
                   <tbody>
-                     <tr ng-repeat="row in data.components.result">
-                        <td ng-repeat="value in row">
+                     <tr ng-repeat="component in data.components">
+                        <td ng-repeat="value in component">
                            {{value}}
+                        </td>
+                        <td>
+                           <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
+                              <i class="glyphicon glyphicon-edit"></i>
+                           </button>
                         </td>
                      </tr>
                   </tbody>

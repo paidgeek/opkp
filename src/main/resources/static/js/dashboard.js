@@ -23,11 +23,11 @@ app.controller("nav", function($scope) {
 });
 
 app.controller('food-modal', function($scope, $uibModalInstance, opkpService, food) {
-   var promise = opkpService.getFood(food["ORIGFDCD"]);
-   $scope.searchPromise = promise;
-
-   promise.then(function(data) {
-      $scope.data = data;
+   opkpService.getFood(food["ORIGFDCD"]).then(function(data) {
+      $scope.data = {
+         components: data.components.result,
+         food: data.food.result[0]
+      };
    });
 
    $scope.ok = function() {

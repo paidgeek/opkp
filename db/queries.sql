@@ -1,5 +1,5 @@
 SELECT *
-FROM fir_food;
+FROM fir_component;
 
 SELECT ((SELECT COUNT(*)
         FROM fir_food

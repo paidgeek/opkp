@@ -73,7 +73,7 @@ OPKPService.create = function() {
                   model: "fir_food,fir_value,fir_component",
                   params: {
                      q: "ORIGFDCD:'" + id + "'",
-                     columns: ["ORIGCPNM", "SELVAL"]
+                     columns: ["ORIGCPNM", "SELVAL", "UNIT"]
                   },
                   dependencies: ["food"]
                }]
