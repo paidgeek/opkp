@@ -117,7 +117,7 @@ public class Validator {
 	}
 
 	public static Optional<String> validate(Batch batch) {
-		if (batch.getCommands().isEmpty()) {
+		if (batch.getCommands() == null || batch.getCommands().isEmpty()) {
 			return Optional.of("no commands in batch");
 		}
 

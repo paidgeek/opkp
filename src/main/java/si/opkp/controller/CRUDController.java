@@ -122,7 +122,7 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performRead(String model, List<String> columns, String query, List<String> sort, List<Integer> limit) {
-		if (columns == null) {
+		if (columns == null || columns.isEmpty()) {
 			columns = Util.stringList("*");
 		}
 
