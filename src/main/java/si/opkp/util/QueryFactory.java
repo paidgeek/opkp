@@ -4,6 +4,8 @@ import com.moybl.restql.*;
 
 import java.util.*;
 
+import si.opkp.model.DataGraph;
+
 public class QueryFactory {
 
 	public static Optional<String> count(String table, String query) {
@@ -40,7 +42,7 @@ public class QueryFactory {
 
 	public static Optional<String> select(List<String> columns, List<String> tables, String query, List<String> orderBy, List<Integer> limit) {
 		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(columns);
-		RelationMap relationMap = RelationMap.getInstance();
+		DataGraph dataGraph = DataGraph.getInstance();
 
 		selectBuilder.from(tables.get(0));
 
@@ -48,13 +50,13 @@ public class QueryFactory {
 			String a = tables.get(i - 1);
 			String b = tables.get(i);
 
-			String edge = relationMap.getEdge(a, b);
+			Optional<String> edge = dataGraph.getEdge(a, b);
 
-			if (edge == null) {
+			if (!edge.isPresent()) {
 				return Optional.empty();
 			}
 
-			selectBuilder.join(b, edge);
+			selectBuilder.join(b, edge.get());
 		}
 
 		if (query != null) {

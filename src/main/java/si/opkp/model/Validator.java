@@ -115,6 +115,10 @@ public class Validator {
 	}
 
 	public static Optional<String> validate(List<String> path, List<String> columns, List<String> sort) {
+		if (!columns.isEmpty() && columns.get(0).equals("*")) {
+			return Optional.empty();
+		}
+
 		for (String node : path) {
 			TableDefinition td = DataDefinition.getInstance().getDefinition(node);
 
