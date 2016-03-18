@@ -1,1 +1,59 @@
-graphs
+<div ng-controller="graphs">
+   <div class="row">
+      <div class="col-md-12">
+         <div class="panel panel-default">
+            <form class="panel-body form-horizontal" ng-submit="search()">
+
+               <label for="select-x-axis">X Axis</label>
+
+               <div id="select-x-axis" class="form-group">
+                  <label for="select-x-table" class="col-md-2 control-label">
+                     Table
+                  </label>
+                  <div class="col-md-3">
+                     <select id="select-x-table" class="form-control" ng-model="selectedTableX">
+                        <option ng-repeat="(key, value) in dd" value="{{key}}">{{key}}</option>
+                     </select>
+                  </div>
+                  <label for="select-x-column" class="col-md-2 control-label">
+                     Column
+                  </label>
+                  <div id="select-x-column" class="col-md-3">
+                     <select id="select-x-column" class="form-control" ng-model="selectedColumnX">
+                        <option ng-repeat="(key, value) in dd[selectedTableX]" value="{{key}}">{{key}}</option>
+                     </select>
+                  </div>
+               </div>
+
+               <label for="select-y-axis">Y Axis</label>
+
+               <div id="select-y-axis" class="form-group">
+                  <label for="select-y-table" class="col-md-2 control-label">
+                     Table
+                  </label>
+                  <div class="col-md-3">
+                     <select id="select-y-table" class="form-control" ng-model="selectedTableY">
+                        <option ng-repeat="(key, value) in dd" value="{{key}}">{{key}}</option>
+                     </select>
+                  </div>
+                  <label for="select-y-column" class="col-md-2 control-label">
+                     Column
+                  </label>
+                  <div id="select-y-column" class="col-md-3">
+                     <select id="select-y-column" class="form-control" ng-model="selectedColumnY">
+                        <option ng-repeat="(key, value) in dd[selectedTableY]" value="{{key}}">{{key}}</option>
+                     </select>
+                  </div>
+               </div>
+
+            </form>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         
+      </div>
+   </div>
+
+</div>

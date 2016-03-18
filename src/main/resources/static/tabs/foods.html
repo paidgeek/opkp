@@ -1,4 +1,4 @@
-<div ng-controller="foods">
+<div ng-controller="food-search">
    <div class="row">
       <div class="col-md-12">
          <div class="panel panel-default">
@@ -72,7 +72,7 @@
       </div>
       <div class="modal-body">
          <!-- Components -->
-         <div class="panel panel-default">
+         <div class="panel panel-default" ng-if="data.components">
             <div class="panel-heading">
                <h3 class="panel-title">Components</h3>
             </div>

@@ -55,7 +55,7 @@ OPKPService.create = function() {
 
             return get($http, $q, url);
          },
-         getFood(id) {
+         getFood: function(id) {
             var url = OPKPService.host + "batch";
 
             return post($http, $q, url, {
@@ -78,6 +78,29 @@ OPKPService.create = function() {
                   dependencies: ["food"]
                }]
             });
+         },
+         getData2D: function(x, y) {
+            var url = OPKPService.host + "batch";
+
+            return post($http, $q, $url, ) {
+               commands: [{
+                  name: "x",
+                  controller: "crud",
+                  method: "GET",
+                  model: x.table,
+                  params: {
+                     columns: [x.column]
+                  }
+               }, {
+                  name: "y",
+                  controller: "crud",
+                  method: "GET",
+                  model: y.table,
+                  params: {
+                     columns: [y.column]
+                  }
+               }]
+            }
          }
       }
    }
