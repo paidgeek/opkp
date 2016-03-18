@@ -82,7 +82,7 @@ public class Util {
 		return new ResponseEntity(createError(message), httpStatus);
 	}
 
-	public static Object readFile(String pathname) {
+	public static Object readJSONFile(String pathname) {
 		try {
 			return new ObjectMapper().readValue(Application.getContext()
 							.getResource(pathname)

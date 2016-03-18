@@ -1,30 +1,35 @@
 package si.opkp.util;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class RelationMap {
 
 	private static RelationMap instance;
-	private HashMap<String, Object> map;
+	private Map<String, Object> map;
 
 	private RelationMap() {
+		HashMap<String, Object> file = null;
+
 		try {
 			instance = this;
 
-			map = (HashMap) Util.readFile("classpath:relationships.json");
+			file = (HashMap) Util.readJSONFile("classpath:relationships.json");
+			map = new HashMap<>(file);
 
-			for (Map.Entry<String, Object> e : map.entrySet()) {
-				Map<String, String> values = (HashMap) e.getValue();
+			for (String key : file.keySet()) {
+				HashMap<String, Object> relatesTo = (HashMap) file.get(key);
 
-				for (Map.Entry<String, String> value : values.entrySet()) {
-					if (map.containsKey(value.getKey())) {
-						((HashMap) map.get(value.getKey())).put(e.getKey(), value.getValue());
+				for (String key1 : relatesTo.keySet()) {
+					String condition = (String) relatesTo.get(key1);
+
+					if (map.containsKey(key1)) {
+						((HashMap) map.get(key1)).put(key, condition);
 					} else {
-						Map<String, String> m = new HashMap<>();
-
-						m.put(e.getKey(), value.getValue());
-
-						map.put(value.getKey(), m);
+						map.put(key1, new HashMap<>());
+						((HashMap) map.get(key1)).put(key, condition);
 					}
 				}
 			}
@@ -56,6 +61,16 @@ public class RelationMap {
 		}
 
 		return null;
+	}
+
+	public Set<String> getNeighbours(String a) {
+		Map<String, Object> m = (HashMap) map.get(a);
+
+		if (m == null) {
+			return Collections.emptySet();
+		}
+
+		return m.keySet();
 	}
 
 }

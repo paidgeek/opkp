@@ -11,7 +11,7 @@ public class StopWords {
 		instance = this;
 
 		words = new HashMap<>();
-		HashMap map = (HashMap) Util.readFile("classpath:stopwords.json");
+		HashMap map = (HashMap) Util.readJSONFile("classpath:stopwords.json");
 
 		map.entrySet().forEach(e -> {
 			Map.Entry<String, List<String>> entry = (Map.Entry<String, List<String>>) e;

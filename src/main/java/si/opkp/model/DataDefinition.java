@@ -29,7 +29,7 @@ public class DataDefinition {
 	private Map<String, TableDefinition> definitions;
 
 	private DataDefinition() {
-		HashMap<String, Object> dd = (HashMap) Util.readFile("classpath:data-definition.json");
+		HashMap<String, Object> dd = (HashMap) Util.readJSONFile("classpath:data-definition.json");
 		definitions = new HashMap<>();
 
 		// TODO "maybe" contains bugs
@@ -73,6 +73,10 @@ public class DataDefinition {
 
 	public TableDefinition getDefinition(String table) {
 		return definitions.get(table);
+	}
+
+	public Set<String> getTables() {
+		return definitions.keySet();
 	}
 
 }
