@@ -1,27 +1,23 @@
-package si.opkp.util;
+package si.opkp.query;
 
-import java.util.*;
+import java.util.Arrays;
 
-public class SQLSelectBuilder {
+class SQLSelectBuilder implements SelectBuilder {
 
 	private StringBuilder query;
 
-	public SQLSelectBuilder(Iterable<? extends CharSequence> columns) {
+	@Override
+	public SelectBuilder expr(String... expr) {
 		query = new StringBuilder();
 
 		query.append("SELECT ");
-		query.append(String.join(",", columns));
+		query.append(String.join(",", Arrays.asList(expr)));
 		query.append("\n");
+
+		return this;
 	}
 
-	public SQLSelectBuilder(String... columns) {
-		query = new StringBuilder();
-
-		query.append("SELECT ");
-		query.append(String.join(",", columns));
-		query.append("\n");
-	}
-
+	@Override
 	public SQLSelectBuilder from(String table) {
 		query.append("FROM ");
 		query.append(table);
@@ -30,6 +26,7 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
+	@Override
 	public SQLSelectBuilder join(String table, String condition) {
 		query.append("JOIN ");
 		query.append(table);
@@ -45,19 +42,26 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
-	public SQLSelectBuilder where(String condition) {
+	@Override
+	public SelectBuilder where(String condition) {
+		return where(new SQLConditionBuilder().parse(condition));
+	}
+
+	@Override
+	public SQLSelectBuilder where(ConditionBuilder conditionBuilder) {
 		query.append("WHERE ");
-		query.append(condition);
+		query.append(conditionBuilder.build());
 		query.append("\n");
 
 		return this;
 	}
 
-	public SQLSelectBuilder orderByPrefixedColumns(List<String> columns) {
+	@Override
+	public SQLSelectBuilder orderBy(String... columns) {
 		query.append("ORDER BY ");
 
-		for (int i = 0; i < columns.size(); i++) {
-			String column = columns.get(i);
+		for (int i = 0; i < columns.length; i++) {
+			String column = columns[0];
 			char prefix = column.charAt(0);
 
 			if (prefix == '-') {
@@ -68,7 +72,7 @@ public class SQLSelectBuilder {
 				query.append(" ASC");
 			}
 
-			if (i < columns.size() - 1) {
+			if (i < columns.length - 1) {
 				query.append(", ");
 			}
 		}
@@ -78,15 +82,16 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
-	public SQLSelectBuilder limit(List<Integer> bounds) {
+	@Override
+	public SelectBuilder limit(Integer... bounds) {
 		query.append("LIMIT ");
 
-		if (bounds.size() == 1) {
-			query.append(bounds.get(0));
-		} else {
-			query.append(bounds.get(0));
+		if (bounds.length == 1) {
+			query.append(bounds[0]);
+		} else if (bounds.length == 2) {
+			query.append(bounds[0]);
 			query.append(", ");
-			query.append(bounds.get(1));
+			query.append(bounds[1]);
 		}
 
 		query.append("\n");
@@ -94,6 +99,7 @@ public class SQLSelectBuilder {
 		return this;
 	}
 
+	@Override
 	public String build() {
 		return query.toString();
 	}

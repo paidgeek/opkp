@@ -17,13 +17,16 @@ import si.opkp.util.Pojo;
 public class Validator {
 
 	public static Optional<String> validatePartial(String table, Pojo body) {
-		TableDefinition td = DataDefinition.getInstance().getDefinition(table);
+		TableDefinition td = DataDefinition.getInstance()
+													  .getDefinition(table);
 
 		if (td == null) {
 			return Optional.of("table does not exist");
 		}
 
-		Set<String> intersection = Sets.difference(body.getProperties().keySet(), td.getFields().keySet());
+		Set<String> intersection = Sets.difference(body.getProperties()
+																	  .keySet(), td.getFields()
+																						.keySet());
 
 		if (!intersection.isEmpty()) {
 			StringBuilder err = new StringBuilder();
@@ -48,13 +51,15 @@ public class Validator {
 	}
 
 	public static Optional<String> validateFull(String table, Pojo body) {
-		TableDefinition td = DataDefinition.getInstance().getDefinition(table);
+		TableDefinition td = DataDefinition.getInstance()
+													  .getDefinition(table);
 
 		if (td == null) {
 			return Optional.of("table does not exist");
 		}
 
-		for (Map.Entry<String, FieldDefinition> cd : td.getFields().entrySet()) {
+		for (Map.Entry<String, FieldDefinition> cd : td.getFields()
+																	  .entrySet()) {
 			FieldDefinition fd = cd.getValue();
 
 			if (fd.isNotNull() && fd.getDefaultValue() == null && body.getProperty(cd.getKey()) == null) {
@@ -62,7 +67,9 @@ public class Validator {
 			}
 		}
 
-		Set<String> intersection = Sets.difference(body.getProperties().keySet(), td.getFields().keySet());
+		Set<String> intersection = Sets.difference(body.getProperties()
+																	  .keySet(), td.getFields()
+																						.keySet());
 
 		if (!intersection.isEmpty()) {
 			StringBuilder err = new StringBuilder();
@@ -87,13 +94,15 @@ public class Validator {
 	}
 
 	public static Optional<String> validate(String model, List<String> columns) {
-		TableDefinition td = DataDefinition.getInstance().getDefinition(model);
+		TableDefinition td = DataDefinition.getInstance()
+													  .getDefinition(model);
 
 		if (td == null) {
 			return Optional.of("unknown model '" + model + "'");
 		}
 
-		columns.removeAll(td.getFields().keySet());
+		columns.removeAll(td.getFields()
+								  .keySet());
 
 		if (!columns.isEmpty()) {
 			StringBuilder err = new StringBuilder();
@@ -116,22 +125,25 @@ public class Validator {
 		return Optional.empty();
 	}
 
-	public static Optional<String> validate(List<String> path, List<String> columns, List<String> sort) {
-		List<String> cols = new ArrayList<>(columns.size());
-		cols.addAll(columns);
+	public static Optional<String> validate(String[] path, String[] columns, String[] sort) {
+		List<String> cols = new ArrayList<>(columns.length);
+		Collections.addAll(cols, columns);
 
-		if (!cols.isEmpty() && cols.get(0).equals("*")) {
+		if (!cols.isEmpty() && cols.get(0)
+											.equals("*")) {
 			return Optional.empty();
 		}
 
 		for (String node : path) {
-			TableDefinition td = DataDefinition.getInstance().getDefinition(node);
+			TableDefinition td = DataDefinition.getInstance()
+														  .getDefinition(node);
 
 			if (td == null) {
 				return Optional.of("unknown model '" + node + "'");
 			}
 
-			cols.removeAll(td.getFields().keySet());
+			cols.removeAll(td.getFields()
+								  .keySet());
 		}
 
 		if (!cols.isEmpty()) {
@@ -156,20 +168,24 @@ public class Validator {
 	}
 
 	public static Optional<String> validate(Batch batch) {
-		if (batch.getCommands() == null || batch.getCommands().isEmpty()) {
+		if (batch.getCommands() == null || batch.getCommands()
+															 .isEmpty()) {
 			return Optional.of("no commands in batch");
 		}
 
 		for (Command command : batch.getCommands()) {
-			if (command.getName().isEmpty()) {
+			if (command.getName()
+						  .isEmpty()) {
 				return Optional.of("command must have a name");
 			}
 
-			if (command.getController().isEmpty()) {
+			if (command.getController()
+						  .isEmpty()) {
 				return Optional.of("command must have a controller specified");
 			}
 
-			if (command.getModel().isEmpty()) {
+			if (command.getModel()
+						  .isEmpty()) {
 				return Optional.of("command must have a model specified");
 			}
 		}

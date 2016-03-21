@@ -1,8 +1,10 @@
-package si.opkp.util;
+package si.opkp.query;
+
+import com.moybl.restql.RestQL;
 
 import si.opkp.model.FieldDefinition;
 
-public class SQLConditionBuilder {
+public class SQLConditionBuilder implements ConditionBuilder {
 
 	private StringBuilder condition;
 
@@ -10,6 +12,7 @@ public class SQLConditionBuilder {
 		condition = new StringBuilder();
 	}
 
+	@Override
 	public SQLConditionBuilder equal(Object a, Object b) {
 		if (a instanceof FieldDefinition) {
 			condition.append('`');
@@ -40,18 +43,28 @@ public class SQLConditionBuilder {
 		return this;
 	}
 
+	@Override
 	public SQLConditionBuilder and() {
 		condition.append(" AND ");
 
 		return this;
 	}
 
+	@Override
 	public SQLConditionBuilder or() {
 		condition.append(" OR ");
 
 		return this;
 	}
 
+	@Override
+	public ConditionBuilder parse(String source) {
+		condition.append(RestQL.parseToSQL(source));
+
+		return this;
+	}
+
+	@Override
 	public String build() {
 		return condition.toString();
 	}

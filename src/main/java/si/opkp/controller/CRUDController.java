@@ -1,16 +1,37 @@
 package si.opkp.controller;
 
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import si.opkp.model.*;
-import si.opkp.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
-import javax.annotation.*;
+import javax.annotation.PostConstruct;
 
-import java.util.*;
+import si.opkp.model.DataDefinition;
+import si.opkp.model.DataGraph;
+import si.opkp.model.Database;
+import si.opkp.model.FieldDefinition;
+import si.opkp.model.Validator;
+import si.opkp.query.ConditionBuilder;
+import si.opkp.query.DeleteBuilder;
+import si.opkp.query.InsertBuilder;
+import si.opkp.query.QueryFactory;
+import si.opkp.query.SelectBuilder;
+import si.opkp.query.UpdateBuilder;
+import si.opkp.util.Pojo;
+import si.opkp.util.RestDto;
+import si.opkp.util.Util;
 
 @RestController
 @RequestMapping("v1/crud/{model}")
@@ -64,17 +85,20 @@ public class CRUDController {
 			return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
 		}
 
-		SQLInsertBuilder insertBuilder = new SQLInsertBuilder(model);
-		body.getProperties().entrySet()
-				.forEach(prop -> insertBuilder.insert(prop.getKey(), prop.getValue()));
+		InsertBuilder insertBuilder = QueryFactory.insert()
+																.into(model);
+		body.getProperties()
+			 .entrySet()
+			 .forEach(prop -> insertBuilder.value(prop.getKey(), prop.getValue()));
 
-		SQLSelectBuilder selectBuilder = new SQLSelectBuilder("*")
-				.from(model);
-		SQLConditionBuilder conditionBuilder = new SQLConditionBuilder();
+		SelectBuilder selectBuilder = QueryFactory.select()
+																.expr("*")
+																.from(model);
+		ConditionBuilder conditionBuilder = QueryFactory.condition();
 		Iterator<FieldDefinition> i = DataDefinition.getInstance()
-				.getDefinition(model)
-				.getPrimaryKeys()
-				.iterator();
+																  .getDefinition(model)
+																  .getPrimaryKeys()
+																  .iterator();
 
 		if (i.hasNext()) {
 			FieldDefinition pk = i.next();
@@ -86,7 +110,7 @@ public class CRUDController {
 			}
 		}
 
-		selectBuilder.where(conditionBuilder.build());
+		selectBuilder.where(conditionBuilder);
 
 		Pojo created;
 
@@ -97,7 +121,7 @@ public class CRUDController {
 			e.printStackTrace();
 
 			if (e instanceof DuplicateKeyException) {
-				return Util.responseError("duplicate entry", HttpStatus.BAD_REQUEST);
+				return Util.responseError("duplicate value", HttpStatus.BAD_REQUEST);
 			}
 
 			return Util.responseError(HttpStatus.BAD_REQUEST);
@@ -114,10 +138,12 @@ public class CRUDController {
 
 	public ResponseEntity<Pojo> performRead(String model, RestDto params) {
 		DataGraph dg = DataGraph.getInstance();
-		SQLSelectBuilder selectBuilder = new SQLSelectBuilder(params.getColumns())
-				.from(model);
-		SQLSelectBuilder countBuilder = new SQLSelectBuilder("COUNT(*) as count")
-				.from(model);
+		SelectBuilder selectBuilder = QueryFactory.select()
+																.expr(params.getColumns())
+																.from(model);
+		SelectBuilder countBuilder = QueryFactory.select()
+															  .expr("COUNT(*) as count")
+															  .from(model);
 
 		if (params.getQuery() != null) {
 			selectBuilder.where(params.getQuery());
@@ -125,13 +151,14 @@ public class CRUDController {
 		}
 
 		if (params.getSort() != null) {
-			selectBuilder.orderByPrefixedColumns(params.getSort());
+			selectBuilder.orderBy(params.getSort());
 		}
 
 		selectBuilder.limit(params.getLimit());
 
 		List<Pojo> objects = db.queryObjects(selectBuilder.build());
-		long total = db.queryObject(countBuilder.build()).getLong("count");
+		long total = db.queryObject(countBuilder.build())
+							.getLong("count");
 
 		Pojo result = new Pojo();
 		Pojo meta = new Pojo();
@@ -152,10 +179,12 @@ public class CRUDController {
 			return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
 		}
 
-		SQLUpdateBuilder updateBuilder = new SQLUpdateBuilder(model);
+		UpdateBuilder updateBuilder = QueryFactory.update()
+																.from(model);
 
-		body.getProperties().entrySet()
-				.forEach(prop -> updateBuilder.set(prop.getKey(), prop.getValue()));
+		body.getProperties()
+			 .entrySet()
+			 .forEach(prop -> updateBuilder.set(prop.getKey(), prop.getValue()));
 
 		updateBuilder.where(params.getQuery());
 
@@ -168,9 +197,9 @@ public class CRUDController {
 			return Util.responseError(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 
-		SQLSelectBuilder selectBuilder = new SQLSelectBuilder("*")
-				.from(model)
-				.where(params.getQuery());
+		SelectBuilder selectBuilder = QueryFactory.select()
+																.from(model)
+																.where(params.getQuery());
 		List<Pojo> objects = db.queryObjects(selectBuilder.build());
 
 		Pojo meta = new Pojo();
@@ -185,9 +214,9 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performDelete(String model, RestDto params) {
-		SQLDeleteBuilder deleteBuilder = new SQLDeleteBuilder(model);
-
-		deleteBuilder.where(params.getQuery());
+		DeleteBuilder deleteBuilder = QueryFactory.delete()
+																.from(model)
+																.where(params.getQuery());
 
 		int deleted;
 		try {

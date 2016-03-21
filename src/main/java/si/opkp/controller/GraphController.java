@@ -1,16 +1,28 @@
 package si.opkp.controller;
 
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import si.opkp.model.*;
+import java.util.List;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+
+import si.opkp.model.DataGraph;
+import si.opkp.model.Database;
+import si.opkp.model.Validator;
+import si.opkp.query.QueryFactory;
+import si.opkp.query.SelectBuilder;
+import si.opkp.util.Pojo;
 import si.opkp.util.RestDto;
-import si.opkp.util.*;
-
-import javax.annotation.*;
-
-import java.util.*;
+import si.opkp.util.Util;
 
 @RestController
 @CrossOrigin
@@ -38,7 +50,7 @@ public class GraphController {
 
 	public ResponseEntity<Pojo> perform(String model, RestDto params) {
 		try {
-			List<String> path = Arrays.asList(model.split(","));
+			String[] path = model.split(",");
 
 			Optional<String> err = Validator.validate(path, params.getColumns(), params.getSort());
 
@@ -47,14 +59,16 @@ public class GraphController {
 			}
 
 			DataGraph dg = DataGraph.getInstance();
-			SQLSelectBuilder selectBuilder = new SQLSelectBuilder(params.getColumns())
-					.from(path.get(0));
-			SQLSelectBuilder countBuilder = new SQLSelectBuilder("COUNT(*) as count")
-					.from(path.get(0));
+			SelectBuilder selectBuilder = QueryFactory.select()
+																	.expr(params.getColumns())
+																	.from(path[0]);
+			SelectBuilder countBuilder = QueryFactory.select()
+																  .expr("COUNT(*) as count")
+																  .from(path[0]);
 
-			for (int i = 1; i < path.size(); i++) {
-				String a = path.get(i - 1);
-				String b = path.get(i);
+			for (int i = 1; i < path.length; i++) {
+				String a = path[i - 1];
+				String b = path[i];
 
 				Optional<String> edge = dg.getEdge(a, b);
 
@@ -72,13 +86,14 @@ public class GraphController {
 			}
 
 			if (params.getSort() != null) {
-				selectBuilder.orderByPrefixedColumns(params.getSort());
+				selectBuilder.orderBy(params.getSort());
 			}
 
 			selectBuilder.limit(params.getLimit());
 
 			List<Pojo> objects = db.queryObjects(selectBuilder.build());
-			long total = db.queryObject(countBuilder.build()).getLong("count");
+			long total = db.queryObject(countBuilder.build())
+								.getLong("count");
 
 			Pojo result = new Pojo();
 			Pojo meta = new Pojo();

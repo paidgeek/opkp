@@ -37,49 +37,45 @@ public class SearchController {
 	}
 
 	public ResponseEntity<Pojo> perform(String model, RestDto params) {
-		List<String> keywords = params.getKeywords();
+		String[] keywords = params.getKeywords();
 
-		if (!keywords.isEmpty()) {
-			keywords.set(keywords.size() - 1, keywords.get(keywords.size() - 1) + "*");
+		if (keywords.length > 0) {
+			keywords[keywords.length - 1] = keywords[keywords.length - 1] + "*";
 		}
 
-		Set<String> stopwords = StopWords.getInstance().getStopWords(params.getLanguage());
-		String kw = keywords.stream()
-				.map(String::toLowerCase)
-				.filter(word -> !stopwords.contains(word))
-				.collect(Collectors.joining(" "));
+		Set<String> stopwords = StopWords.getInstance()
+													.getStopWords(params.getLanguage());
+		String kw = Arrays.asList(keywords)
+								.stream()
+								.map(String::toLowerCase)
+								.filter(word -> !stopwords.contains(word))
+								.collect(Collectors.joining(" "));
 
 		Pojo result = new Pojo();
 		Pojo meta = new Pojo();
 		List<Pojo> objects;
-		List<Integer> limit = params.getLimit();
-		List<String> columns = params.getColumns();
-		int offset = 0, count = Integer.MAX_VALUE, total = 0;
-
-		if (limit != null) {
-			if (limit.size() == 1) {
-				count = limit.get(0);
-			} else if (limit.size() == 2) {
-				offset = limit.get(0);
-				count = limit.get(1);
-			}
-		}
+		Integer[] limit = params.getLimit();
+		int total = 0;
 
 		// TODO clean up
 		if (model.equals("fir_food")) {
-			objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, offset, count);
+			objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, limit[0], limit[1]);
 		} else {
 			return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
 		}
 
 		if (!objects.isEmpty()) {
-			total = objects.get(0).getInteger("total");
+			total = objects.get(0)
+								.getInteger("total");
 		}
 
-		if (!(columns.size() == 1 && columns.contains("*"))) {
-			for (Pojo pojo : objects) {
-				pojo.getProperties().entrySet().removeIf(e -> !columns.contains(e.getKey()));
-			}
+
+		List<String> columns = Arrays.asList(params.getColumns());
+
+		for (Pojo pojo : objects) {
+			pojo.getProperties()
+				 .entrySet()
+				 .removeIf(e -> !columns.contains(e.getKey()));
 		}
 
 		meta.setProperty("count", objects.size());

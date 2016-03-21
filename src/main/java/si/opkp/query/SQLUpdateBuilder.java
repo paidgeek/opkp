@@ -1,30 +1,43 @@
-package si.opkp.util;
+package si.opkp.query;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SQLUpdateBuilder {
+import si.opkp.util.Pair;
+
+class SQLUpdateBuilder implements UpdateBuilder {
 
 	private StringBuilder query;
 	private List<Pair<String, Object>> delta;
 	private String condition;
 
-	public SQLUpdateBuilder(String table) {
+	@Override
+	public SQLUpdateBuilder from(String table) {
 		query = new StringBuilder();
 		delta = new ArrayList<>();
 
 		query.append("UPDATE ");
 		query.append(table);
 		query.append("\n");
+
+		return this;
 	}
 
+	@Override
 	public SQLUpdateBuilder set(String column, Object value) {
 		delta.add(new Pair<>(column, value));
 
 		return this;
 	}
 
-	public SQLUpdateBuilder where(String condition) {
-		this.condition = condition;
+	@Override
+	public UpdateBuilder where(String condition) {
+		return where(new SQLConditionBuilder().parse(condition));
+	}
+
+	@Override
+	public SQLUpdateBuilder where(ConditionBuilder conditionBuilder) {
+		this.condition = conditionBuilder.build();
 
 		return this;
 	}
