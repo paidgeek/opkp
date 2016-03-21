@@ -4,13 +4,10 @@ import si.opkp.model.*;
 import si.opkp.util.*;
 
 import javax.sql.*;
+
 import java.util.*;
 
 public class DatabaseMock implements Database {
-
-	@Override
-	public void setDataSource(DataSource dataSource) {
-	}
 
 	@Override
 	public List<Pojo> queryObjects(String sql) {

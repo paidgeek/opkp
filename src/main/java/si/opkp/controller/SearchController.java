@@ -32,35 +32,18 @@ public class SearchController {
 
 	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
-											  @RequestParam(name = "columns", required = false) String columnList,
-											  @RequestParam(name = "keywords", required = true) String keywordList,
-											  @RequestParam(name = "limit", required = false) String limitList,
-											  @RequestParam(name = "lang", required = false) String language) {
-		List<String> columns = Util.parseStringList(columnList);
-		List<String> keywords = Util.parseStringList(keywordList);
-		List<Integer> limit = Util.parseIntegerList(limitList);
-
-		return perform(model, columns, keywords, limit, language);
+											  @ModelAttribute RestDto params) {
+		return perform(model, params);
 	}
 
-	public ResponseEntity<Pojo> perform(String model, List<String> columns, List<String> keywords, List<Integer> limit, String language) {
-		if (columns.isEmpty()) {
-			columns.add("*");
-		}
-
-		if (language == null) {
-			language = "en";
-		}
-
-		if (keywords == null) {
-			keywords = new ArrayList<>();
-		}
+	public ResponseEntity<Pojo> perform(String model, RestDto params) {
+		List<String> keywords = params.getKeywords();
 
 		if (!keywords.isEmpty()) {
 			keywords.set(keywords.size() - 1, keywords.get(keywords.size() - 1) + "*");
 		}
 
-		Set<String> stopwords = StopWords.getInstance().getStopWords(language);
+		Set<String> stopwords = StopWords.getInstance().getStopWords(params.getLanguage());
 		String kw = keywords.stream()
 				.map(String::toLowerCase)
 				.filter(word -> !stopwords.contains(word))
@@ -69,6 +52,8 @@ public class SearchController {
 		Pojo result = new Pojo();
 		Pojo meta = new Pojo();
 		List<Pojo> objects;
+		List<Integer> limit = params.getLimit();
+		List<String> columns = params.getColumns();
 		int offset = 0, count = Integer.MAX_VALUE, total = 0;
 
 		if (limit != null) {

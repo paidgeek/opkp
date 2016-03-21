@@ -2,6 +2,8 @@ package si.opkp.model;
 
 import com.google.common.collect.Sets;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +117,10 @@ public class Validator {
 	}
 
 	public static Optional<String> validate(List<String> path, List<String> columns, List<String> sort) {
-		if (!columns.isEmpty() && columns.get(0).equals("*")) {
+		List<String> cols = new ArrayList<>(columns.size());
+		cols.addAll(columns);
+
+		if (!cols.isEmpty() && cols.get(0).equals("*")) {
 			return Optional.empty();
 		}
 
@@ -126,20 +131,20 @@ public class Validator {
 				return Optional.of("unknown model '" + node + "'");
 			}
 
-			columns.removeAll(td.getFields().keySet());
+			cols.removeAll(td.getFields().keySet());
 		}
 
-		if (!columns.isEmpty()) {
+		if (!cols.isEmpty()) {
 			StringBuilder err = new StringBuilder();
 
 			err.append("unknown columns: ");
 
-			for (int i = 0; i < columns.size(); i++) {
+			for (int i = 0; i < cols.size(); i++) {
 				err.append('\'');
-				err.append(columns.get(i));
+				err.append(cols.get(i));
 				err.append('\'');
 
-				if (i < columns.size() - 1) {
+				if (i < cols.size() - 1) {
 					err.append(", ");
 				}
 			}
@@ -166,14 +171,6 @@ public class Validator {
 
 			if (command.getModel().isEmpty()) {
 				return Optional.of("command must have a model specified");
-			}
-
-			if (command.getLimit() != null && command.getLimit().isEmpty()) {
-				return Optional.of("empty limit array");
-			}
-
-			if (command.getColumns() != null && command.getColumns().isEmpty()) {
-				return Optional.of("no columns selected");
 			}
 		}
 

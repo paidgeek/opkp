@@ -26,7 +26,7 @@ public class BatchController {
 
 		try {
 			Pojo result = new Pojo();
-			List<Command> commands = batch.sortedCommands();
+			List<Command> commands = batch.getCommands();
 			Set<String> failed = new HashSet<>();
 
 			for (Command command : commands) {
@@ -52,29 +52,17 @@ public class BatchController {
 				switch (controller) {
 					case "graph":
 						response = GraphController.getInstance()
-								.perform(model,
-										command.getColumns(),
-										command.getQuery(),
-										command.getSort(),
-										command.getLimit());
+								.perform(model, command.getParams());
 						break;
 					case "search":
 						response = SearchController.getInstance()
-								.perform(model,
-										command.getColumns(),
-										command.getKeywords(),
-										command.getLimit(),
-										command.getLanguage());
+								.perform(model, command.getParams());
 						break;
 					case "crud":
 						switch (command.getMethod()) {
 							case GET:
 								response = CRUDController.getInstance()
-										.performRead(command.getModel(),
-												command.getColumns(),
-												command.getQuery(),
-												command.getSort(),
-												command.getLimit());
+										.performRead(command.getModel(), command.getParams());
 								break;
 							case POST:
 								response = CRUDController.getInstance()
@@ -84,13 +72,13 @@ public class BatchController {
 							case PUT:
 								response = CRUDController.getInstance()
 										.performUpdate(command.getModel(),
-												command.getQuery(),
+												command.getParams(),
 												command.getBody());
 								break;
 							case DELETE:
 								response = CRUDController.getInstance()
 										.performDelete(command.getModel(),
-												command.getQuery());
+												command.getParams());
 								break;
 							default:
 								response = Util.responseError("invalid method", HttpStatus.BAD_REQUEST);

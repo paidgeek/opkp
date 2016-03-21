@@ -7,8 +7,6 @@ import java.util.*;
 
 public interface Database {
 
-	void setDataSource(DataSource dataSource);
-
 	List<Pojo> queryObjects(String sql);
 
 	List<Pojo> queryObjects(String sql, Object... args);

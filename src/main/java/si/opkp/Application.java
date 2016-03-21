@@ -17,15 +17,13 @@ import javax.servlet.http.*;
 import java.io.*;
 
 @Configuration
-@EnableAutoConfiguration/*(exclude = {
-		org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class
-})*/
+@EnableAutoConfiguration
 @ComponentScan
 @EnableOAuth2Sso
-@ImportResource({"beans.xml"})
+@ImportResource({"classpath:beans.xml"})
 @PropertySources({
-		@PropertySource("/application.yml"),
-		@PropertySource("/credentials.properties")
+		@PropertySource("classpath:application.yml"),
+		@PropertySource("classpath:security.properties")
 })
 public class Application extends WebSecurityConfigurerAdapter {
 

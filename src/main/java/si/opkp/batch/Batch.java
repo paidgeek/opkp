@@ -11,13 +11,15 @@ public class Batch {
 	@JsonCreator
 	public Batch(@JsonProperty("commands") List<Command> commands) {
 		this.commands = commands;
+
+		sort();
 	}
 
 	public List<Command> getCommands() {
 		return commands;
 	}
 
-	public List<Command> sortedCommands() {
+	private void sort() {
 		Map<String, List<String>> graph = new HashMap<>();
 
 		commands.forEach(cmd -> {
@@ -36,7 +38,7 @@ public class Batch {
 				.findFirst()
 				.get()));
 
-		return sortedCommands;
+		commands = sortedCommands;
 	}
 
 	private List<String> topologicalSort(Map<String, List<String>> graph) {

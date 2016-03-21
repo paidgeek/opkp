@@ -79,28 +79,13 @@ OPKPService.create = function() {
                }]
             });
          },
-         getData2D: function(x, y) {
-            var url = OPKPService.host + "batch";
+         getData2D: function(x, y, limit) {
+            var url = OPKPService.host + "path/";
+            url += x.table + "/" + y.table;
+            url += "?columns=" + x.column + "," + y.column;
+            url += "&limit=" + limit.join(",");
 
-            return post($http, $q, $url, ) {
-               commands: [{
-                  name: "x",
-                  controller: "crud",
-                  method: "GET",
-                  model: x.table,
-                  params: {
-                     columns: [x.column]
-                  }
-               }, {
-                  name: "y",
-                  controller: "crud",
-                  method: "GET",
-                  model: y.table,
-                  params: {
-                     columns: [y.column]
-                  }
-               }]
-            }
+            return get($http, $q, url);
          }
       }
    }

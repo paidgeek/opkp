@@ -61,11 +61,12 @@ public class DataGraph {
 
 				getNeighbours(v)
 						.stream()
-						.filter(u -> !dst.containsKey(u)).forEach(u -> {
-					edg.put(u, v);
-					dst.put(u, dst.get(v) + 1);
-					s.push(u);
-				});
+						.filter(u -> !dst.containsKey(u))
+						.forEach(u -> {
+							edg.put(u, v);
+							dst.put(u, dst.get(v) + 1);
+							s.push(u);
+						});
 			}
 
 			distances.put(start, dst);
