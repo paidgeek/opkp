@@ -11,6 +11,7 @@ public class RequestParams {
 
 	private RequestColumn[] columns;
 	private RequestColumn[] sort;
+	private RequestColumn[] group;
 	private String query;
 	private Integer[] limit;
 	private String[] keywords;
@@ -26,6 +27,7 @@ public class RequestParams {
 	@JsonCreator
 	public RequestParams(@JsonProperty("columns") List<String> columnList,
 								@JsonProperty("sort") List<String> sortList,
+								@JsonProperty("group") List<String> groupList,
 								@JsonProperty("q") String query,
 								@JsonProperty("body") List<Integer> limitList,
 								@JsonProperty("keywords") List<String> keywordList,
@@ -47,6 +49,14 @@ public class RequestParams {
 
 			for (int i = 0; i < sort.length; i++) {
 				sort[i] = new RequestColumn(sortList.get(i));
+			}
+		}
+
+		if (groupList != null) {
+			group = new RequestColumn[groupList.size()];
+
+			for (int i = 0; i < group.length; i++) {
+				group[i] = new RequestColumn(groupList.get(i));
 			}
 		}
 
@@ -84,6 +94,15 @@ public class RequestParams {
 
 		for (int i = 0; i < cols.length; i++) {
 			this.sort[i] = new RequestColumn(cols[i]);
+		}
+	}
+
+	public void setGroup(String group) {
+		String[] cols = group.split(",");
+		this.group = new RequestColumn[cols.length];
+
+		for (int i = 0; i < cols.length; i++) {
+			this.group[i] = new RequestColumn(cols[i]);
 		}
 	}
 
@@ -128,6 +147,10 @@ public class RequestParams {
 
 	public RequestColumn[] getSort() {
 		return sort;
+	}
+
+	public RequestColumn[] getGroup() {
+		return group;
 	}
 
 	public String getLanguage() {

@@ -17,10 +17,12 @@ public class RequestParamsDeserializer extends JsonDeserializer<RequestParams> {
 
 	@Override
 	public RequestParams deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-		Map<String, Object> map = jsonParser.readValuesAs(HashMap.class).next();
+		Map<String, Object> map = jsonParser.readValuesAs(HashMap.class)
+														.next();
 
 		return new RequestParams((List<String>) map.get("columns"),
 				(List<String>) map.get("sort"),
+				(List<String>) map.get("group"),
 				(String) map.get("query"),
 				(List<Integer>) map.get("limit"),
 				(List<String>) map.get("keywords"),

@@ -86,6 +86,10 @@ public class GraphController {
 				countBuilder.where(params.getQuery());
 			}
 
+			if (params.getGroup() != null) {
+				selectBuilder.groupBy(params.getGroup());
+			}
+
 			if (params.getSort() != null) {
 				selectBuilder.orderBy(params.getSort());
 			}

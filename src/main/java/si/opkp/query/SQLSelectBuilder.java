@@ -76,11 +76,11 @@ class SQLSelectBuilder implements SelectBuilder {
 	}
 
 	@Override
-	public SQLSelectBuilder orderBy(RequestColumn... columns) {
+	public SQLSelectBuilder orderBy(RequestColumn... expr) {
 		query.append("ORDER BY ");
 
-		for (int i = 0; i < columns.length; i++) {
-			RequestColumn column = columns[0];
+		for (int i = 0; i < expr.length; i++) {
+			RequestColumn column = expr[0];
 			char prefix = column.getName()
 									  .charAt(0);
 
@@ -103,7 +103,32 @@ class SQLSelectBuilder implements SelectBuilder {
 				query.append(" ASC");
 			}
 
-			if (i < columns.length - 1) {
+			if (i < expr.length - 1) {
+				query.append(", ");
+			}
+		}
+
+		query.append("\n");
+
+		return this;
+	}
+
+	@Override
+	public SelectBuilder groupBy(RequestColumn... expr) {
+		query.append("GROUP BY ");
+
+		for (int i = 0; i < expr.length; i++) {
+			RequestColumn column = expr[0];
+
+			query.append(column.getName());
+
+			switch (column.getAggregate()) {
+				case COUNT:
+					query.append("_COUNT");
+					break;
+			}
+
+			if (i < expr.length - 1) {
 				query.append(", ");
 			}
 		}

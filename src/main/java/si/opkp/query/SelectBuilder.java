@@ -16,6 +16,8 @@ public interface SelectBuilder extends QueryBuilder {
 
 	SelectBuilder orderBy(RequestColumn... expr);
 
+	SelectBuilder groupBy(RequestColumn... expr);
+
 	SelectBuilder limit(Integer... bounds);
 
 }
