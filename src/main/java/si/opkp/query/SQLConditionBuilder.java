@@ -3,6 +3,7 @@ package si.opkp.query;
 import com.moybl.restql.RestQL;
 
 import si.opkp.model.FieldDefinition;
+import si.opkp.util.RequestColumn;
 
 public class SQLConditionBuilder implements ConditionBuilder {
 
@@ -18,9 +19,9 @@ public class SQLConditionBuilder implements ConditionBuilder {
 			condition.append('`');
 			condition.append(((FieldDefinition) a).getName());
 			condition.append('`');
-		} else if (a instanceof String) {
+		} else if (a instanceof RequestColumn) {
 			condition.append('\'');
-			condition.append(a);
+			condition.append(((RequestColumn) a).getName());
 			condition.append('\'');
 		} else {
 			condition.append(a);

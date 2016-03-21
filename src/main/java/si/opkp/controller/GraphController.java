@@ -21,7 +21,8 @@ import si.opkp.model.Validator;
 import si.opkp.query.QueryFactory;
 import si.opkp.query.SelectBuilder;
 import si.opkp.util.Pojo;
-import si.opkp.util.RestDto;
+import si.opkp.util.RequestColumn;
+import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
 @RestController
@@ -44,11 +45,11 @@ public class GraphController {
 
 	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
-											  @ModelAttribute RestDto params) {
+											  @ModelAttribute RequestParams params) {
 		return perform(model, params);
 	}
 
-	public ResponseEntity<Pojo> perform(String model, RestDto params) {
+	public ResponseEntity<Pojo> perform(String model, RequestParams params) {
 		try {
 			String[] path = model.split(",");
 
@@ -63,7 +64,7 @@ public class GraphController {
 																	.expr(params.getColumns())
 																	.from(path[0]);
 			SelectBuilder countBuilder = QueryFactory.select()
-																  .expr("COUNT(*) as count")
+																  .expr(new RequestColumn("COUNT(*) as count"))
 																  .from(path[0]);
 
 			for (int i = 1; i < path.length; i++) {

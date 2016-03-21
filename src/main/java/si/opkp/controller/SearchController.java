@@ -32,11 +32,11 @@ public class SearchController {
 
 	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
-											  @ModelAttribute RestDto params) {
+											  @ModelAttribute RequestParams params) {
 		return perform(model, params);
 	}
 
-	public ResponseEntity<Pojo> perform(String model, RestDto params) {
+	public ResponseEntity<Pojo> perform(String model, RequestParams params) {
 		String[] keywords = params.getKeywords();
 
 		if (keywords.length > 0) {
@@ -70,12 +70,14 @@ public class SearchController {
 		}
 
 
-		List<String> columns = Arrays.asList(params.getColumns());
+		List<RequestColumn> columns = Arrays.asList(params.getColumns());
 
 		for (Pojo pojo : objects) {
 			pojo.getProperties()
 				 .entrySet()
-				 .removeIf(e -> !columns.contains(e.getKey()));
+				 .removeIf(e -> !columns.stream()
+												.anyMatch(col -> e.getKey()
+																		.equals(col.getName())));
 		}
 
 		meta.setProperty("count", objects.size());

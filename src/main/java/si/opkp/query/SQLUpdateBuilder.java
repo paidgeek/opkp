@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import si.opkp.util.Pair;
+import si.opkp.util.RequestColumn;
 
 class SQLUpdateBuilder implements UpdateBuilder {
 
@@ -24,8 +25,8 @@ class SQLUpdateBuilder implements UpdateBuilder {
 	}
 
 	@Override
-	public SQLUpdateBuilder set(String column, Object value) {
-		delta.add(new Pair<>(column, value));
+	public SQLUpdateBuilder set(RequestColumn column, Object value) {
+		delta.add(new Pair<>(column.getName(), value));
 
 		return this;
 	}

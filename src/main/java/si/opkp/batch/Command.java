@@ -15,7 +15,7 @@ public class Command {
 	private String controller;
 	private String model;
 	private Pojo body;
-	private RestDto params;
+	private RequestParams params;
 	private List<String> dependencies;
 
 	@JsonCreator
@@ -24,7 +24,7 @@ public class Command {
 						@JsonProperty("controller") String controller,
 						@JsonProperty("model") String model,
 						@JsonProperty("body") Pojo body,
-						@JsonProperty("params") RestDto params,
+						@JsonProperty("params") RequestParams params,
 						@JsonProperty("dependencies") List<String> dependencies) {
 		this.name = name == null ? "" : name;
 		this.method = method == null ? HttpMethod.GET : method;
@@ -55,7 +55,7 @@ public class Command {
 		return body;
 	}
 
-	public RestDto getParams() {
+	public RequestParams getParams() {
 		return params;
 	}
 

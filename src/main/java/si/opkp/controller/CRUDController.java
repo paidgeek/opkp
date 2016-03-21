@@ -30,7 +30,8 @@ import si.opkp.query.QueryFactory;
 import si.opkp.query.SelectBuilder;
 import si.opkp.query.UpdateBuilder;
 import si.opkp.util.Pojo;
-import si.opkp.util.RestDto;
+import si.opkp.util.RequestColumn;
+import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
 @RestController
@@ -60,21 +61,21 @@ public class CRUDController {
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<Pojo> read(@PathVariable("model") String model,
-												@ModelAttribute RestDto params) {
+												@ModelAttribute RequestParams params) {
 
 		return performRead(model, params);
 	}
 
 	@RequestMapping(method = RequestMethod.PUT)
 	public ResponseEntity<Pojo> update(@PathVariable("model") String model,
-												  @ModelAttribute RestDto params,
+												  @ModelAttribute RequestParams params,
 												  @RequestBody Pojo body) {
 		return performUpdate(model, params, body);
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE)
 	public ResponseEntity<Pojo> delete(@PathVariable("model") String model,
-												  @ModelAttribute RestDto params) {
+												  @ModelAttribute RequestParams params) {
 		return performDelete(model, params);
 	}
 
@@ -92,7 +93,7 @@ public class CRUDController {
 			 .forEach(prop -> insertBuilder.value(prop.getKey(), prop.getValue()));
 
 		SelectBuilder selectBuilder = QueryFactory.select()
-																.expr("*")
+																.expr(new RequestColumn("*"))
 																.from(model);
 		ConditionBuilder conditionBuilder = QueryFactory.condition();
 		Iterator<FieldDefinition> i = DataDefinition.getInstance()
@@ -136,13 +137,13 @@ public class CRUDController {
 		return ResponseEntity.ok(result);
 	}
 
-	public ResponseEntity<Pojo> performRead(String model, RestDto params) {
+	public ResponseEntity<Pojo> performRead(String model, RequestParams params) {
 		DataGraph dg = DataGraph.getInstance();
 		SelectBuilder selectBuilder = QueryFactory.select()
 																.expr(params.getColumns())
 																.from(model);
 		SelectBuilder countBuilder = QueryFactory.select()
-															  .expr("COUNT(*) as count")
+															  .expr(new RequestColumn("COUNT(*) as count"))
 															  .from(model);
 
 		if (params.getQuery() != null) {
@@ -172,7 +173,7 @@ public class CRUDController {
 		return ResponseEntity.ok(result);
 	}
 
-	public ResponseEntity<Pojo> performUpdate(String model, RestDto params, Pojo body) {
+	public ResponseEntity<Pojo> performUpdate(String model, RequestParams params, Pojo body) {
 		Optional<String> err = Validator.validatePartial(model, body);
 
 		if (err.isPresent()) {
@@ -184,7 +185,7 @@ public class CRUDController {
 
 		body.getProperties()
 			 .entrySet()
-			 .forEach(prop -> updateBuilder.set(prop.getKey(), prop.getValue()));
+			 .forEach(prop -> updateBuilder.set(new RequestColumn(prop.getKey()), prop.getValue()));
 
 		updateBuilder.where(params.getQuery());
 
@@ -213,7 +214,7 @@ public class CRUDController {
 		return ResponseEntity.ok(result);
 	}
 
-	public ResponseEntity<Pojo> performDelete(String model, RestDto params) {
+	public ResponseEntity<Pojo> performDelete(String model, RequestParams params) {
 		DeleteBuilder deleteBuilder = QueryFactory.delete()
 																.from(model)
 																.where(params.getQuery());

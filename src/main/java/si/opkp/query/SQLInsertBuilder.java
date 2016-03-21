@@ -4,7 +4,7 @@ import java.util.*;
 
 import si.opkp.util.Pair;
 
- class SQLInsertBuilder implements InsertBuilder {
+class SQLInsertBuilder implements InsertBuilder {
 
 	private StringBuilder query;
 	private List<Pair<String, Object>> values;

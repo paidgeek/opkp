@@ -34,9 +34,10 @@ public class Batch {
 		List<Command> sortedCommands = new ArrayList<>();
 
 		sorted.forEach(name -> sortedCommands.add(commands.stream()
-				.filter(cmd -> cmd.getName().equals(name))
-				.findFirst()
-				.get()));
+																		  .filter(cmd -> cmd.getName()
+																								  .equals(name))
+																		  .findFirst()
+																		  .get()));
 
 		commands = sortedCommands;
 	}
@@ -45,13 +46,15 @@ public class Batch {
 		Map<String, Boolean> used = new HashMap<>();
 		List<String> sorted = new ArrayList<>();
 
-		graph.keySet().forEach(node -> used.put(node, false));
+		graph.keySet()
+			  .forEach(node -> used.put(node, false));
 
-		graph.keySet().forEach(node -> {
-			if (!used.get(node)) {
-				dfs(graph, used, sorted, node);
-			}
-		});
+		graph.keySet()
+			  .forEach(node -> {
+				  if (!used.get(node)) {
+					  dfs(graph, used, sorted, node);
+				  }
+			  });
 
 		return sorted;
 	}
@@ -59,11 +62,12 @@ public class Batch {
 	private void dfs(Map<String, List<String>> graph, Map<String, Boolean> used, List<String> sorted, String u) {
 		used.put(u, true);
 
-		graph.get(u).forEach(v -> {
-			if (!used.get(v)) {
-				dfs(graph, used, sorted, v);
-			}
-		});
+		graph.get(u)
+			  .forEach(v -> {
+				  if (!used.get(v)) {
+					  dfs(graph, used, sorted, v);
+				  }
+			  });
 
 		sorted.add(u);
 	}

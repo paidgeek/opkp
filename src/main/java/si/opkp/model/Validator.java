@@ -3,6 +3,7 @@ package si.opkp.model;
 import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Set;
 import javafx.scene.control.Tab;
 import si.opkp.batch.*;
 import si.opkp.util.Pojo;
+import si.opkp.util.RequestColumn;
 
 public class Validator {
 
@@ -125,9 +127,12 @@ public class Validator {
 		return Optional.empty();
 	}
 
-	public static Optional<String> validate(String[] path, String[] columns, String[] sort) {
+	public static Optional<String> validate(String[] path, RequestColumn[] columns, RequestColumn[] sort) {
 		List<String> cols = new ArrayList<>(columns.length);
-		Collections.addAll(cols, columns);
+
+		for (int i = 0; i < columns.length; i++) {
+			cols.add(columns[i].getName());
+		}
 
 		if (!cols.isEmpty() && cols.get(0)
 											.equals("*")) {

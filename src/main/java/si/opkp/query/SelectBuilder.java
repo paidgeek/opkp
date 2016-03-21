@@ -1,8 +1,10 @@
 package si.opkp.query;
 
+import si.opkp.util.RequestColumn;
+
 public interface SelectBuilder extends QueryBuilder {
 
-	SelectBuilder expr(String... expr);
+	SelectBuilder expr(RequestColumn... expr);
 
 	SelectBuilder from(String table);
 
@@ -12,7 +14,7 @@ public interface SelectBuilder extends QueryBuilder {
 
 	SelectBuilder where(ConditionBuilder conditionBuilder);
 
-	SelectBuilder orderBy(String... expr);
+	SelectBuilder orderBy(RequestColumn... expr);
 
 	SelectBuilder limit(Integer... bounds);
 

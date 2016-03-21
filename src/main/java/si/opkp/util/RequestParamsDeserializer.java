@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RestDtoDeserializer extends JsonDeserializer<RestDto> {
+public class RequestParamsDeserializer extends JsonDeserializer<RequestParams> {
 
-	public RestDtoDeserializer() {
+	public RequestParamsDeserializer() {
 	}
 
 	@Override
-	public RestDto deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+	public RequestParams deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
 		Map<String, Object> map = jsonParser.readValuesAs(HashMap.class).next();
 
-		return new RestDto((List<String>) map.get("columns"),
+		return new RequestParams((List<String>) map.get("columns"),
 				(List<String>) map.get("sort"),
 				(String) map.get("query"),
 				(List<Integer>) map.get("limit"),

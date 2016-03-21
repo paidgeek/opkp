@@ -113,7 +113,8 @@ public class DataGraph {
 	}
 
 	public boolean pathExists(String start, String goal) {
-		return distances.get(start).containsKey(goal);
+		return distances.get(start)
+							 .containsKey(goal);
 	}
 
 	public List<String> findPath(String start, String goal) {
