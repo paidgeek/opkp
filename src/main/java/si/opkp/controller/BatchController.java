@@ -16,7 +16,6 @@ import java.util.*;
 public class BatchController {
 
 	@RequestMapping(method = RequestMethod.POST)
-	@Transactional
 	public ResponseEntity<Pojo> post(@RequestBody Batch batch) {
 		Optional<String> err = Validator.validate(batch);
 

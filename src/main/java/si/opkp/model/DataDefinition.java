@@ -1,46 +1,45 @@
 package si.opkp.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import si.opkp.util.*;
 
 import java.util.*;
 
+import javax.annotation.PostConstruct;
+
+@Component
 public class DataDefinition {
 
 	private static DataDefinition instance;
 
 	public static DataDefinition getInstance() {
-		if (instance == null) {
-			synchronized (DataDefinition.class) {
-				if (instance == null) {
-					instance = new DataDefinition();
-
-					return instance;
-				}
-			}
-		}
-
 		return instance;
 	}
 
-	static {
-		getInstance();
-	}
-
+	@Autowired
+	private Database db;
 	private Map<String, TableDefinition> definitions;
 
-	private DataDefinition() {
-		HashMap<String, Object> dd = (HashMap) Util.readJSONFile("classpath:data-definition.json");
+	@PostConstruct
+	private void init() {
 		definitions = new HashMap<>();
+		List<Pojo> tables = db.queryObjects("SHOW TABLES");
 
-		// TODO "maybe" contains bugs
-		for (Map.Entry<String, Object> table : dd.entrySet()) {
-			HashMap<String, Map> cols = (HashMap) table.getValue();
+		for (Pojo tableResult : tables) {
 			Map<String, FieldDefinition> defs = new HashMap<>();
 			Set<FieldDefinition> primaryKeys = new HashSet<>();
 
-			for (Map.Entry<String, Map> col : cols.entrySet()) {
-				Map<String, Object> info = col.getValue();
-				String typeString = (String) info.get("type");
+			String tableName = tableResult.getProperties()
+													.values()
+													.iterator()
+													.next()
+													.toString();
+			List<Pojo> columns = db.queryObjects("SHOW COLUMNS FROM `" + tableName + "`");
+
+			for (Pojo col : columns) {
+				String typeString = col.getString("Type");
 				FieldDefinition.Type type = null;
 
 				if (typeString.startsWith("varchar") || typeString.equalsIgnoreCase("text")) {
@@ -53,22 +52,25 @@ public class DataDefinition {
 					type = FieldDefinition.Type.DECIMAL;
 				}
 
-				boolean notNull = (Boolean) info.get("notNull");
-				String key = (String) info.get("key");
-				Object defaultValue = info.get("defaultValue");
-				String extra = (String) info.get("extra");
+				boolean notNull = col.getString("Null")
+											.equals("NO");
+				String key = col.getString("Key");
+				Object defaultValue = col.getProperty("Default");
+				String extra = col.getString("Extra");
 
-				FieldDefinition fd = new FieldDefinition(col.getKey(), type, notNull, !key.isEmpty(), defaultValue, extra);
+				FieldDefinition fd = new FieldDefinition(col.getString("Field"), type, notNull, !key.isEmpty(), defaultValue, extra);
 
 				if (key.equals("PRI")) {
 					primaryKeys.add(fd);
 				}
 
-				defs.put(col.getKey(), fd);
+				defs.put(col.getString("Field"), fd);
 			}
 
-			definitions.put(table.getKey(), new TableDefinition(table.getKey(), defs, primaryKeys));
+			definitions.put(tableName, new TableDefinition(tableName, defs, primaryKeys));
 		}
+
+		instance = this;
 	}
 
 	public TableDefinition getDefinition(String table) {
