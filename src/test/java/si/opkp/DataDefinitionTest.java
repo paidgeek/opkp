@@ -3,8 +3,10 @@ package si.opkp;
 import com.google.common.collect.Sets;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -17,6 +19,7 @@ import si.opkp.model.TableDefinition;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextHierarchy({
 		@ContextConfiguration(name = "testContext", classes = TestData.class)
 })

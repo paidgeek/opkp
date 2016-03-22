@@ -14,7 +14,6 @@ public class TestData {
 
 	@Bean
 	public DataSource dataSource() throws IOException {
-
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
 														.addScript("schema.sql")
 														.addScript("data.sql")

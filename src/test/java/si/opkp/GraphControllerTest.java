@@ -1,11 +1,13 @@
 package si.opkp;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextHierarchy({
 		@ContextConfiguration(name = "testContext", classes = TestData.class)
 })
