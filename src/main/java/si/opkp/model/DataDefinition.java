@@ -3,11 +3,15 @@ package si.opkp.model;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import si.opkp.util.*;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
+
+import si.opkp.util.Pojo;
 
 @Component
 public class DataDefinition {

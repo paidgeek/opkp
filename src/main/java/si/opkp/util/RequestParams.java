@@ -157,4 +157,60 @@ public class RequestParams {
 		return language;
 	}
 
+	public static class Builder {
+
+		private RequestParams params;
+
+		public Builder() {
+			params = new RequestParams();
+		}
+
+		public Builder columns(String... columns) {
+			params.setColumns(String.join(",", columns));
+
+			return this;
+		}
+
+		public Builder sort(String... sort) {
+			params.setSort(String.join(",", sort));
+
+			return this;
+		}
+
+		public Builder group(String... group) {
+			params.setGroup(String.join(",", group));
+
+			return this;
+		}
+
+		public Builder query(String query) {
+			params.setQuery(query);
+
+			return this;
+		}
+
+		public Builder limit(int offset, int count) {
+			params.setLimit(offset + "," + count);
+
+			return this;
+		}
+
+		public Builder keywords(String... keywords) {
+			params.setKeywords(String.join(",", keywords));
+
+			return this;
+		}
+
+		public Builder language(String language) {
+			params.setLanguage(language);
+
+			return this;
+		}
+
+		public RequestParams build() {
+			return params;
+		}
+
+	}
+
 }

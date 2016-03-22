@@ -1,12 +1,16 @@
 package si.opkp.util;
 
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.http.*;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import si.opkp.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class Util {
 
@@ -84,13 +88,22 @@ public class Util {
 
 	public static Object readJSONFile(String pathname) {
 		try {
-			return new ObjectMapper().readValue(Application.getContext()
-							.getResource(pathname)
-							.getInputStream(),
+			return new ObjectMapper().readValue(new ClassPathResource(pathname).getInputStream(),
 					HashMap.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
+		}
+
+		return null;
+	}
+
+	public static String prettyJson(Object obj) {
+		try {
+			return new ObjectMapper().writerWithDefaultPrettyPrinter()
+											 .writeValueAsString(obj);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
 
 		return null;

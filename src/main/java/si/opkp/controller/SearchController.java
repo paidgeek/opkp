@@ -1,20 +1,22 @@
 package si.opkp.controller;
 
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import si.opkp.model.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
+import si.opkp.model.Database;
 import si.opkp.util.*;
-
-import javax.annotation.*;
-
-import java.util.*;
-import java.util.stream.*;
 
 @RestController
 @RequestMapping("v1/search")
-@CrossOrigin
 public class SearchController {
 
 	private static SearchController instance;
@@ -55,7 +57,7 @@ public class SearchController {
 		Pojo meta = new Pojo();
 		List<Pojo> objects;
 		Integer[] limit = params.getLimit();
-		int total = 0;
+		long total = 0;
 
 		// TODO clean up
 		if (model.equals("fir_food")) {
@@ -66,7 +68,7 @@ public class SearchController {
 
 		if (!objects.isEmpty()) {
 			total = objects.get(0)
-								.getInteger("total");
+								.getLong("total");
 		}
 
 
