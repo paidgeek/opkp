@@ -13,7 +13,10 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import si.opkp.model.Database;
+<<<<<<< HEAD
 import si.opkp.query.RequestColumn;
+=======
+>>>>>>> d6e473a869f3d61d9674ecaa1e24c8f82f694e96
 import si.opkp.util.*;
 
 @RestController

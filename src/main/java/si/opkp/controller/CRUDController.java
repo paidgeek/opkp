@@ -4,7 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+<<<<<<< HEAD
 import org.springframework.web.bind.annotation.*;
+=======
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+>>>>>>> d6e473a869f3d61d9674ecaa1e24c8f82f694e96
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -167,7 +176,11 @@ public class CRUDController {
 
 		updateBuilder.where(params.getQuery());
 
+<<<<<<< HEAD
 		long total;
+=======
+		long updated;
+>>>>>>> d6e473a869f3d61d9674ecaa1e24c8f82f694e96
 		try {
 			total = db.update(updateBuilder.build());
 		} catch (Exception e) {
@@ -190,6 +203,10 @@ public class CRUDController {
 																.where(params.getQuery());
 		long total;
 
+<<<<<<< HEAD
+=======
+		long deleted;
+>>>>>>> d6e473a869f3d61d9674ecaa1e24c8f82f694e96
 		try {
 			total = db.update(deleteBuilder.build());
 		} catch (Exception e) {

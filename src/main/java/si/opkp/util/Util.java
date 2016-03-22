@@ -109,6 +109,7 @@ public class Util {
 		return null;
 	}
 
+<<<<<<< HEAD
 	public static ResponseEntity<Pojo> createResult(List<Pojo> objects, long total) {
 		Pojo result = new Pojo();
 		Pojo meta = new Pojo();
@@ -122,4 +123,6 @@ public class Util {
 		return ResponseEntity.ok(result);
 	}
 
+=======
+>>>>>>> d6e473a869f3d61d9674ecaa1e24c8f82f694e96
 }
