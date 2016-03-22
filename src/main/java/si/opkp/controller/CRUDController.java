@@ -4,13 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -18,18 +14,12 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 
 import si.opkp.model.DataDefinition;
-import si.opkp.model.DataGraph;
 import si.opkp.model.Database;
 import si.opkp.model.FieldDefinition;
 import si.opkp.model.Validator;
-import si.opkp.query.ConditionBuilder;
-import si.opkp.query.DeleteBuilder;
-import si.opkp.query.InsertBuilder;
-import si.opkp.query.QueryFactory;
-import si.opkp.query.SelectBuilder;
-import si.opkp.query.UpdateBuilder;
+import si.opkp.query.*;
 import si.opkp.util.Pojo;
-import si.opkp.util.RequestColumn;
+import si.opkp.query.RequestColumn;
 import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
@@ -136,7 +126,6 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performRead(String model, RequestParams params) {
-		DataGraph dg = DataGraph.getInstance();
 		SelectBuilder selectBuilder = QueryFactory.select()
 																.expr(params.getColumns())
 																.from(model);
@@ -159,16 +148,7 @@ public class CRUDController {
 		long total = db.queryObject(countBuilder.build())
 							.getLong("count");
 
-		Pojo result = new Pojo();
-		Pojo meta = new Pojo();
-
-		meta.setProperty("count", objects.size());
-		meta.setProperty("total", total);
-
-		result.setProperty("meta", meta);
-		result.setProperty("result", objects);
-
-		return ResponseEntity.ok(result);
+		return Util.createResult(objects, total);
 	}
 
 	public ResponseEntity<Pojo> performUpdate(String model, RequestParams params, Pojo body) {
@@ -187,9 +167,9 @@ public class CRUDController {
 
 		updateBuilder.where(params.getQuery());
 
-		long updated;
+		long total;
 		try {
-			updated = db.update(updateBuilder.build());
+			total = db.update(updateBuilder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -201,39 +181,24 @@ public class CRUDController {
 																.where(params.getQuery());
 		List<Pojo> objects = db.queryObjects(selectBuilder.build());
 
-		Pojo meta = new Pojo();
-		Pojo result = new Pojo();
-
-		meta.setProperty("updated", updated);
-
-		result.setProperty("meta", meta);
-		result.setProperty("changed", objects);
-
-		return ResponseEntity.ok(result);
+		return Util.createResult(objects, total);
 	}
 
 	public ResponseEntity<Pojo> performDelete(String model, RequestParams params) {
 		DeleteBuilder deleteBuilder = QueryFactory.delete()
 																.from(model)
 																.where(params.getQuery());
+		long total;
 
-		long deleted;
 		try {
-			deleted = db.update(deleteBuilder.build());
+			total = db.update(deleteBuilder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 
 			return Util.responseError(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 
-		Pojo meta = new Pojo();
-		Pojo result = new Pojo();
-
-		meta.setProperty("deleted", deleted);
-
-		result.setProperty("meta", meta);
-
-		return ResponseEntity.ok(result);
+		return Util.createResult(Collections.emptyList(), total);
 	}
 
 }

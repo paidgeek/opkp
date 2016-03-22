@@ -20,7 +20,7 @@ import si.opkp.model.Validator;
 import si.opkp.query.QueryFactory;
 import si.opkp.query.SelectBuilder;
 import si.opkp.util.Pojo;
-import si.opkp.util.RequestColumn;
+import si.opkp.query.RequestColumn;
 import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
@@ -99,16 +99,7 @@ public class GraphController {
 			long total = db.queryObject(countBuilder.build())
 								.getLong("count");
 
-			Pojo result = new Pojo();
-			Pojo meta = new Pojo();
-
-			meta.setProperty("count", (long) objects.size());
-			meta.setProperty("total", total);
-
-			result.setProperty("meta", meta);
-			result.setProperty("result", objects);
-
-			return ResponseEntity.ok(result);
+			return Util.createResult(objects, total);
 		} catch (Exception e) {
 			e.printStackTrace();
 

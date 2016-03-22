@@ -109,4 +109,17 @@ public class Util {
 		return null;
 	}
 
+	public static ResponseEntity<Pojo> createResult(List<Pojo> objects, long total) {
+		Pojo result = new Pojo();
+		Pojo meta = new Pojo();
+
+		meta.setProperty("count", (long) objects.size());
+		meta.setProperty("total", total);
+
+		result.setProperty("meta", meta);
+		result.setProperty("result", objects);
+
+		return ResponseEntity.ok(result);
+	}
+
 }

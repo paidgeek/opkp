@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.List;
 
+import si.opkp.query.RequestColumn;
+
 @JsonDeserialize(using = RequestParamsDeserializer.class)
 public class RequestParams {
 
@@ -18,7 +20,7 @@ public class RequestParams {
 	private String language;
 
 	public RequestParams() {
-		columns = new RequestColumn[]{new RequestColumn("*")};
+		columns = new RequestColumn[]{RequestColumn.columnAll()};
 		limit = new Integer[]{0, 100};
 		keywords = new String[]{};
 		language = "en";

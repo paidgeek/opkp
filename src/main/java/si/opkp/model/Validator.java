@@ -3,18 +3,15 @@ package si.opkp.model;
 import com.google.common.collect.Sets;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import javafx.scene.control.Tab;
 import si.opkp.batch.*;
 import si.opkp.util.Pojo;
-import si.opkp.util.RequestColumn;
+import si.opkp.query.RequestColumn;
 
 public class Validator {
 

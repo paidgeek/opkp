@@ -3,7 +3,6 @@ package si.opkp.query;
 import com.moybl.restql.RestQL;
 
 import si.opkp.model.FieldDefinition;
-import si.opkp.util.RequestColumn;
 
 public class SQLConditionBuilder implements ConditionBuilder {
 

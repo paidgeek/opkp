@@ -1,7 +1,9 @@
-package si.opkp.util;
+package si.opkp.query;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import si.opkp.util.Aggregate;
 
 public class RequestColumn {
 
@@ -45,6 +47,10 @@ public class RequestColumn {
 
 	public Aggregate getAggregate() {
 		return aggregate;
+	}
+
+	public static RequestColumn columnAll() {
+		return new RequestColumn("*");
 	}
 
 }

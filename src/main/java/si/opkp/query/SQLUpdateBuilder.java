@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import si.opkp.util.Pair;
-import si.opkp.util.RequestColumn;
 
 class SQLUpdateBuilder implements UpdateBuilder {
 

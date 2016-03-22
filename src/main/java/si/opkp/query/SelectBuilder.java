@@ -1,7 +1,5 @@
 package si.opkp.query;
 
-import si.opkp.util.RequestColumn;
-
 public interface SelectBuilder extends QueryBuilder {
 
 	SelectBuilder expr(RequestColumn... expr);

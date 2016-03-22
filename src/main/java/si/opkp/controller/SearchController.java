@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import si.opkp.model.Database;
+import si.opkp.query.RequestColumn;
 import si.opkp.util.*;
 
 @RestController
@@ -35,6 +36,8 @@ public class SearchController {
 	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
 											  @ModelAttribute RequestParams params) {
+
+
 		return perform(model, params);
 	}
 
@@ -53,8 +56,6 @@ public class SearchController {
 								.filter(word -> !stopwords.contains(word))
 								.collect(Collectors.joining(" "));
 
-		Pojo result = new Pojo();
-		Pojo meta = new Pojo();
 		List<Pojo> objects;
 		Integer[] limit = params.getLimit();
 		long total = 0;
@@ -71,7 +72,6 @@ public class SearchController {
 								.getLong("total");
 		}
 
-
 		List<RequestColumn> columns = Arrays.asList(params.getColumns());
 
 		for (Pojo pojo : objects) {
@@ -82,13 +82,7 @@ public class SearchController {
 																		.equals(col.getName())));
 		}
 
-		meta.setProperty("count", objects.size());
-		meta.setProperty("total", total);
-
-		result.setProperty("meta", meta);
-		result.setProperty("result", objects);
-
-		return ResponseEntity.ok(result);
+		return Util.createResult(objects, total);
 	}
 
 }
