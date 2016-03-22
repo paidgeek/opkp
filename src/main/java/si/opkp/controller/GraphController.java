@@ -99,20 +99,7 @@ public class GraphController {
 			long total = db.queryObject(countBuilder.build())
 								.getLong("count");
 
-<<<<<<< HEAD
 			return Util.createResult(objects, total);
-=======
-			Pojo result = new Pojo();
-			Pojo meta = new Pojo();
-
-			meta.setProperty("count", (long) objects.size());
-			meta.setProperty("total", total);
-
-			result.setProperty("meta", meta);
-			result.setProperty("result", objects);
-
-			return ResponseEntity.ok(result);
->>>>>>> d6e473a869f3d61d9674ecaa1e24c8f82f694e96
 		} catch (Exception e) {
 			e.printStackTrace();
 

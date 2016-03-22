@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import si.opkp.util.Aggregate;
-<<<<<<< HEAD
-=======
-import si.opkp.util.RequestColumn;
->>>>>>> d6e473a869f3d61d9674ecaa1e24c8f82f694e96
 
 class SQLSelectBuilder implements SelectBuilder {
 
