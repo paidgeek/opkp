@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +35,6 @@ import si.opkp.util.Util;
 
 @RestController
 @RequestMapping("v1/crud/{model}")
-@CrossOrigin
 public class CRUDController {
 
 	private static CRUDController instance;
@@ -189,7 +187,7 @@ public class CRUDController {
 
 		updateBuilder.where(params.getQuery());
 
-		int updated;
+		long updated;
 		try {
 			updated = db.update(updateBuilder.build());
 		} catch (Exception e) {
@@ -219,7 +217,7 @@ public class CRUDController {
 																.from(model)
 																.where(params.getQuery());
 
-		int deleted;
+		long deleted;
 		try {
 			deleted = db.update(deleteBuilder.build());
 		} catch (Exception e) {

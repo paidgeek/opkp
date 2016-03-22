@@ -2,7 +2,6 @@ package si.opkp.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +16,6 @@ import si.opkp.util.Util;
 
 @RestController
 @RequestMapping("v1/path")
-@CrossOrigin
 public class PathController {
 
 	@RequestMapping("/{start}/{goals}")

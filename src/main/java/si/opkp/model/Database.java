@@ -1,9 +1,8 @@
 package si.opkp.model;
 
-import si.opkp.util.*;
+import java.util.List;
 
-import javax.sql.*;
-import java.util.*;
+import si.opkp.util.Pojo;
 
 public interface Database {
 
@@ -15,8 +14,8 @@ public interface Database {
 
 	Pojo queryObject(String sql, Object... args);
 
-	int update(String sql);
+	long update(String sql);
 
-	int update(String sql, Object... args);
+	long update(String sql, Object... args);
 
 }

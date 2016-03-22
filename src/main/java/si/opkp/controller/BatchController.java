@@ -1,18 +1,25 @@
 package si.opkp.controller;
 
-import org.springframework.http.*;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import si.opkp.batch.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import si.opkp.batch.Batch;
+import si.opkp.batch.Command;
 import si.opkp.model.Validator;
-import si.opkp.util.*;
-
-import java.util.*;
+import si.opkp.util.Pojo;
+import si.opkp.util.Util;
 
 @RestController
 @RequestMapping("v1/batch")
-@CrossOrigin
 public class BatchController {
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -30,9 +37,9 @@ public class BatchController {
 
 			for (Command command : commands) {
 				Optional<String> failedDependency = command.getDependencies()
-						.stream()
-						.filter(failed::contains)
-						.findAny();
+																		 .stream()
+																		 .filter(failed::contains)
+																		 .findAny();
 
 				if (failedDependency.isPresent()) {
 					failed.add(command.getName());
@@ -51,33 +58,33 @@ public class BatchController {
 				switch (controller) {
 					case "graph":
 						response = GraphController.getInstance()
-								.perform(model, command.getParams());
+														  .perform(model, command.getParams());
 						break;
 					case "search":
 						response = SearchController.getInstance()
-								.perform(model, command.getParams());
+															.perform(model, command.getParams());
 						break;
 					case "crud":
 						switch (command.getMethod()) {
 							case GET:
 								response = CRUDController.getInstance()
-										.performRead(command.getModel(), command.getParams());
+																 .performRead(command.getModel(), command.getParams());
 								break;
 							case POST:
 								response = CRUDController.getInstance()
-										.performCreate(command.getModel(),
-												command.getBody());
+																 .performCreate(command.getModel(),
+																		 command.getBody());
 								break;
 							case PUT:
 								response = CRUDController.getInstance()
-										.performUpdate(command.getModel(),
-												command.getParams(),
-												command.getBody());
+																 .performUpdate(command.getModel(),
+																		 command.getParams(),
+																		 command.getBody());
 								break;
 							case DELETE:
 								response = CRUDController.getInstance()
-										.performDelete(command.getModel(),
-												command.getParams());
+																 .performDelete(command.getModel(),
+																		 command.getParams());
 								break;
 							default:
 								response = Util.responseError("invalid method", HttpStatus.BAD_REQUEST);

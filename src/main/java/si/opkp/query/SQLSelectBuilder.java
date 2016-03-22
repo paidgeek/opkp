@@ -1,8 +1,25 @@
 package si.opkp.query;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import si.opkp.util.Aggregate;
 import si.opkp.util.RequestColumn;
 
 class SQLSelectBuilder implements SelectBuilder {
+
+	private static final Map<Aggregate, String> AGGREGATE_PREFIXES = new HashMap<Aggregate, String>() {{
+		put(Aggregate.AVG, "AVG(");
+		put(Aggregate.COUNT, "COUNT(");
+		put(Aggregate.COUNT_DISTINCT, "COUNT(DISTINCT ");
+		put(Aggregate.MAX, "MAX(");
+		put(Aggregate.MIN, "MIN(");
+		put(Aggregate.SUM, "SUM(");
+		put(Aggregate.STD, "STD(");
+		put(Aggregate.STD_SAMPLE, "STDDEV_SAMP(");
+		put(Aggregate.VAR, "VAR_POP(");
+		put(Aggregate.VAR_SAMPLE, "VAR_SAMP(");
+	}};
 
 	private StringBuilder query;
 
@@ -14,16 +31,18 @@ class SQLSelectBuilder implements SelectBuilder {
 		for (int i = 0; i < expr.length; i++) {
 			RequestColumn col = expr[i];
 
-			switch (col.getAggregate()) {
-				case COUNT:
-					query.append("COUNT(");
-					query.append(col.getName());
-					query.append(") AS ");
-					query.append(String.format("%s_COUNT", col.getName()));
-					break;
-				default:
-					query.append(col.getName());
-					break;
+			if (col.getAggregate() == Aggregate.NONE) {
+				query.append(col.getName());
+			} else {
+				AGGREGATE_PREFIXES.keySet()
+										.stream()
+										.filter(a -> col.getAggregate() == a)
+										.forEach(a -> query.append(AGGREGATE_PREFIXES.get(a))
+																 .append(col.getName())
+																 .append(") AS ")
+																 .append(col.getName())
+																 .append("_")
+																 .append(a));
 			}
 
 			if (i < expr.length - 1) {
@@ -38,17 +57,17 @@ class SQLSelectBuilder implements SelectBuilder {
 
 	@Override
 	public SQLSelectBuilder from(String table) {
-		query.append("FROM ");
-		query.append(table);
-		query.append("\n");
+		query.append("FROM ")
+			  .append(table)
+			  .append("\n");
 
 		return this;
 	}
 
 	@Override
 	public SQLSelectBuilder join(String table, String condition) {
-		query.append("JOIN ");
-		query.append(table);
+		query.append("JOIN ")
+			  .append(table);
 
 		if (condition.contains("=")) {
 			query.append(" ON(" + condition + ")");
@@ -68,9 +87,9 @@ class SQLSelectBuilder implements SelectBuilder {
 
 	@Override
 	public SQLSelectBuilder where(ConditionBuilder conditionBuilder) {
-		query.append("WHERE ");
-		query.append(conditionBuilder.build());
-		query.append("\n");
+		query.append("WHERE ")
+			  .append(conditionBuilder.build())
+			  .append("\n");
 
 		return this;
 	}
@@ -80,22 +99,22 @@ class SQLSelectBuilder implements SelectBuilder {
 		query.append("ORDER BY ");
 
 		for (int i = 0; i < expr.length; i++) {
-			RequestColumn column = expr[0];
-			char prefix = column.getName()
-									  .charAt(0);
+			RequestColumn col = expr[0];
+			char prefix = col.getName()
+								  .charAt(0);
 
 			if (prefix == '-') {
-				query.append(column.getName()
-										 .substring(1));
+				query.append(col.getName()
+									 .substring(1));
 			} else {
-				query.append(column.getName());
+				query.append(col.getName());
 			}
 
-			switch (column.getAggregate()) {
-				case COUNT:
-					query.append("_COUNT");
-					break;
-			}
+			AGGREGATE_PREFIXES.keySet()
+									.stream()
+									.filter(a -> col.getAggregate() == a)
+									.forEach(a -> query.append("_")
+															 .append(a.toString()));
 
 			if (prefix == '-') {
 				query.append(" DESC");
@@ -118,15 +137,15 @@ class SQLSelectBuilder implements SelectBuilder {
 		query.append("GROUP BY ");
 
 		for (int i = 0; i < expr.length; i++) {
-			RequestColumn column = expr[0];
+			RequestColumn col = expr[0];
 
-			query.append(column.getName());
+			query.append(col.getName());
 
-			switch (column.getAggregate()) {
-				case COUNT:
-					query.append("_COUNT");
-					break;
-			}
+			AGGREGATE_PREFIXES.keySet()
+									.stream()
+									.filter(a -> col.getAggregate() == a)
+									.forEach(a -> query.append("_")
+															 .append(a.toString()));
 
 			if (i < expr.length - 1) {
 				query.append(", ");
@@ -145,9 +164,9 @@ class SQLSelectBuilder implements SelectBuilder {
 		if (bounds.length == 1) {
 			query.append(bounds[0]);
 		} else if (bounds.length == 2) {
-			query.append(bounds[0]);
-			query.append(", ");
-			query.append(bounds[1]);
+			query.append(bounds[0])
+				  .append(", ")
+				  .append(bounds[1]);
 		}
 
 		query.append("\n");

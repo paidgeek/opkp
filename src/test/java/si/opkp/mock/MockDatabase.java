@@ -1,6 +1,7 @@
-package si.opkp.model;
+package si.opkp.mock;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -10,10 +11,12 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import si.opkp.model.Database;
 import si.opkp.util.Pojo;
 
 @Component
-class OPKPDatabase implements Database {
+@Primary
+public class MockDatabase implements Database {
 
 	private JdbcTemplate jdbcTemplate;
 

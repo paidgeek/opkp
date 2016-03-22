@@ -1,28 +1,51 @@
 package si.opkp;
 
-import org.junit.*;
-import org.junit.runner.*;
-import org.springframework.boot.test.*;
-import org.springframework.context.annotation.*;
-import org.springframework.test.context.junit4.*;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ContextHierarchy;
+
+import java.util.List;
 
 import si.opkp.controller.GraphController;
+import si.opkp.util.Pojo;
+import si.opkp.util.RequestParams;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
-@WebAppConfiguration
-public class GraphControllerTest {
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
-	private GraphController graph;
+@ContextHierarchy({
+		@ContextConfiguration(name = "testContext", classes = TestData.class)
+})
+public class GraphControllerTest extends BaseTest {
 
-	@Before
-	public void setup() {
-		graph = GraphController.getInstance();
-	}
+	@Autowired
+	private GraphController graphController;
 
 	@Test
-	public void simple() throws Exception {
+	public void fullQuery() {
+		ResponseEntity<Pojo> response = graphController.perform("A", new RequestParams.Builder()
+				.columns("VALUE")
+				.query("VALUE~'%A%'")
+				.sort("VALUE")
+				.limit(0, 20)
+				.build());
+
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		Pojo body = response.getBody();
+		List<Pojo> result = (List<Pojo>) body.getProperty("result");
+		Pojo meta = (Pojo) body.getProperty("meta");
+
+		assertEquals(52, (long) meta.getLong("total"));
+		assertEquals(20, (long) meta.getLong("count"));
+
+		for (Pojo entry : result) {
+			assertThat(entry.getString("VALUE"), containsString("A"));
+		}
 	}
 
 }

@@ -3,7 +3,6 @@ package si.opkp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,17 +25,17 @@ import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
 @RestController
-@CrossOrigin
 @RequestMapping("v1/graph")
 public class GraphController {
 
 	private static GraphController instance;
-	@Autowired
-	private Database db;
 
 	public static GraphController getInstance() {
 		return instance;
 	}
+
+	@Autowired
+	private Database db;
 
 	@PostConstruct
 	private void init() {
@@ -103,7 +102,7 @@ public class GraphController {
 			Pojo result = new Pojo();
 			Pojo meta = new Pojo();
 
-			meta.setProperty("count", objects.size());
+			meta.setProperty("count", (long) objects.size());
 			meta.setProperty("total", total);
 
 			result.setProperty("meta", meta);

@@ -22,7 +22,7 @@ public class DataGraph {
 		try {
 			instance = this;
 
-			HashMap<String, Object> file = (HashMap) Util.readJSONFile("classpath:relationships.json");
+			HashMap<String, Object> file = (HashMap) Util.readJSONFile("relationships.json");
 			map = new HashMap<>(file);
 
 			for (String key : file.keySet()) {

@@ -60,6 +60,33 @@ public class Pojo implements JsonSerializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return properties.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !(obj instanceof Pojo)) {
+			return false;
+		}
+
+		Pojo other = (Pojo) obj;
+
+		for (Map.Entry<String, Object> prop : properties.entrySet()) {
+			if (!other.properties.containsKey(prop.getKey())) {
+				return false;
+			}
+
+			if (!other.getProperty(prop.getKey())
+						 .equals(getProperty(prop.getKey()))) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	@Override
 	public void serialize(JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
 		jsonGenerator.writeStartObject();
 
