@@ -18,6 +18,7 @@ import si.opkp.util.*;
 
 @RestController
 @RequestMapping("v1/search")
+@CrossOrigin
 public class SearchController {
 
 	private static SearchController instance;
@@ -36,7 +37,6 @@ public class SearchController {
 	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
 											  @ModelAttribute RequestParams params) {
-
 
 		return perform(model, params);
 	}

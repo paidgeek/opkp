@@ -36,7 +36,13 @@ public class Pojo implements JsonSerializable {
 	}
 
 	public Long getLong(String name) {
-		return (Long) properties.get(name);
+		Object obj = properties.get(name);
+
+		if (obj instanceof Integer) {
+			return ((long) (Integer) obj);
+		}
+
+		return (Long) obj;
 	}
 
 	public String getString(String name) {

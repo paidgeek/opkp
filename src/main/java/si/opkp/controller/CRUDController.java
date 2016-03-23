@@ -25,6 +25,7 @@ import si.opkp.util.Util;
 
 @RestController
 @RequestMapping("v1/crud/{model}")
+@CrossOrigin
 public class CRUDController {
 
 	private static CRUDController instance;

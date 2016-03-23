@@ -2,10 +2,7 @@ package si.opkp.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +17,7 @@ import si.opkp.util.Util;
 
 @RestController
 @RequestMapping("v1/batch")
+@CrossOrigin
 public class BatchController {
 
 	@RequestMapping(method = RequestMethod.POST)
