@@ -178,6 +178,7 @@ public class CRUDController {
 		}
 
 		SelectBuilder selectBuilder = QueryFactory.select()
+																.expr(params.getColumns())
 																.from(model)
 																.where(params.getQuery());
 		List<Pojo> objects = db.queryObjects(selectBuilder.build());

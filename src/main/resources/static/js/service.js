@@ -27,6 +27,8 @@ function get($http, $q, url) {
 function post($http, $q, url, data) {
    var deferred = $q.defer();
 
+   console.log(data);
+
    $http({
       method: "POST",
       url: url,
@@ -65,14 +67,14 @@ OPKPService.create = function() {
                   method: "GET",
                   model: "fir_food",
                   params: {
-                     q: "ORIGFDCD:'" + id + "'"
+                     query: "ORIGFDCD:'" + id + "'"
                   }
                }, {
                   name: "components",
                   controller: "graph",
                   model: "fir_food,fir_value,fir_component",
                   params: {
-                     q: "ORIGFDCD:'" + id + "'",
+                     query: "ORIGFDCD:'" + id + "'",
                      columns: ["ORIGCPNM", "SELVAL", "UNIT"]
                   },
                   dependencies: ["food"]

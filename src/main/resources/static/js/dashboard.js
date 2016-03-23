@@ -20,4 +20,13 @@ app.controller("nav", function($scope) {
    $scope.getTypeOf = function(obj) {
       return typeof obj;
    }
+   $scope.range = function(n) {
+      var arr = new Array(n);
+
+      for (var i = 0; i < n; i++) {
+         arr[i] = i;
+      }
+
+      return arr;
+   }
 });

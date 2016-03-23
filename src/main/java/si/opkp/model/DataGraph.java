@@ -88,18 +88,18 @@ public class DataGraph {
 		return instance;
 	}
 
-	public Optional<String> getEdge(String a, String b) {
-		if (map.containsKey(a)) {
-			return Optional.of((String) ((HashMap) map.get(a)).get(b));
-		} else if (map.containsKey(b)) {
-			return Optional.of((String) ((HashMap) map.get(b)).get(a));
+	public Optional<String> getEdge(String nodeA, String nodeB) {
+		if (map.containsKey(nodeA)) {
+			return Optional.of((String) ((HashMap) map.get(nodeA)).get(nodeB));
+		} else if (map.containsKey(nodeB)) {
+			return Optional.of((String) ((HashMap) map.get(nodeB)).get(nodeA));
 		}
 
 		return Optional.empty();
 	}
 
-	public Set<String> getNeighbours(String a) {
-		Map<String, Object> m = (HashMap) map.get(a);
+	public Set<String> getNeighbours(String node) {
+		Map<String, Object> m = (HashMap) map.get(node);
 
 		if (m == null) {
 			return Collections.emptySet();
@@ -107,9 +107,19 @@ public class DataGraph {
 
 		Set<String> neighbours = m.keySet();
 
-		neighbours.remove(a);
+		neighbours.remove(node);
 
 		return neighbours;
+	}
+
+	public Map<String, Set<String>> getNeighboursSet() {
+		Map<String, Set<String>> res = new HashMap<>();
+
+		for (String node : map.keySet()) {
+			res.put(node, getNeighbours(node));
+		}
+
+		return res;
 	}
 
 	public boolean pathExists(String start, String goal) {

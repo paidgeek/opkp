@@ -1,3 +1,12 @@
+app.factory("neighbours", function() {
+   return {
+      "fir_component": ["fir_value"],
+      "fir_food": ["fir_value", "fir_ingredients"],
+      "fir_ingredients": ["fir_food"],
+      "fir_value": ["fir_component", "fir_food"]
+   };
+});
+
 app.factory("dataDefinition", function() {
    return {
       "fc_celiac_members": {

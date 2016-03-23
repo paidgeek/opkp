@@ -1,50 +1,29 @@
 <div ng-controller="graphs">
+
    <div class="row">
       <div class="col-md-12">
          <div class="panel panel-default">
-            <form class="panel-body form-horizontal" ng-submit="search()">
+            <form class="panel-body form-horizontal">
 
-               <label for="select-x-axis">X Axis</label>
+               <h4>Tables</h4>
 
-               <div id="select-x-axis" class="form-group">
-                  <label for="select-x-table" class="col-md-2 control-label">
-                     Table
-                  </label>
-                  <div class="col-md-3">
-                     <select id="select-x-table" class="form-control" ng-model="selectedTableX">
-                        <option ng-repeat="(key, value) in dd" value="{{key}}">{{key}}</option>
+               <div class="form-group form-inline">
+                  <div ng-repeat="i in range(pathLength) track by $index">
+                     <select ng-model="selection[i]" class="form-control" ng-change="selectNode(i, selection[i])">
+                        <option ng-repeat="node in getSteps(i - 1) track by $index" value="{{node}}">{{node}}</option>
                      </select>
-                  </div>
-                  <label for="select-x-column" class="col-md-2 control-label">
-                     Column
-                  </label>
-                  <div id="select-x-column" class="col-md-3">
-                     <select id="select-x-column" class="form-control" ng-model="selectedColumnX">
-                        <option ng-repeat="(key, value) in dd[selectedTableX]" value="{{key}}">{{key}}</option>
-                     </select>
+                     <button ng-if="getSteps(i).length != 0 && i == pathLength - 1" type="button" class="btn btn-primary" ng-click="addNode()">+</button>
+                     <button ng-if="i == pathLength - 1 && i > 0" type="button" class="btn btn-danger" ng-click="removeNode()">-</button>
                   </div>
                </div>
 
-               <label for="select-y-axis">Y Axis</label>
-
-               <div id="select-y-axis" class="form-group">
-                  <label for="select-y-table" class="col-md-2 control-label">
-                     Table
-                  </label>
-                  <div class="col-md-3">
-                     <select id="select-y-table" class="form-control" ng-model="selectedTableY">
-                        <option ng-repeat="(key, value) in dd" value="{{key}}">{{key}}</option>
-                     </select>
-                  </div>
-                  <label for="select-y-column" class="col-md-2 control-label">
-                     Column
-                  </label>
-                  <div id="select-y-column" class="col-md-3">
-                     <select id="select-y-column" class="form-control" ng-model="selectedColumnY">
-                        <option ng-repeat="(key, value) in dd[selectedTableY]" value="{{key}}">{{key}}</option>
-                     </select>
-                  </div>
+               <div>
+                  {{path}}
                </div>
+
+               <h4>Columns</h4>
+
+               <h4>Conditions</h4>
 
                <button type="button" class="btn btn-default" ng-click="update()">Update</button>
 
