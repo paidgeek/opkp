@@ -4,24 +4,25 @@
       <div class="col-md-12">
          <div class="panel panel-default">
             <form class="panel-body form-horizontal">
-
                <h4>Tables</h4>
 
-               <div class="form-group form-inline">
-                  <div ng-repeat="i in range(pathLength) track by $index">
-                     <select ng-model="selection[i]" class="form-control" ng-change="selectNode(i, selection[i])">
+               <div class="row voffset-1" ng-repeat="i in range(pathLength) track by $index">
+                  <div class="col-md-3">
+                     <select class="form-control" ng-model="selection[i]" ng-change="selectNode(i, selection[i])">
                         <option ng-repeat="node in getSteps(i - 1) track by $index" value="{{node}}">{{node}}</option>
                      </select>
-                     <button ng-if="getSteps(i).length != 0 && i == pathLength - 1" type="button" class="btn btn-primary" ng-click="addNode()">+</button>
-                     <button ng-if="i == pathLength - 1 && i > 0" type="button" class="btn btn-danger" ng-click="removeNode()">-</button>
+                  </div>
+                  <div class="col-md-2 form-inline">
+                     <button ng-if="getSteps(i).length != 0 && i == pathLength - 1" type="button" class="btn btn-primary form-control" ng-click="addNode()">+</button>
+                     <button ng-if="i > 0" type="button" class="btn btn-danger form-control" ng-click="removeNode(i)">-</button>
                   </div>
                </div>
 
-               <div>
-                  {{path}}
-               </div>
-
                <h4>Columns</h4>
+               <div ng-repeat="i in range(pathLength) track by $index" ng-if="dataDefinition[path[i]]">
+                  {{path[i]}}
+                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns.length}} columns selected" ng-model="selectedColumns" ms-header="Select columns" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
+               </div>
 
                <h4>Conditions</h4>
 

@@ -45,6 +45,52 @@ body {
 .row-number {
    color: #aaa;
 }
+.input-group > .input-group-btn:last-child > .selectpicker {
+   border-top-right-radius: 5px;
+   border-bottom-right-radius: 5px;
+}
+.input-group > .input-group-btn:first-child > .selectpicker {
+   border-top-left-radius: 5px;
+   border-bottom-left-radius: 5px;
+}
+am-multiselect .dropdown-menu {
+   padding-left: 5px;
+   padding-right: 5px;
+}
+am-multiselect .dropdown-menu > li > a {
+   padding: 3px 10px;
+   cursor: pointer;
+}
+am-multiselect .dropdown-menu > li.selected {
+   background-color: #ADD8E6;
+}
+.voffset-1 {
+   margin-top: 5px;
+}
+.voffset-2 {
+   margin-top: 10px;
+}
+.voffset-3 {
+   margin-top: 15px;
+}
+.voffset-4 {
+   margin-top: 30px;
+}
+.voffset-5 {
+   margin-top: 40px;
+}
+.voffset-6 {
+   margin-top: 60px;
+}
+.voffset-7 {
+   margin-top: 80px;
+}
+.voffset-8 {
+   margin-top: 100px;
+}
+.voffset-9 {
+   margin-top: 150px;
+}
 
 /* Food profile modal */
 

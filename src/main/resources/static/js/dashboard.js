@@ -1,4 +1,4 @@
-var app = angular.module("app", ["cgBusy", "ui.bootstrap"]);
+var app = angular.module("app", ["cgBusy", "ui.bootstrap", "am.multiselect"]);
 
 app.factory("opkpService", OPKPService.create());
 

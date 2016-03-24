@@ -4,6 +4,12 @@ app.controller("graphs", function($scope, opkpService, dataDefinition, neighbour
    $scope.path = [];
    $scope.pathLength = 1;
 
+   $scope.selectedColumns = [];
+
+   $scope.getColumns = function(index) {
+      return Object.keys($scope.dataDefinition[$scope.path[index]]);
+   }
+
    $scope.selectNode = function(index, node) {
       $scope.path[index] = node;
    }
@@ -37,9 +43,9 @@ app.controller("graphs", function($scope, opkpService, dataDefinition, neighbour
       return [];
    }
 
-   $scope.removeNode = function() {
-      $scope.path.splice($scope.pathLength - 1, 1);
-      $scope.pathLength--;
+   $scope.removeNode = function(i) {
+      $scope.path.splice(i, $scope.pathLength);
+      $scope.pathLength = $scope.path.length;
    }
 
    $scope.update = function() {}
