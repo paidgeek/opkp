@@ -19,9 +19,9 @@
                </div>
 
                <h4>Columns</h4>
-               <div ng-repeat="i in range(pathLength) track by $index" ng-if="dataDefinition[path[i]]">
+               <div ng-repeat="i in range(pathLength) track by $index" ng-if="dataGraph.definitions[path[i]]">
                   {{path[i]}}
-                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns.length}} columns selected" ng-model="selectedColumns" ms-header="Select columns" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
+                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns[i].length}} columns selected" ng-model="selectedColumns[i]" ms-header="Select columns" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
                </div>
 
                <h4>Conditions</h4>
@@ -34,7 +34,7 @@
    </div>
    <div class="row">
       <div class="col-md-12">
-         {{data}}
+         {{responseData}}
       </div>
    </div>
 

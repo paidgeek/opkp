@@ -81,11 +81,25 @@ OPKPService.create = function() {
                }]
             });
          },
-         getData2D: function(x, y, limit) {
-            var url = OPKPService.host + "path/";
-            url += x.table + "/" + y.table;
-            url += "?columns=" + x.column + "," + y.column;
-            url += "&limit=" + limit.join(",");
+         graph: function(model, columns) {
+            if (model.constructor === Array) {
+               model = model.join(",");
+            }
+
+            var url = OPKPService.host + "graph/" + model + "?";
+
+            if (columns) {
+               url += "columns=" + columns.join(",");
+            }
+
+            return get($http, $q, url);
+         },
+         path: function(start, goals, columns) {
+            var url = OPKPService.host + "path/" + start + "/" + goals.join(",") + "?";
+
+            if (columns) {
+               url += "columns=" + columns.join(",");
+            }
 
             return get($http, $q, url);
          }

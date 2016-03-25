@@ -2,22 +2,23 @@ package si.opkp.model;
 
 import com.google.common.collect.Sets;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import si.opkp.batch.*;
-import si.opkp.util.Pojo;
+import si.opkp.batch.Batch;
+import si.opkp.batch.Command;
 import si.opkp.query.RequestColumn;
+import si.opkp.util.Pojo;
 
 public class Validator {
 
-	public static Optional<String> validatePartial(String table, Pojo body) {
-		TableDefinition td = DataDefinition.getInstance()
-													  .getDefinition(table);
+	private Database database;
+
+	public Validator(Database database) {
+		this.database = database;
+	}
+
+	public Optional<String> validatePartial(String table, Pojo body) {
+		TableDefinition td = database.getDefinition(table);
 
 		if (td == null) {
 			return Optional.of("table does not exist");
@@ -49,9 +50,8 @@ public class Validator {
 		return Optional.empty();
 	}
 
-	public static Optional<String> validateFull(String table, Pojo body) {
-		TableDefinition td = DataDefinition.getInstance()
-													  .getDefinition(table);
+	public Optional<String> validateFull(String table, Pojo body) {
+		TableDefinition td = database.getDefinition(table);
 
 		if (td == null) {
 			return Optional.of("table does not exist");
@@ -92,9 +92,8 @@ public class Validator {
 		return Optional.empty();
 	}
 
-	public static Optional<String> validate(String model, List<String> columns) {
-		TableDefinition td = DataDefinition.getInstance()
-													  .getDefinition(model);
+	public Optional<String> validate(String model, List<String> columns) {
+		TableDefinition td = database.getDefinition(model);
 
 		if (td == null) {
 			return Optional.of("unknown model '" + model + "'");
@@ -124,7 +123,7 @@ public class Validator {
 		return Optional.empty();
 	}
 
-	public static Optional<String> validate(String[] path, RequestColumn[] columns, RequestColumn[] sort) {
+	public Optional<String> validate(String[] path, RequestColumn[] columns, RequestColumn[] sort) {
 		List<String> cols = new ArrayList<>(columns.length);
 
 		for (int i = 0; i < columns.length; i++) {
@@ -137,8 +136,7 @@ public class Validator {
 		}
 
 		for (String node : path) {
-			TableDefinition td = DataDefinition.getInstance()
-														  .getDefinition(node);
+			TableDefinition td = database.getDefinition(node);
 
 			if (td == null) {
 				return Optional.of("unknown model '" + node + "'");
@@ -169,7 +167,7 @@ public class Validator {
 		return Optional.empty();
 	}
 
-	public static Optional<String> validate(Batch batch) {
+	public Optional<String> validate(Batch batch) {
 		if (batch.getCommands() == null || batch.getCommands()
 															 .isEmpty()) {
 			return Optional.of("no commands in batch");

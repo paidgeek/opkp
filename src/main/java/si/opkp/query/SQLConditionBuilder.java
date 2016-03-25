@@ -15,9 +15,11 @@ public class SQLConditionBuilder implements ConditionBuilder {
 	@Override
 	public SQLConditionBuilder equal(Object a, Object b) {
 		if (a instanceof FieldDefinition) {
-			condition.append('`');
-			condition.append(((FieldDefinition) a).getName());
-			condition.append('`');
+			FieldDefinition fa = (FieldDefinition) a;
+
+			condition.append(fa.getTableName());
+			condition.append(".");
+			condition.append(fa.getName());
 		} else if (a instanceof RequestColumn) {
 			condition.append('\'');
 			condition.append(((RequestColumn) a).getName());
@@ -29,9 +31,11 @@ public class SQLConditionBuilder implements ConditionBuilder {
 		condition.append(" = ");
 
 		if (b instanceof FieldDefinition) {
-			condition.append('`');
-			condition.append(((FieldDefinition) b).getName());
-			condition.append('`');
+			FieldDefinition fb = (FieldDefinition) b;
+
+			condition.append(fb.getTableName());
+			condition.append(".");
+			condition.append(fb.getName());
 		} else if (b instanceof String) {
 			condition.append('\'');
 			condition.append(b);

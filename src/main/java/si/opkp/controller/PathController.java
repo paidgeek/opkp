@@ -1,12 +1,14 @@
 package si.opkp.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
-import si.opkp.model.DataGraph;
+import si.opkp.model.Database;
 import si.opkp.util.Pojo;
 import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
@@ -16,25 +18,27 @@ import si.opkp.util.Util;
 @CrossOrigin
 public class PathController {
 
-	@RequestMapping("/{start}/{goals}")
-	public ResponseEntity<Pojo> path(@PathVariable("start") String start,
-												@PathVariable("goals") String goalsList,
-												@ModelAttribute RequestParams params) {
-		List<String> goals = Util.parseStringList(goalsList);
+	@Autowired
+	private Database database;
+	@Autowired
+	private GraphController graphController;
 
-		return perform(start, goals, params);
+	@RequestMapping("/{start}/{goal}")
+	ResponseEntity<Pojo> get(@PathVariable("start") String start,
+									 @PathVariable("goal") String goal,
+									 @ModelAttribute RequestParams params) {
+		return perform(start, goal, params);
 	}
 
-	public ResponseEntity<Pojo> perform(String start, List<String> goals, RequestParams params) {
-		List<String> path = DataGraph.getInstance()
-											  .findPath(start, goals.get(0));
+	public ResponseEntity<Pojo> perform(String start, String goal, RequestParams params) {
+		Optional<List<String>> path = database.getDataGraph()
+														  .findPath(start, goal);
 
-		if (path == null) {
+		if (!path.isPresent()) {
 			return Util.responseError("path not found", HttpStatus.BAD_REQUEST);
 		}
 
-		return GraphController.getInstance()
-									 .perform(String.join(",", path), params);
+		return graphController.perform(String.join(",", path.get()), params);
 	}
 
 }

@@ -8,15 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
-import si.opkp.model.DataGraph;
 import si.opkp.model.Database;
-import si.opkp.model.Validator;
+import si.opkp.query.ConditionBuilder;
 import si.opkp.query.QueryFactory;
-import si.opkp.query.SelectBuilder;
-import si.opkp.util.Pojo;
 import si.opkp.query.RequestColumn;
+import si.opkp.query.SelectBuilder;
+import si.opkp.util.DirectedGraph;
+import si.opkp.util.Pojo;
 import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
@@ -25,23 +23,12 @@ import si.opkp.util.Util;
 @CrossOrigin
 public class GraphController {
 
-	private static GraphController instance;
-
-	public static GraphController getInstance() {
-		return instance;
-	}
-
 	@Autowired
-	private Database db;
-
-	@PostConstruct
-	private void init() {
-		instance = this;
-	}
+	private Database database;
 
 	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
-	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
-											  @ModelAttribute RequestParams params) {
+	ResponseEntity<Pojo> get(@PathVariable("model") String model,
+									 @ModelAttribute RequestParams params) {
 		return perform(model, params);
 	}
 
@@ -49,13 +36,13 @@ public class GraphController {
 		try {
 			String[] path = model.split(",");
 
-			Optional<String> err = Validator.validate(path, params.getColumns(), params.getSort());
+			Optional<String> err = database.getValidator()
+													 .validate(path, params.getColumns(), params.getSort());
 
 			if (err.isPresent()) {
 				return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
 			}
 
-			DataGraph dg = DataGraph.getInstance();
 			SelectBuilder selectBuilder = QueryFactory.select()
 																	.expr(params.getColumns())
 																	.from(path[0]);
@@ -67,13 +54,15 @@ public class GraphController {
 				String a = path[i - 1];
 				String b = path[i];
 
-				Optional<String> edge = dg.getEdge(a, b);
-
+				Optional<DirectedGraph<String, ConditionBuilder>.Edge> edge = database.getDataGraph()
+																											 .getEdge(a, b);
 				if (edge.isPresent()) {
-					selectBuilder.join(b, edge.get());
-					countBuilder.join(b, edge.get());
+					selectBuilder.join(b, edge.get()
+													  .getValue());
+					countBuilder.join(b, edge.get()
+													 .getValue());
 				} else {
-					return Util.responseError(String.format("cannot join '%s' and '%s'", a, b), HttpStatus.BAD_REQUEST);
+					return Util.responseError(String.format("can not join '%s' and '%s'", a, b), HttpStatus.BAD_REQUEST);
 				}
 			}
 
@@ -92,9 +81,9 @@ public class GraphController {
 
 			selectBuilder.limit(params.getLimit());
 
-			List<Pojo> objects = db.queryObjects(selectBuilder.build());
-			long total = db.queryObject(countBuilder.build())
-								.getLong("count");
+			List<Pojo> objects = database.queryObjects(selectBuilder.build());
+			long total = database.queryObject(countBuilder.build())
+										.getLong("count");
 
 			return Util.createResult(objects, total);
 		} catch (Exception e) {

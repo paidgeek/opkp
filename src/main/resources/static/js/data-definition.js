@@ -1,14 +1,5 @@
-app.factory("neighbours", function() {
-   return {
-      "fir_component": ["fir_value"],
-      "fir_food": ["fir_value", "fir_ingredients"],
-      "fir_ingredients": ["fir_food"],
-      "fir_value": ["fir_component", "fir_food"]
-   };
-});
-
-app.factory("dataDefinition", function() {
-   return {
+app.factory("dataGraph", function() {
+   var dataDefinition = {
       "fc_celiac_members": {
          "CODE": {
             "type": "varchar(255)",
@@ -4182,5 +4173,76 @@ app.factory("dataDefinition", function() {
             "extra": ""
          }
       }
+   };
+
+   var neighbours = {
+      "fir_component": ["fir_value"],
+      "fir_food": ["fir_value", "fir_ingredients"],
+      "fir_ingredients": ["fir_food"],
+      "fir_value": ["fir_component", "fir_food"]
+   };
+
+   var distances = {};
+   var edges = {};
+   var nodes = Object.keys(dataDefinition);
+
+   for (var i = 0; i < nodes.length; i++) {
+      var start = nodes[i];
+      var dst = {};
+      var edg = {};
+      var s = [];
+
+      dst[start] = 0;
+      s.push(start);
+
+      while (s.length != 0) {
+         var v = s.pop();
+
+         if (!neighbours[v]) {
+            continue;
+         }
+
+         for (var j = 0; j < neighbours[v].length; j++) {
+            var u = neighbours[v][j];
+
+            if (dst[u] == null) {
+               edg[u] = v;
+               dst[u] = dst[v] + 1;
+               s.push(u);
+            }
+         }
+      }
+
+      distances[start] = dst;
+      edges[start] = edg;
    }
+
+   return {
+      distances: distances,
+      edges: edges,
+      definitions: dataDefinition,
+      neighbours: neighbours,
+      pathExists: function(start, goal) {
+         return this.distances[start] != null && this.distances[start][goal] != null;
+      },
+      findPath: function(start, goal) {
+         if (!this.pathExists(start, goal)) {
+            return null;
+         }
+
+         var dst = this.distances[start];
+         var edg = this.edges[start];
+         var path = [];
+         var n = goal;
+
+         while (dst[n] != 0) {
+            path.splice(0, 0, n);
+            n = edg[n];
+         }
+
+         path.splice(0, 0, n);
+
+         return path;
+      }
+   };
 });

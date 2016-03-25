@@ -11,15 +11,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
-import si.opkp.model.DataDefinition;
 import si.opkp.model.Database;
 import si.opkp.model.FieldDefinition;
-import si.opkp.model.Validator;
 import si.opkp.query.*;
 import si.opkp.util.Pojo;
-import si.opkp.query.RequestColumn;
 import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
@@ -28,37 +23,26 @@ import si.opkp.util.Util;
 @CrossOrigin
 public class CRUDController {
 
-	private static CRUDController instance;
-
-	public static CRUDController getInstance() {
-		return instance;
-	}
-
 	@Autowired
-	private Database db;
-
-	@PostConstruct
-	private void init() {
-		instance = this;
-	}
+	private Database database;
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Pojo> create(@PathVariable("model") String model,
-												  @RequestBody Pojo body) {
+	ResponseEntity<Pojo> create(@PathVariable("model") String model,
+										 @RequestBody Pojo body) {
 		return performCreate(model, body);
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ResponseEntity<Pojo> read(@PathVariable("model") String model,
-												@ModelAttribute RequestParams params) {
+	ResponseEntity<Pojo> read(@PathVariable("model") String model,
+									  @ModelAttribute RequestParams params) {
 
 		return performRead(model, params);
 	}
 
 	@RequestMapping(method = RequestMethod.PUT)
-	public ResponseEntity<Pojo> update(@PathVariable("model") String model,
-												  @ModelAttribute RequestParams params,
-												  @RequestBody Pojo body) {
+	ResponseEntity<Pojo> update(@PathVariable("model") String model,
+										 @ModelAttribute RequestParams params,
+										 @RequestBody Pojo body) {
 		return performUpdate(model, params, body);
 	}
 
@@ -69,7 +53,8 @@ public class CRUDController {
 	}
 
 	public ResponseEntity<Pojo> performCreate(String model, Pojo body) {
-		Optional<String> err = Validator.validateFull(model, body);
+		Optional<String> err = database.getValidator()
+												 .validateFull(model, body);
 
 		if (err.isPresent()) {
 			return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
@@ -82,13 +67,12 @@ public class CRUDController {
 			 .forEach(prop -> insertBuilder.value(prop.getKey(), prop.getValue()));
 
 		SelectBuilder selectBuilder = QueryFactory.select()
-																.expr(new RequestColumn("*"))
+																.expr(RequestColumn.columnAll())
 																.from(model);
 		ConditionBuilder conditionBuilder = QueryFactory.condition();
-		Iterator<FieldDefinition> i = DataDefinition.getInstance()
-																  .getDefinition(model)
-																  .getPrimaryKeys()
-																  .iterator();
+		Iterator<FieldDefinition> i = database.getDefinition(model)
+														  .getPrimaryKeys()
+														  .iterator();
 
 		if (i.hasNext()) {
 			FieldDefinition pk = i.next();
@@ -105,8 +89,8 @@ public class CRUDController {
 		Pojo created;
 
 		try {
-			db.update(insertBuilder.build());
-			created = db.queryObject(selectBuilder.build());
+			database.update(insertBuilder.build());
+			created = database.queryObject(selectBuilder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -145,15 +129,16 @@ public class CRUDController {
 
 		selectBuilder.limit(params.getLimit());
 
-		List<Pojo> objects = db.queryObjects(selectBuilder.build());
-		long total = db.queryObject(countBuilder.build())
-							.getLong("count");
+		List<Pojo> objects = database.queryObjects(selectBuilder.build());
+		long total = database.queryObject(countBuilder.build())
+									.getLong("count");
 
 		return Util.createResult(objects, total);
 	}
 
 	public ResponseEntity<Pojo> performUpdate(String model, RequestParams params, Pojo body) {
-		Optional<String> err = Validator.validatePartial(model, body);
+		Optional<String> err = database.getValidator()
+												 .validatePartial(model, body);
 
 		if (err.isPresent()) {
 			return Util.responseError(err.get(), HttpStatus.BAD_REQUEST);
@@ -170,7 +155,7 @@ public class CRUDController {
 
 		long total;
 		try {
-			total = db.update(updateBuilder.build());
+			total = database.update(updateBuilder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -181,7 +166,7 @@ public class CRUDController {
 																.expr(params.getColumns())
 																.from(model)
 																.where(params.getQuery());
-		List<Pojo> objects = db.queryObjects(selectBuilder.build());
+		List<Pojo> objects = database.queryObjects(selectBuilder.build());
 
 		return Util.createResult(objects, total);
 	}
@@ -193,7 +178,7 @@ public class CRUDController {
 		long total;
 
 		try {
-			total = db.update(deleteBuilder.build());
+			total = database.update(deleteBuilder.build());
 		} catch (Exception e) {
 			e.printStackTrace();
 

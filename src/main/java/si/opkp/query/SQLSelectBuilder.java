@@ -64,14 +64,16 @@ class SQLSelectBuilder implements SelectBuilder {
 	}
 
 	@Override
-	public SQLSelectBuilder join(String table, String condition) {
-		query.append("JOIN ")
+	public SQLSelectBuilder join(String table, ConditionBuilder condition) {
+		query.append("INNER JOIN ")
 			  .append(table);
 
-		if (condition.contains("=")) {
-			query.append(" ON(" + condition + ")");
+		String cond = condition.build();
+
+		if (cond.matches("^[a-zA-Z0-9_]*$")) {
+			query.append(" USING(" + cond + ")");
 		} else {
-			query.append(" USING(" + condition + ")");
+			query.append(" ON(" + cond + ")");
 		}
 
 		query.append("\n");

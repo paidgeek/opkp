@@ -6,7 +6,7 @@ public interface SelectBuilder extends QueryBuilder {
 
 	SelectBuilder from(String table);
 
-	SelectBuilder join(String table, String condition);
+	SelectBuilder join(String table, ConditionBuilder condition);
 
 	SelectBuilder where(String condition);
 

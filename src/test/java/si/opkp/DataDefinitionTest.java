@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -12,7 +13,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import si.opkp.model.DataDefinition;
+import si.opkp.model.Database;
 import si.opkp.model.FieldDefinition;
 import si.opkp.model.TableDefinition;
 
@@ -25,22 +26,24 @@ import static org.junit.Assert.assertThat;
 })
 public class DataDefinitionTest extends BaseTest {
 
+	@Autowired
+	private Database database;
+
 	@Test
 	public void dataDefinition() {
-		Set<String> tables = Sets.newHashSet("A", "B", "C", "D", "E");
+		Set<String> tables = Sets.newHashSet("a", "b", "c", "d", "e", "f");
 		HashMap<String, Set<String>> pks = new HashMap<>();
-		pks.put("A", Sets.newHashSet("A_ID"));
-		pks.put("B", Sets.newHashSet("B_ID"));
-		pks.put("C", Sets.newHashSet("C_ID"));
-		pks.put("D", Sets.newHashSet("D_ID"));
-		pks.put("E", Sets.newHashSet("E_ID"));
+		pks.put("a", Sets.newHashSet("a_id"));
+		pks.put("b", Sets.newHashSet("b_id"));
+		pks.put("c", Sets.newHashSet("c_id"));
+		pks.put("d", Sets.newHashSet("d_id"));
+		pks.put("e", Sets.newHashSet("e_id"));
+		pks.put("f", Sets.newHashSet("f_id"));
 
-		DataDefinition dd = DataDefinition.getInstance();
-
-		assertThat(dd.getTables(), is(tables));
+		assertThat(database.getTables(), is(tables));
 
 		tables.forEach(tableName -> {
-			TableDefinition td = dd.getDefinition(tableName);
+			TableDefinition td = database.getDefinition(tableName);
 
 			assertThat(td.getPrimaryKeys()
 							 .stream()

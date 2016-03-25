@@ -10,14 +10,16 @@ public class FieldDefinition {
 	}
 
 	private String name;
+	private String tableName;
 	private Type type;
 	private boolean notNull;
 	private boolean key;
 	private Object defaultValue;
 	private String extra;
 
-	public FieldDefinition(String name, Type type, boolean notNull, boolean key, Object defaultValue, String extra) {
+	public FieldDefinition(String name, String tableName, Type type, boolean notNull, boolean key, Object defaultValue, String extra) {
 		this.name = name;
+		this.tableName = tableName;
 		this.type = type;
 		this.notNull = notNull;
 		this.key = key;
@@ -27,6 +29,10 @@ public class FieldDefinition {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getTableName() {
+		return tableName;
 	}
 
 	public Type getType() {

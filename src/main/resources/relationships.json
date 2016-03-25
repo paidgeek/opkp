@@ -1,9 +1,0 @@
-{
-  "fir_food": {
-    "fir_value": "ORIGFDCD",
-    "fir_ingredients": "ORIGFDCD=FOODID"
-  },
-  "fir_value": {
-    "fir_component": "COMPID=ECOMPID"
-  }
-}

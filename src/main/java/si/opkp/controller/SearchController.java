@@ -10,29 +10,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import si.opkp.model.Database;
 import si.opkp.query.RequestColumn;
-import si.opkp.util.*;
+import si.opkp.util.Pojo;
+import si.opkp.util.RequestParams;
+import si.opkp.util.StopWords;
+import si.opkp.util.Util;
 
 @RestController
 @RequestMapping("v1/search")
 @CrossOrigin
 public class SearchController {
 
-	private static SearchController instance;
 	@Autowired
-	private Database db;
-
-	public static SearchController getInstance() {
-		return instance;
-	}
-
-	@PostConstruct
-	private void init() {
-		instance = this;
-	}
+	private Database database;
 
 	@RequestMapping(value = "/{model}", method = RequestMethod.GET)
 	public ResponseEntity<Pojo> get(@PathVariable("model") String model,
@@ -62,7 +53,7 @@ public class SearchController {
 
 		// TODO clean up
 		if (model.equals("fir_food")) {
-			objects = db.queryObjects("CALL search_foods(?, ?, ?)", kw, limit[0], limit[1]);
+			objects = database.queryObjects("CALL search_foods(?, ?, ?)", kw, limit[0], limit[1]);
 		} else {
 			return Util.responseError("invalid model", HttpStatus.BAD_REQUEST);
 		}
