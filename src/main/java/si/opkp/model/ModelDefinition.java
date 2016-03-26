@@ -3,15 +3,15 @@ package si.opkp.model;
 import java.util.Map;
 import java.util.Set;
 
-public class TableDefinition {
+public class ModelDefinition {
 
 	private String name;
-	private Set<FieldDefinition> primaryKeys;
+	private Set<FieldDefinition> identifiers;
 	private Map<String, FieldDefinition> fields;
 
-	public TableDefinition(String name, Map<String, FieldDefinition> fields, Set<FieldDefinition> primaryKeys) {
+	public ModelDefinition(String name, Map<String, FieldDefinition> fields, Set<FieldDefinition> identifiers) {
 		this.name = name;
-		this.primaryKeys = primaryKeys;
+		this.identifiers = identifiers;
 		this.fields = fields;
 	}
 
@@ -27,8 +27,8 @@ public class TableDefinition {
 		return fields.get(name);
 	}
 
-	public Set<FieldDefinition> getPrimaryKeys() {
-		return primaryKeys;
+	public Set<FieldDefinition> getIdentifiers() {
+		return identifiers;
 	}
 
 }

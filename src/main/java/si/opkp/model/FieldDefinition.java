@@ -10,29 +10,27 @@ public class FieldDefinition {
 	}
 
 	private String name;
-	private String tableName;
+	private String model;
 	private Type type;
 	private boolean notNull;
-	private boolean key;
+	private boolean identifier;
 	private Object defaultValue;
-	private String extra;
 
-	public FieldDefinition(String name, String tableName, Type type, boolean notNull, boolean key, Object defaultValue, String extra) {
+	public FieldDefinition(String name, String model, Type type, boolean notNull, boolean identifier, Object defaultValue) {
 		this.name = name;
-		this.tableName = tableName;
+		this.model = model;
 		this.type = type;
 		this.notNull = notNull;
-		this.key = key;
+		this.identifier = identifier;
 		this.defaultValue = defaultValue;
-		this.extra = extra;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public String getTableName() {
-		return tableName;
+	public String getModel() {
+		return model;
 	}
 
 	public Type getType() {
@@ -43,16 +41,12 @@ public class FieldDefinition {
 		return notNull;
 	}
 
-	public boolean isKey() {
-		return key;
+	public boolean isIdentifier() {
+		return identifier;
 	}
 
 	public Object getDefaultValue() {
 		return defaultValue;
-	}
-
-	public String getExtra() {
-		return extra;
 	}
 
 }

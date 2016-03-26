@@ -2,9 +2,9 @@ package si.opkp.model;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import si.opkp.query.ConditionBuilder;
+import si.opkp.query.SelectBuilder;
 import si.opkp.util.DirectedGraph;
 import si.opkp.util.Pojo;
 
@@ -12,24 +12,14 @@ public interface Database {
 
 	DirectedGraph<String, ConditionBuilder> getDataGraph();
 
-	Validator getValidator();
+	Map<String, ModelDefinition> getModels();
 
-	Map<String, TableDefinition> getDefinitions();
+	List<Pojo> queryObjects(SelectBuilder selectBuilder, Object... args);
 
-	TableDefinition getDefinition(String table);
+	Pojo queryObject(SelectBuilder selectBuilder, Object... args);
 
-	Set<String> getTables();
+	long count(SelectBuilder selectBuilder, Object... args);
 
-	List<Pojo> queryObjects(String sql);
-
-	List<Pojo> queryObjects(String sql, Object... args);
-
-	Pojo queryObject(String sql);
-
-	Pojo queryObject(String sql, Object... args);
-
-	long update(String sql);
-
-	long update(String sql, Object... args);
+	List<Pojo> callFunction(String function, Object... args);
 
 }

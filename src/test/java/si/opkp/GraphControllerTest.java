@@ -12,12 +12,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.List;
 
 import si.opkp.controller.GraphController;
-import si.opkp.model.Database;
 import si.opkp.util.Pojo;
-import si.opkp.util.RequestParams;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextHierarchy({
@@ -27,30 +24,22 @@ public class GraphControllerTest extends BaseTest {
 
 	@Autowired
 	private GraphController graphController;
-	@Autowired
-	private Database database;
 
 	@Test
-	public void fullQuery() {
-		ResponseEntity<Pojo> response = graphController.perform("e", new RequestParams.Builder()
-				.columns("*")
-				.query("value~'%A%'")
-				.sort("value")
-				.limit(0, 20)
+	public void simple() {
+		ResponseEntity<Pojo> response = graphController.traverse("A", new RequestParamsBuilder()
+				.take(10)
 				.build());
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		Pojo body = response.getBody();
-		List<Pojo> result = (List<Pojo>) body.getProperty("result");
-		Pojo meta = (Pojo) body.getProperty("meta");
+		List<Pojo> result = ((List<Pojo>) response.getBody()
+																.getProperty("result"));
+		Pojo meta = (Pojo) response.getBody()
+											.getProperty("meta");
 
-		assertEquals(30, (long) meta.getLong("total"));
-		assertEquals(20, (long) meta.getLong("count"));
-
-		for (Pojo entry : result) {
-			assertThat(entry.getString("VALUE"), containsString("A"));
-		}
+		assertEquals(10, meta.getLong("count"));
+		assertEquals(200, meta.getLong("total"));
 	}
 
 }

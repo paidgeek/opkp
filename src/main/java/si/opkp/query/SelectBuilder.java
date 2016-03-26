@@ -2,20 +2,20 @@ package si.opkp.query;
 
 public interface SelectBuilder extends QueryBuilder {
 
-	SelectBuilder expr(RequestColumn... expr);
+	SelectBuilder fields(Field... fields);
 
-	SelectBuilder from(String table);
+	SelectBuilder from(String model);
 
-	SelectBuilder join(String table, ConditionBuilder condition);
-
-	SelectBuilder where(String condition);
+	SelectBuilder join(String model, ConditionBuilder conditionBuilder);
 
 	SelectBuilder where(ConditionBuilder conditionBuilder);
 
-	SelectBuilder orderBy(RequestColumn... expr);
+	SelectBuilder sort(Field... fields);
 
-	SelectBuilder groupBy(RequestColumn... expr);
+	SelectBuilder group(Field... fields);
 
-	SelectBuilder limit(Integer... bounds);
+	SelectBuilder skip(int skip);
+
+	SelectBuilder take(int take);
 
 }

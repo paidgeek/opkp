@@ -1,28 +1,31 @@
-package si.opkp.query;
+package si.opkp.query.mysql;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import si.opkp.query.Field;
+import si.opkp.query.InsertBuilder;
 import si.opkp.util.Pair;
 
-class SQLInsertBuilder implements InsertBuilder {
+public class SQLInsertBuilder implements InsertBuilder {
 
 	private StringBuilder query;
-	private List<Pair<String, Object>> values;
+	private List<Pair<Field, Object>> values;
 
 	@Override
-	public SQLInsertBuilder into(String table) {
+	public SQLInsertBuilder into(String model) {
 		query = new StringBuilder();
 		values = new ArrayList<>();
 
 		query.append("INSERT INTO ");
-		query.append(table);
+		query.append(model);
 
 		return this;
 	}
 
 	@Override
-	public SQLInsertBuilder value(String column, Object value) {
-		values.add(new Pair<>(column, value));
+	public SQLInsertBuilder value(Field field, Object value) {
+		values.add(new Pair<>(field, value));
 
 		return this;
 	}
@@ -32,11 +35,11 @@ class SQLInsertBuilder implements InsertBuilder {
 		query.append("(");
 
 		for (int i = 0; i < values.size(); i++) {
-			String column = values.get(i)
-										 .getFirst();
+			Field field = values.get(i)
+									  .getFirst();
 
 			query.append("`");
-			query.append(column);
+			query.append(field);
 			query.append("`");
 
 			if (i < values.size() - 1) {

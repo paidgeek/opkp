@@ -21,7 +21,7 @@
                <h4>Columns</h4>
                <div ng-repeat="i in range(pathLength) track by $index" ng-if="dataGraph.definitions[path[i]]">
                   {{path[i]}}
-                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns[i].length}} columns selected" ng-model="selectedColumns[i]" ms-header="Select columns" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
+                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns[i].length}} fields selected" ng-model="selectedColumns[i]" ms-header="Select fields" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
                </div>
 
                <h4>Conditions</h4>

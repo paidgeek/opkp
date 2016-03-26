@@ -1,5 +1,7 @@
 package si.opkp.query;
 
+import si.opkp.query.mysql.*;
+
 public class QueryFactory {
 
 	public static InsertBuilder insert() {

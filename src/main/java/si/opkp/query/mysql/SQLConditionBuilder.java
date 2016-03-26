@@ -1,8 +1,10 @@
-package si.opkp.query;
+package si.opkp.query.mysql;
 
 import com.moybl.restql.RestQL;
 
 import si.opkp.model.FieldDefinition;
+import si.opkp.query.ConditionBuilder;
+import si.opkp.query.Field;
 
 public class SQLConditionBuilder implements ConditionBuilder {
 
@@ -17,12 +19,12 @@ public class SQLConditionBuilder implements ConditionBuilder {
 		if (a instanceof FieldDefinition) {
 			FieldDefinition fa = (FieldDefinition) a;
 
-			condition.append(fa.getTableName());
+			condition.append(fa.getModel());
 			condition.append(".");
 			condition.append(fa.getName());
-		} else if (a instanceof RequestColumn) {
+		} else if (a instanceof Field) {
 			condition.append('\'');
-			condition.append(((RequestColumn) a).getName());
+			condition.append(((Field) a).getName());
 			condition.append('\'');
 		} else {
 			condition.append(a);
@@ -33,7 +35,7 @@ public class SQLConditionBuilder implements ConditionBuilder {
 		if (b instanceof FieldDefinition) {
 			FieldDefinition fb = (FieldDefinition) b;
 
-			condition.append(fb.getTableName());
+			condition.append(fb.getModel());
 			condition.append(".");
 			condition.append(fb.getName());
 		} else if (b instanceof String) {

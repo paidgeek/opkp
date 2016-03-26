@@ -2,11 +2,9 @@ package si.opkp.query;
 
 public interface UpdateBuilder extends QueryBuilder {
 
-	UpdateBuilder from(String table);
+	UpdateBuilder from(String model);
 
-	UpdateBuilder set(RequestColumn column, Object value);
-
-	UpdateBuilder where(String condition);
+	UpdateBuilder set(Field field, Object value);
 
 	UpdateBuilder where(ConditionBuilder conditionBuilder);
 

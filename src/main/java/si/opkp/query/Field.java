@@ -5,7 +5,7 @@ import java.util.Map;
 
 import si.opkp.util.Aggregate;
 
-public class RequestColumn {
+public class Field {
 
 	private static final Map<String, Aggregate> SUFFIXES = new HashMap<String, Aggregate>() {{
 		put("$avg", Aggregate.AVG);
@@ -23,7 +23,7 @@ public class RequestColumn {
 	private String name;
 	private Aggregate aggregate;
 
-	public RequestColumn(String name) {
+	public Field(String name) {
 		this.name = name;
 		this.aggregate = Aggregate.NONE;
 
@@ -36,7 +36,7 @@ public class RequestColumn {
 				  });
 	}
 
-	public RequestColumn(String name, Aggregate aggregate) {
+	public Field(String name, Aggregate aggregate) {
 		this.name = name;
 		this.aggregate = aggregate;
 	}
@@ -47,10 +47,6 @@ public class RequestColumn {
 
 	public Aggregate getAggregate() {
 		return aggregate;
-	}
-
-	public static RequestColumn columnAll() {
-		return new RequestColumn("*");
 	}
 
 }

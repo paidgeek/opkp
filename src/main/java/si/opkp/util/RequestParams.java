@@ -1,218 +1,98 @@
 package si.opkp.util;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import java.util.List;
-
-import si.opkp.query.RequestColumn;
+import si.opkp.query.Field;
 
 @JsonDeserialize(using = RequestParamsDeserializer.class)
 public class RequestParams {
 
-	private RequestColumn[] columns;
-	private RequestColumn[] sort;
-	private RequestColumn[] group;
+	private Field[] fields;
+	private Field[] sort;
+	private Field[] group;
 	private String query;
-	private Integer[] limit;
-	private String[] keywords;
-	private String language;
+	private int skip;
+	private int take;
 
 	public RequestParams() {
-		columns = new RequestColumn[]{RequestColumn.columnAll()};
-		limit = new Integer[]{0, 100};
-		keywords = new String[]{};
-		language = "en";
+		skip = 0;
+		take = 100;
 	}
 
-	@JsonCreator
-	public RequestParams(@JsonProperty("columns") List<String> columnList,
-								@JsonProperty("sort") List<String> sortList,
-								@JsonProperty("group") List<String> groupList,
-								@JsonProperty("q") String query,
-								@JsonProperty("body") List<Integer> limitList,
-								@JsonProperty("keywords") List<String> keywordList,
-								@JsonProperty("language") String language) {
-		this();
-
-		this.query = query;
-
-		if (columnList != null) {
-			columns = new RequestColumn[columnList.size()];
-
-			for (int i = 0; i < columns.length; i++) {
-				columns[i] = new RequestColumn(columnList.get(i));
-			}
-		}
-
-		if (sortList != null) {
-			sort = new RequestColumn[sortList.size()];
-
-			for (int i = 0; i < sort.length; i++) {
-				sort[i] = new RequestColumn(sortList.get(i));
-			}
-		}
-
-		if (groupList != null) {
-			group = new RequestColumn[groupList.size()];
-
-			for (int i = 0; i < group.length; i++) {
-				group[i] = new RequestColumn(groupList.get(i));
-			}
-		}
-
-		if (keywordList != null) {
-			keywords = new String[keywordList.size()];
-			keywordList.toArray(keywords);
-		}
-
-		if (language != null && !language.isEmpty()) {
-			this.language = language;
-		}
-
-		if (limitList != null && !limitList.isEmpty()) {
-			if (limitList.size() == 1) {
-				limit[1] = limitList.get(0);
-			} else {
-				limit[0] = limitList.get(0);
-				limit[1] = limitList.get(1);
-			}
-		}
+	public Field[] getFields() {
+		return fields;
 	}
 
-	public void setColumns(String columns) {
-		String[] cols = columns.split(",");
-		this.columns = new RequestColumn[cols.length];
-
-		for (int i = 0; i < cols.length; i++) {
-			this.columns[i] = new RequestColumn(cols[i]);
-		}
+	public void setFields(Field[] fields) {
+		this.fields = fields;
 	}
 
-	public void setSort(String sort) {
-		String[] cols = sort.split(",");
-		this.sort = new RequestColumn[cols.length];
-
-		for (int i = 0; i < cols.length; i++) {
-			this.sort[i] = new RequestColumn(cols[i]);
-		}
+	public Field[] getSort() {
+		return sort;
 	}
 
-	public void setGroup(String group) {
-		String[] cols = group.split(",");
-		this.group = new RequestColumn[cols.length];
-
-		for (int i = 0; i < cols.length; i++) {
-			this.group[i] = new RequestColumn(cols[i]);
-		}
+	public void setSort(Field[] sort) {
+		this.sort = sort;
 	}
 
-	public void setQuery(String query) {
-		this.query = query;
+	public Field[] getGroup() {
+		return group;
 	}
 
-	public void setLimit(String limit) {
-		String[] bounds = limit.split(",");
-
-		if (bounds.length == 1) {
-			this.limit[1] = Integer.parseInt(bounds[0]);
-		} else if (bounds.length == 2) {
-			this.limit[0] = Integer.parseInt(bounds[0]);
-			this.limit[1] = Integer.parseInt(bounds[1]);
-		}
-	}
-
-	public void setKeywords(String keywords) {
-		this.keywords = keywords.split(",");
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-
-	public Integer[] getLimit() {
-		return limit;
+	public void setGroup(Field[] group) {
+		this.group = group;
 	}
 
 	public String getQuery() {
 		return query;
 	}
 
-	public RequestColumn[] getColumns() {
-		return columns;
+	public void setQuery(String query) {
+		this.query = query;
 	}
 
-	public String[] getKeywords() {
-		return keywords;
+	public int getSkip() {
+		return skip;
 	}
 
-	public RequestColumn[] getSort() {
-		return sort;
+	public void setSkip(int skip) {
+		this.skip = skip;
 	}
 
-	public RequestColumn[] getGroup() {
-		return group;
+	public int getTake() {
+		return take;
 	}
 
-	public String getLanguage() {
-		return language;
+	public void setTake(int take) {
+		this.take = take;
 	}
 
-	public static class Builder {
+	// setters for @ModelAttribute
+	public void setFields(String fieldList) {
+		String[] cols = fieldList.split(",");
+		this.fields = new Field[cols.length];
 
-		private RequestParams params;
-
-		public Builder() {
-			params = new RequestParams();
+		for (int i = 0; i < cols.length; i++) {
+			this.fields[i] = new Field(cols[i]);
 		}
+	}
 
-		public Builder columns(String... columns) {
-			params.setColumns(String.join(",", columns));
+	public void setSort(String sortList) {
+		String[] cols = sortList.split(",");
+		this.sort = new Field[cols.length];
 
-			return this;
+		for (int i = 0; i < cols.length; i++) {
+			this.sort[i] = new Field(cols[i]);
 		}
+	}
 
-		public Builder sort(String... sort) {
-			params.setSort(String.join(",", sort));
+	public void setGroup(String groupList) {
+		String[] cols = groupList.split(",");
+		this.group = new Field[cols.length];
 
-			return this;
+		for (int i = 0; i < cols.length; i++) {
+			this.group[i] = new Field(cols[i]);
 		}
-
-		public Builder group(String... group) {
-			params.setGroup(String.join(",", group));
-
-			return this;
-		}
-
-		public Builder query(String query) {
-			params.setQuery(query);
-
-			return this;
-		}
-
-		public Builder limit(int offset, int count) {
-			params.setLimit(offset + "," + count);
-
-			return this;
-		}
-
-		public Builder keywords(String... keywords) {
-			params.setKeywords(String.join(",", keywords));
-
-			return this;
-		}
-
-		public Builder language(String language) {
-			params.setLanguage(language);
-
-			return this;
-		}
-
-		public RequestParams build() {
-			return params;
-		}
-
 	}
 
 }

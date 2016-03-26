@@ -11,9 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
-import si.opkp.controller.PathController;
+import si.opkp.controller.FunctionController;
 import si.opkp.util.Pojo;
-import si.opkp.util.RequestParams;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,25 +20,24 @@ import static org.junit.Assert.assertEquals;
 @ContextHierarchy({
 		@ContextConfiguration(name = "testContext", classes = TestData.class)
 })
-public class PathControllerTest extends BaseTest {
+public class FunctionControllerTest extends BaseTest {
 
 	@Autowired
-	private PathController pathController;
+	private FunctionController functionController;
 
 	@Test
-	public void longPath() {
-		ResponseEntity<Pojo> response = pathController.perform("e", "a", new RequestParams.Builder()
-				.limit(0, 10)
-				.build());
+	public void simple() {
+		ResponseEntity<Pojo> response = functionController.call("ping", null);
 
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		Pojo body = response.getBody();
-		List<Pojo> result = (List<Pojo>) body.getProperty("result");
-		Pojo meta = (Pojo) body.getProperty("meta");
+		Pojo result = ((List<Pojo>) response.getBody()
+														.getProperty("result")).get(0);
+		Pojo meta = (Pojo) response.getBody()
+											.getProperty("meta");
 
-		assertEquals(200, (long) meta.getLong("total"));
-		assertEquals(10, (long) meta.getLong("count"));
+		assertEquals(1, meta.getLong("count"));
+		assertEquals("pong", result.getString("ping"));
 	}
 
 }

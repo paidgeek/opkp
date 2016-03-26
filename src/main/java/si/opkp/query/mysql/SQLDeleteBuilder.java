@@ -1,23 +1,21 @@
-package si.opkp.query;
+package si.opkp.query.mysql;
 
-class SQLDeleteBuilder implements DeleteBuilder {
+import si.opkp.query.ConditionBuilder;
+import si.opkp.query.DeleteBuilder;
+
+public class SQLDeleteBuilder implements DeleteBuilder {
 
 	private StringBuilder query;
 
 	@Override
-	public SQLDeleteBuilder from(String table) {
+	public SQLDeleteBuilder from(String model) {
 		query = new StringBuilder();
 
 		query.append("DELETE FROM ");
-		query.append(table);
+		query.append(model);
 		query.append("\n");
 
 		return this;
-	}
-
-	@Override
-	public DeleteBuilder where(String condition) {
-		return where(new SQLConditionBuilder().parse(condition));
 	}
 
 	@Override

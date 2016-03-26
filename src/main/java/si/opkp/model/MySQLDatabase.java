@@ -9,16 +9,17 @@ import java.util.*;
 import javax.sql.DataSource;
 
 import si.opkp.query.ConditionBuilder;
-import si.opkp.query.SQLConditionBuilder;
+import si.opkp.query.Field;
+import si.opkp.query.QueryFactory;
+import si.opkp.query.SelectBuilder;
 import si.opkp.util.DirectedGraph;
 import si.opkp.util.Pojo;
 
 @Component
-class JDBCDatabase implements Database {
+class MySQLDatabase implements Database {
 
 	private DirectedGraph<String, ConditionBuilder> dataGraph;
-	private Validator validator;
-	private Map<String, TableDefinition> definitions;
+	private Map<String, ModelDefinition> definitions;
 	private Connection connection;
 
 	@Autowired
@@ -57,7 +58,6 @@ class JDBCDatabase implements Database {
 				FieldDefinition.Type type = null;
 				boolean key = false;
 				boolean notNull = cols.getInt("NULLABLE") != DatabaseMetaData.columnNullable;
-				String extra = cols.getString("REMARKS");
 
 				if (primaryKeyNames.contains(name)) {
 					key = true;
@@ -82,7 +82,7 @@ class JDBCDatabase implements Database {
 				//Object defaultValue = cols.getString("COLUMN_DEF");
 				Object defaultValue = null;
 
-				FieldDefinition fd = new FieldDefinition(name, tableName, type, notNull, key, defaultValue, extra);
+				FieldDefinition fd = new FieldDefinition(name, tableName, type, notNull, key, defaultValue);
 				fields.put(name, fd);
 
 				if (key) {
@@ -90,7 +90,7 @@ class JDBCDatabase implements Database {
 				}
 			}
 
-			definitions.put(tableName, new TableDefinition(tableName, fields, primaryKeys));
+			definitions.put(tableName, new ModelDefinition(tableName, fields, primaryKeys));
 		}
 
 		// set graph's edges based on foreign keys
@@ -100,17 +100,15 @@ class JDBCDatabase implements Database {
 			while (fks.next()) {
 				String pk = fks.getString("PKCOLUMN_NAME");
 				String fk = fks.getString("FKCOLUMN_NAME");
-				TableDefinition thisTable = definitions.get(tableName);
-				TableDefinition otherTable = definitions.get(fks.getString("FKTABLE_NAME"));
+				ModelDefinition thisTable = definitions.get(tableName);
+				ModelDefinition otherTable = definitions.get(fks.getString("FKTABLE_NAME"));
 
-				ConditionBuilder conditionBuilder = new SQLConditionBuilder()
-						.equal(thisTable.getField(pk), otherTable.getField(fk));
+				ConditionBuilder conditionBuilder = QueryFactory.condition()
+																				.equal(thisTable.getField(pk), otherTable.getField(fk));
 
 				dataGraph.addEdge(tableName, otherTable.getName(), conditionBuilder);
 			}
 		}
-
-		validator = new Validator(this);
 	}
 
 	@Override
@@ -119,35 +117,15 @@ class JDBCDatabase implements Database {
 	}
 
 	@Override
-	public Validator getValidator() {
-		return validator;
-	}
-
-	@Override
-	public Map<String, TableDefinition> getDefinitions() {
+	public Map<String, ModelDefinition> getModels() {
 		return definitions;
 	}
 
 	@Override
-	public TableDefinition getDefinition(String table) {
-		return definitions.get(table);
-	}
-
-	@Override
-	public Set<String> getTables() {
-		return definitions.keySet();
-	}
-
-	@Override
-	public List<Pojo> queryObjects(String sql, Object... args) {
-		return queryObjects(buildStatement(sql, args));
-	}
-
-	@Override
-	public List<Pojo> queryObjects(String sql) {
+	public List<Pojo> queryObjects(SelectBuilder selectBuilder, Object... args) {
 		try {
 			ResultSet rs = connection.createStatement()
-											 .executeQuery(sql);
+											 .executeQuery(buildStatement(selectBuilder.build(), args));
 
 			ResultSetMetaData meta = rs.getMetaData();
 			List<Pojo> objects = new ArrayList<>();
@@ -171,15 +149,10 @@ class JDBCDatabase implements Database {
 	}
 
 	@Override
-	public Pojo queryObject(String sql, Object... args) {
-		return queryObject(buildStatement(sql, args));
-	}
-
-	@Override
-	public Pojo queryObject(String sql) {
+	public Pojo queryObject(SelectBuilder selectBuilder, Object... args) {
 		try {
 			ResultSet rs = connection.createStatement()
-											 .executeQuery(sql);
+											 .executeQuery(buildStatement(selectBuilder.build(), args));
 
 			if (!rs.next()) {
 				return null;
@@ -201,27 +174,27 @@ class JDBCDatabase implements Database {
 	}
 
 	@Override
-	public long update(String sql, Object... args) {
-		return update(buildStatement(sql, args));
+	public long count(SelectBuilder selectBuilder, Object... args) {
+		selectBuilder.fields(new Field("COUNT(*) as total"));
+		Pojo result = queryObject(selectBuilder, args);
+
+		return result.getLong("total");
 	}
 
 	@Override
-	public long update(String sql) {
-		try {
-			return connection.createStatement()
-								  .executeUpdate(sql);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return 0;
+	public List<Pojo> callFunction(String function, Object... args) {
+		return null;
 	}
 
-	private String buildStatement(String sql, Object... args) {
+	private String buildStatement(String statement, Object... args) {
+		if (args == null || args.length == 0) {
+			return statement;
+		}
+
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
 
-		for (char ch : sql.toCharArray()) {
+		for (char ch : statement.toCharArray()) {
 			if (ch == '?') {
 				sb.append(args[i++].toString());
 			} else {

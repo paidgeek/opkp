@@ -35,8 +35,8 @@
                         <th>
                            #
                         </th>
-                        <th ng-repeat="(key, value) in data.result[0]" ng-if="$index > 0">
-                           {{key}}
+                        <th ng-repeat="(identifier, value) in data.result[0]" ng-if="$index > 0">
+                           {{identifier}}
                         </th>
                         <th></th>
                      </tr>
@@ -80,8 +80,8 @@
                <table class="table table-hover">
                   <thead>
                      <tr>
-                        <th ng-repeat="(key, value) in data.components[0]">
-                           {{key}}
+                        <th ng-repeat="(identifier, value) in data.components[0]">
+                           {{identifier}}
                         </th>
                         <th></th>
                      </tr>

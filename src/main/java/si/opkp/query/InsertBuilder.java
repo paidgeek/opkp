@@ -2,8 +2,8 @@ package si.opkp.query;
 
 public interface InsertBuilder extends QueryBuilder {
 
-	InsertBuilder into(String table);
+	InsertBuilder into(String model);
 
-	InsertBuilder value(String column, Object value);
+	InsertBuilder value(Field field, Object value);
 
 }

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 import si.opkp.model.Database;
 import si.opkp.model.FieldDefinition;
-import si.opkp.model.TableDefinition;
+import si.opkp.model.ModelDefinition;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,12 +40,13 @@ public class DataDefinitionTest extends BaseTest {
 		pks.put("e", Sets.newHashSet("e_id"));
 		pks.put("f", Sets.newHashSet("f_id"));
 
-		assertThat(database.getTables(), is(tables));
+		assertThat(database.getModels(), is(tables));
 
 		tables.forEach(tableName -> {
-			TableDefinition td = database.getDefinition(tableName);
+			ModelDefinition td = database.getModels()
+												  .get(tableName);
 
-			assertThat(td.getPrimaryKeys()
+			assertThat(td.getIdentifiers()
 							 .stream()
 							 .map(FieldDefinition::getName)
 							 .collect(Collectors.toSet()), is(pks.get(tableName)));

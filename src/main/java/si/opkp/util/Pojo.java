@@ -31,11 +31,11 @@ public class Pojo implements JsonSerializable {
 		return properties.get(name);
 	}
 
-	public Integer getInteger(String name) {
+	public int getInteger(String name) {
 		return (Integer) properties.get(name);
 	}
 
-	public Long getLong(String name) {
+	public long getLong(String name) {
 		Object obj = properties.get(name);
 
 		if (obj instanceof Integer) {
@@ -106,6 +106,26 @@ public class Pojo implements JsonSerializable {
 	@Override
 	public void serializeWithType(JsonGenerator jsonGenerator, SerializerProvider serializerProvider, TypeSerializer typeSerializer) throws IOException {
 		throw new NotImplementedException();
+	}
+
+	public static class Builder {
+
+		private Pojo pojo;
+
+		public Builder() {
+			pojo = new Pojo();
+		}
+
+		public Builder property(String name, Object value) {
+			pojo.setProperty(name, value);
+
+			return this;
+		}
+
+		public Pojo build() {
+			return pojo;
+		}
+
 	}
 
 }

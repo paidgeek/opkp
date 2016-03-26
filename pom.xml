@@ -12,6 +12,7 @@
     <name>opkp</name>
     <description>Open platform for clinical nutrition</description>
 
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -109,13 +110,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
+            <version>3.8.11.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
