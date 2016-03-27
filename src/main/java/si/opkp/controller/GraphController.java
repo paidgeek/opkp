@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
+import si.opkp.controller.middlewares.GraphValidation;
 import si.opkp.model.Database;
 import si.opkp.query.ConditionBuilder;
 import si.opkp.query.QueryFactory;
@@ -18,6 +19,7 @@ import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
 @Component("graph")
+@Use(classes = {GraphValidation.class})
 class GraphController implements Controller {
 
 	@Autowired
@@ -37,14 +39,10 @@ class GraphController implements Controller {
 
 			Optional<DirectedGraph<String, ConditionBuilder>.Edge> edge = database.getDataGraph()
 																										 .getEdge(a, b);
-			if (edge.isPresent()) {
-				selectBuilder.join(b, edge.get()
-												  .getValue());
-				countBuilder.join(b, edge.get()
-												 .getValue());
-			} else {
-				return Util.responseError(String.format("can not join '%s' and '%s'", a, b), HttpStatus.BAD_REQUEST);
-			}
+			selectBuilder.join(b, edge.get()
+											  .getValue());
+			countBuilder.join(b, edge.get()
+											 .getValue());
 		}
 
 		if (params.getQuery() != null) {
