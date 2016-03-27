@@ -40,7 +40,8 @@ public class DataDefinitionTest extends BaseTest {
 		pks.put("e", Sets.newHashSet("e_id"));
 		pks.put("f", Sets.newHashSet("f_id"));
 
-		assertThat(database.getModels(), is(tables));
+		assertThat(database.getModels()
+								 .keySet(), is(tables));
 
 		tables.forEach(tableName -> {
 			ModelDefinition td = database.getModels()
