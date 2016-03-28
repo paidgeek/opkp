@@ -53,7 +53,7 @@ OPKPService.create = function() {
       return {
          searchFood: function(keywords, offset, count) {
             keywords = keywords.join(",");
-            var url = OPKPService.host + "search/fir_food?columns=ORIGFDCD,ORIGFDNM,ENGFDNAM,SCINAM&keywords=" + keywords + "&limit=" + offset + "," + count;
+            var url = OPKPService.host + "search/fir_food?fields=ORIGFDCD,ORIGFDNM,ENGFDNAM,SCINAM&keywords=" + keywords + "&limit=" + offset + "," + count;
 
             return get($http, $q, url);
          },
@@ -75,30 +75,30 @@ OPKPService.create = function() {
                   model: "fir_food,fir_value,fir_component",
                   params: {
                      query: "ORIGFDCD:'" + id + "'",
-                     columns: ["ORIGCPNM", "SELVAL", "UNIT"]
+                     fields: ["ORIGCPNM", "SELVAL", "UNIT"]
                   },
                   dependencies: ["food"]
                }]
             });
          },
-         graph: function(model, columns) {
+         graph: function(model, fields) {
             if (model.constructor === Array) {
                model = model.join(",");
             }
 
             var url = OPKPService.host + "graph/" + model + "?";
 
-            if (columns) {
-               url += "columns=" + columns.join(",");
+            if (fields) {
+               url += "fields=" + fields.join(",");
             }
 
             return get($http, $q, url);
          },
-         path: function(start, goals, columns) {
+         path: function(start, goals, fields) {
             var url = OPKPService.host + "path/" + start + "/" + goals.join(",") + "?";
 
-            if (columns) {
-               url += "columns=" + columns.join(",");
+            if (fields) {
+               url += "fields=" + fields.join(",");
             }
 
             return get($http, $q, url);

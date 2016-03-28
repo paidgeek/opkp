@@ -1,21 +1,26 @@
 package si.opkp.query;
 
-public interface SelectBuilder extends QueryBuilder {
+import com.moybl.restql.ast.AstNode;
+import com.moybl.restql.ast.Sequence;
 
-	SelectBuilder fields(Field... fields);
+public interface SelectBuilder {
 
-	SelectBuilder from(String model);
+	SelectBuilder fields(Sequence fields);
 
-	SelectBuilder join(String model, ConditionBuilder conditionBuilder);
+	SelectBuilder from(AstNode model);
 
-	SelectBuilder where(ConditionBuilder conditionBuilder);
+	SelectBuilder join(AstNode model, AstNode conditionBuilder);
 
-	SelectBuilder sort(Field... fields);
+	SelectBuilder where(AstNode conditionBuilder);
 
-	SelectBuilder group(Field... fields);
+	SelectBuilder sort(Sequence fields);
 
-	SelectBuilder skip(int skip);
+	SelectBuilder group(Sequence fields);
 
-	SelectBuilder take(int take);
+	SelectBuilder skip(AstNode skip);
+
+	SelectBuilder take(AstNode take);
+
+	String build();
 
 }

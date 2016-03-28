@@ -1,96 +1,81 @@
 package si.opkp.query.mysql;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.moybl.restql.Token;
+import com.moybl.restql.ast.*;
 
-import si.opkp.query.ConditionBuilder;
-import si.opkp.query.Field;
+import java.util.ArrayList;
+import java.util.List;
+
 import si.opkp.query.SelectBuilder;
-import si.opkp.util.Aggregate;
 import si.opkp.util.Pair;
 
 public class SQLSelectBuilder implements SelectBuilder {
 
-	private static final Map<Aggregate, String> AGGREGATE_PREFIXES = new HashMap<Aggregate, String>() {{
-		put(Aggregate.AVG, "AVG(");
-		put(Aggregate.COUNT, "COUNT(");
-		put(Aggregate.COUNT_DISTINCT, "COUNT(DISTINCT ");
-		put(Aggregate.MAX, "MAX(");
-		put(Aggregate.MIN, "MIN(");
-		put(Aggregate.SUM, "SUM(");
-		put(Aggregate.STD, "STD(");
-		put(Aggregate.STD_SAMPLE, "STDDEV_SAMP(");
-		put(Aggregate.VAR, "VAR_POP(");
-		put(Aggregate.VAR_SAMPLE, "VAR_SAMP(");
-	}};
-
-	private Field[] fields;
-	private String from;
-	private List<Pair<String, ConditionBuilder>> joins;
-	private ConditionBuilder where;
-	private Field[] sort;
-	private Field[] group;
-	private int skip, take;
+	private Sequence fields;
+	private AstNode from;
+	private List<Pair<AstNode, AstNode>> joins;
+	private AstNode where;
+	private Sequence sort;
+	private Sequence group;
+	private AstNode skip, take;
 
 	public SQLSelectBuilder() {
 		joins = new ArrayList<>();
-		skip = -1;
-		take = -1;
+		skip = new Literal(0, Token.NUMBER);
+		take = new Literal(100, Token.NUMBER);
 	}
 
 	@Override
-	public SelectBuilder fields(Field... fields) {
+	public SelectBuilder fields(Sequence fields) {
 		this.fields = fields;
 
 		return this;
 	}
 
 	@Override
-	public SQLSelectBuilder from(String model) {
+	public SQLSelectBuilder from(AstNode model) {
 		this.from = model;
 
 		return this;
 	}
 
 	@Override
-	public SQLSelectBuilder join(String model, ConditionBuilder conditionBuilder) {
-		joins.add(new Pair<>(model, conditionBuilder));
+	public SQLSelectBuilder join(AstNode model, AstNode condition) {
+		joins.add(new Pair<>(model, condition));
 
 		return this;
 	}
 
 	@Override
-	public SQLSelectBuilder where(ConditionBuilder conditionBuilder) {
-		this.where = conditionBuilder;
+	public SQLSelectBuilder where(AstNode condition) {
+		this.where = condition;
 
 		return this;
 	}
 
 	@Override
-	public SQLSelectBuilder sort(Field... fields) {
+	public SQLSelectBuilder sort(Sequence fields) {
 		this.sort = fields;
 
 		return this;
 	}
 
 	@Override
-	public SelectBuilder group(Field... fields) {
+	public SelectBuilder group(Sequence fields) {
 		this.group = fields;
 
 		return this;
 	}
 
 	@Override
-	public SelectBuilder skip(int skip) {
+	public SelectBuilder skip(AstNode skip) {
 		this.skip = skip;
 
 		return this;
 	}
 
 	@Override
-	public SelectBuilder take(int take) {
+	public SelectBuilder take(AstNode take) {
 		this.take = take;
 
 		return this;
@@ -101,44 +86,24 @@ public class SQLSelectBuilder implements SelectBuilder {
 		StringBuilder query = new StringBuilder();
 
 		query.append("SELECT ");
-		if (fields == null || fields.length == 0) {
+		if (fields == null || fields.getElements()
+											 .size() == 0) {
 			query.append("*");
 		} else {
-			for (int i = 0; i < fields.length; i++) {
-				Field col = fields[i];
-
-				if (col.getAggregate() == Aggregate.NONE) {
-					query.append(col.getName());
-				} else {
-					AGGREGATE_PREFIXES.keySet()
-											.stream()
-											.filter(a -> col.getAggregate() == a)
-											.forEach(a -> query.append(AGGREGATE_PREFIXES.get(a))
-																	 .append(col.getName())
-																	 .append(") AS ")
-																	 .append(col.getName())
-																	 .append("_")
-																	 .append(a));
-				}
-
-				if (i < fields.length - 1) {
-					query.append(", ");
-				}
-			}
+			query.append(SQLSourceFactory.build(fields));
 		}
 
 		query.append("\n");
 
 		query.append("FROM ")
-			  .append(from)
+			  .append(SQLSourceFactory.build(from))
 			  .append("\n");
 
-		for (Pair<String, ConditionBuilder> join : joins) {
+		for (Pair<AstNode, AstNode> join : joins) {
 			query.append("INNER JOIN ")
-				  .append(join.getFirst());
+				  .append(SQLSourceFactory.build(join.getFirst()));
 
-			String cond = join.getSecond()
-									.build();
+			String cond = SQLSourceFactory.build(join.getSecond());
 
 			if (cond.matches("^[a-zA-Z0-9_]*$")) {
 				query.append(" USING(")
@@ -155,72 +120,54 @@ public class SQLSelectBuilder implements SelectBuilder {
 
 		if (where != null) {
 			query.append("WHERE ")
-				  .append(where.build())
+				  .append(SQLSourceFactory.build(where))
 				  .append("\n");
 		}
 
-		if (sort != null && sort.length > 0) {
+		if (group != null && !group.getElements()
+											.isEmpty()) {
+			query.append("GROUP BY ")
+				  .append(SQLSourceFactory.build(group))
+				  .append("\n");
+		}
+
+		if (sort != null && !sort.getElements()
+										 .isEmpty()) {
 			query.append("ORDER BY ");
 
-			for (int i = 0; i < sort.length; i++) {
-				Field col = sort[0];
-				char prefix = col.getName()
-									  .charAt(0);
+			for (AstNode sortNode : sort.getElements()) {
+				if (sortNode instanceof Call) {
+					Call sortCall = (Call) sortNode;
 
-				if (prefix == '-') {
-					query.append(col.getName()
-										 .substring(1));
-				} else {
-					query.append(col.getName());
-				}
+					query.append("count_");
+					query.append(SQLSourceFactory.build(sortCall.getArguments()));
+				} else if (sortNode instanceof UnaryOperation) {
+					UnaryOperation sortUnary = (UnaryOperation) sortNode;
 
-				AGGREGATE_PREFIXES.keySet()
-										.stream()
-										.filter(a -> col.getAggregate() == a)
-										.forEach(a -> query.append("_")
-																 .append(a.toString()));
+					if (sortUnary.getChild() instanceof Call) {
+						Call sortCall = (Call) sortUnary.getChild();
 
-				if (prefix == '-') {
+						query.append("count_");
+						query.append(SQLSourceFactory.build(sortCall.getArguments()));
+					} else {
+						query.append(SQLSourceFactory.build(sortUnary.getChild()));
+					}
+
 					query.append(" DESC");
+
 				} else {
-					query.append(" ASC");
-				}
-
-				if (i < sort.length - 1) {
-					query.append(", ");
+					query.append(SQLSourceFactory.build(sortNode));
 				}
 			}
 
 			query.append("\n");
 		}
 
-		if (group != null && group.length > 0) {
-			query.append("GROUP BY ");
-
-			for (int i = 0; i < group.length; i++) {
-				Field col = group[0];
-
-				query.append(col.getName());
-
-				AGGREGATE_PREFIXES.keySet()
-										.stream()
-										.filter(a -> col.getAggregate() == a)
-										.forEach(a -> query.append("_")
-																 .append(a.toString()));
-
-				if (i < group.length - 1) {
-					query.append(", ");
-				}
-			}
-
-			query.append("\n");
-		}
-
-		if (skip >= 0 || take >= 0) {
+		if (skip != null || take != null) {
 			query.append("LIMIT ")
-				  .append(skip)
+				  .append(SQLSourceFactory.build(skip))
 				  .append(", ")
-				  .append(take)
+				  .append(SQLSourceFactory.build(take))
 				  .append("\n");
 		}
 

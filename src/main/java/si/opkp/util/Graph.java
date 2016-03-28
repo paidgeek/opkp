@@ -2,7 +2,7 @@ package si.opkp.util;
 
 import java.util.*;
 
-public class DirectedGraph<T, S> {
+public class Graph<T, S> {
 
 	public class Edge {
 
@@ -36,7 +36,7 @@ public class DirectedGraph<T, S> {
 	private Map<T, Map<T, Integer>> distances;
 	private Map<T, Map<T, Edge>> edges;
 
-	public DirectedGraph() {
+	public Graph() {
 		nodes = new HashMap<>();
 		distances = new HashMap<>();
 		edges = new HashMap<>();
@@ -60,6 +60,8 @@ public class DirectedGraph<T, S> {
 
 		nodes.get(nodeA)
 			  .put(nodeB, new Edge(nodeA, nodeB, edge));
+		nodes.get(nodeB)
+			  .put(nodeA, new Edge(nodeB, nodeA, edge));
 
 		dirty = true;
 	}
@@ -77,9 +79,19 @@ public class DirectedGraph<T, S> {
 														.get(goal));
 	}
 
-	public Optional<Edge> getEdge(T nodeA, T nodeB) {
+	public Optional<S> getEdge(T nodeA, T nodeB) {
+		if (!nodes.containsKey(nodeA)) {
+			return Optional.empty();
+		}
+
+		if (!nodes.get(nodeA)
+					 .containsKey(nodeB)) {
+			return Optional.empty();
+		}
+
 		return Optional.ofNullable(nodes.get(nodeA)
-												  .get(nodeB));
+												  .get(nodeB)
+												  .getValue());
 	}
 
 	public Set<T> getNodes() {

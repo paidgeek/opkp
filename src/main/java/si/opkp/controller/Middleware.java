@@ -1,12 +1,13 @@
 package si.opkp.controller;
 
+import com.moybl.restql.ast.Query;
+
 import org.springframework.http.ResponseEntity;
 
 import si.opkp.util.Pojo;
-import si.opkp.util.RequestParams;
 
 public interface Middleware {
 
-	ResponseEntity<Pojo> get(String[] model, RequestParams params);
+	ResponseEntity<Pojo> get(Query query);
 
 }

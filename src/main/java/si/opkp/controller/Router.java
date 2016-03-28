@@ -1,7 +1,6 @@
 package si.opkp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,37 +17,46 @@ import si.opkp.util.Util;
 public class Router {
 
 	@Autowired
-	private ApplicationContext applicationContext;
-	@Autowired
 	private Map<String, Controller> controllers;
 
-	@RequestMapping(value = "{controller}/{model}", method = RequestMethod.GET)
-	public ResponseEntity<Pojo> get(@PathVariable("controller") String controllerName,
-											  @PathVariable("model") String modelList,
-											  @ModelAttribute RequestParams params) {
-		if (!controllers.containsKey(controllerName)) {
-			return Util.responseError("controller '" + controllerName + "' not found", HttpStatus.BAD_REQUEST);
+	@RequestMapping(value = "{controller}", method = RequestMethod.GET)
+	public ResponseEntity<?> get(@PathVariable("controller") String controllerName,
+										  @ModelAttribute RequestParams params) {
+		return get(controllerName, "", params);
+	}
+
+	@RequestMapping(value = "{controller}/{arguments}", method = RequestMethod.GET)
+	public ResponseEntity<?> get(@PathVariable("controller") String controllerName,
+										  @PathVariable("arguments") String arguments,
+										  @ModelAttribute RequestParams params) {
+		try {
+			Controller controller = controllers.get(controllerName + "Controller");
+
+			return controller.get(Util.parseQueryArguments(arguments), params);
+		} catch (Exception e) {
+			return Util.responseError("invalid controller '" + controllerName + "' with arguments '" + arguments + "'", HttpStatus.BAD_REQUEST);
 		}
+	}
 
-		String[] model = modelList.split(",");
-		Controller controller = controllers.get(controllerName);
-		Use use = controller.getClass()
-								  .getAnnotation(Use.class);
+	@RequestMapping(value = "{controller}", method = RequestMethod.POST)
+	public ResponseEntity<?> post(@PathVariable("controller") String controllerName,
+											@ModelAttribute RequestParams params,
+											@RequestBody Pojo body) {
+		return post(controllerName, "", params, body);
+	}
 
-		if (use != null) {
-			Class<? extends Middleware>[] middlewares = use.classes();
+	@RequestMapping(value = "{controller}/{arguments}", method = RequestMethod.POST)
+	public ResponseEntity<?> post(@PathVariable("controller") String controllerName,
+											@PathVariable("arguments") String arguments,
+											@ModelAttribute RequestParams params,
+											@RequestBody Pojo body) {
+		try {
+			Controller controller = controllers.get(controllerName + "Controller");
 
-			for (int i = 0; i < middlewares.length; i++) {
-				ResponseEntity response = applicationContext.getBean(middlewares[i])
-																		  .get(model, params);
-
-				if (response != null) {
-					return response;
-				}
-			}
+			return controller.post(Util.parseQueryArguments(arguments), params, body);
+		} catch (Exception e) {
+			return Util.responseError("invalid controller '" + controllerName + "' with arguments '" + arguments + "'", HttpStatus.BAD_REQUEST);
 		}
-
-		return controller.get(model, params);
 	}
 
 }

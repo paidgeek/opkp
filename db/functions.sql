@@ -1,9 +1,37 @@
 DELIMITER //
 
-DROP FUNCTION IF EXISTS ping//
-CREATE FUNCTION ping() RETURNS TEXT
+-- FOOD SEARCH --
+ALTER TABLE fir_food ADD FULLTEXT(ORIGFDNM, ENGFDNAM, SCINAM)//
+DROP PROCEDURE IF EXISTS search_foods//
+CREATE PROCEDURE search_foods(keywords TEXT, skip INTEGER, take INTEGER)
 BEGIN
-	RETURN 'pong';
-END;//
+
+DECLARE total INT DEFAULT 0;
+
+CREATE TEMPORARY TABLE results
+SELECT *, 0 AS total,
+	(
+		MATCH(ORIGFDNM, ENGFDNAM, SCINAM)
+		AGAINST(keywords IN NATURAL LANGUAGE MODE WITH QUERY EXPANSION)
+	)
+    AS score
+FROM fir_food
+HAVING score > 0
+ORDER BY score DESC
+LIMIT skip, take;
+
+SELECT FOUND_ROWS() INTO total;
+UPDATE results SET results.total = total LIMIT 1;
+
+SELECT * FROM results;
+
+DROP TEMPORARY TABLE IF EXISTS results;
+
+END
+//
 
 DELIMITER ;
+
+
+-- TESTS --
+CALL search_foods('banana', 0, 10);

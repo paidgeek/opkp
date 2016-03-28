@@ -1,24 +1,29 @@
 package si.opkp.model;
 
+import com.moybl.restql.Token;
+import com.moybl.restql.ast.AstNode;
+import com.moybl.restql.factory.RestQLBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import si.opkp.query.ConditionBuilder;
-import si.opkp.query.Field;
-import si.opkp.query.QueryFactory;
 import si.opkp.query.SelectBuilder;
-import si.opkp.util.DirectedGraph;
+import si.opkp.util.Graph;
 import si.opkp.util.Pojo;
 
 @Component
 class MySQLDatabase implements Database {
 
-	private DirectedGraph<String, ConditionBuilder> dataGraph;
+	private static final Logger logger = Logger.getLogger("Database");
+
+	private Graph<String, AstNode> dataGraph;
 	private Map<String, ModelDefinition> definitions;
 	private Connection connection;
 
@@ -27,9 +32,9 @@ class MySQLDatabase implements Database {
 		connection = dataSource.getConnection();
 		DatabaseMetaData meta = connection.getMetaData();
 		definitions = new HashMap<>();
-		dataGraph = new DirectedGraph<>();
+		dataGraph = new Graph<>();
 
-		ResultSet tables = meta.getTables(null, "%", "%", null);
+		ResultSet tables = meta.getTables(null, meta.getUserName(), "%", null);
 
 		while (tables.next()) {
 			String tableName = tables.getString("TABLE_NAME")
@@ -46,8 +51,8 @@ class MySQLDatabase implements Database {
 			Set<FieldDefinition> primaryKeys = new HashSet<>();
 			Set<String> primaryKeyNames = new HashSet<>();
 
-			ResultSet pks = meta.getPrimaryKeys(null, null, tableName);
-			ResultSet cols = meta.getColumns(null, "%", tableName, "%");
+			ResultSet pks = meta.getPrimaryKeys(null, meta.getUserName(), tableName);
+			ResultSet cols = meta.getColumns(null, meta.getUserName(), tableName, "%");
 
 			while (pks.next()) {
 				primaryKeyNames.add(pks.getString("COLUMN_NAME"));
@@ -95,7 +100,7 @@ class MySQLDatabase implements Database {
 
 		// set graph's edges based on foreign keys
 		for (String tableName : dataGraph.getNodes()) {
-			ResultSet fks = meta.getExportedKeys(null, null, tableName);
+			ResultSet fks = meta.getExportedKeys(null, meta.getUserName(), tableName);
 
 			while (fks.next()) {
 				String pk = fks.getString("PKCOLUMN_NAME");
@@ -103,16 +108,18 @@ class MySQLDatabase implements Database {
 				ModelDefinition thisTable = definitions.get(tableName);
 				ModelDefinition otherTable = definitions.get(fks.getString("FKTABLE_NAME"));
 
-				ConditionBuilder conditionBuilder = QueryFactory.condition()
-																				.equal(thisTable.getField(pk), otherTable.getField(fk));
+				RestQLBuilder b = new RestQLBuilder();
+				dataGraph.addEdge(tableName, otherTable.getName(), b.binaryOperation(b.member(b.identifier(tableName), b.identifier(pk)),
+						Token.EQUAL,
+						b.member(b.identifier(otherTable.getName()), b.identifier(fk))));
 
-				dataGraph.addEdge(tableName, otherTable.getName(), conditionBuilder);
+				//dataGraph.addEdge(tableName, otherTable.getName(), conditionBuilder);
 			}
 		}
 	}
 
 	@Override
-	public DirectedGraph<String, ConditionBuilder> getDataGraph() {
+	public Graph<String, AstNode> getDataGraph() {
 		return dataGraph;
 	}
 
@@ -124,8 +131,10 @@ class MySQLDatabase implements Database {
 	@Override
 	public List<Pojo> queryObjects(SelectBuilder selectBuilder, Object... args) {
 		try {
+			String stmt = buildStatement(selectBuilder.build(), args);
+			logger.log(Level.INFO, "Executing statement:\n" + stmt);
 			ResultSet rs = connection.createStatement()
-											 .executeQuery(buildStatement(selectBuilder.build(), args));
+											 .executeQuery(stmt);
 
 			ResultSetMetaData meta = rs.getMetaData();
 			List<Pojo> objects = new ArrayList<>();
@@ -175,7 +184,7 @@ class MySQLDatabase implements Database {
 
 	@Override
 	public long count(SelectBuilder selectBuilder, Object... args) {
-		selectBuilder.fields(new Field("COUNT(*) as total"));
+		//selectBuilder.fields("COUNT(*) as total");
 		Pojo result = queryObject(selectBuilder, args);
 
 		return result.getLong("total");

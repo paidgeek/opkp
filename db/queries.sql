@@ -1,5 +1,5 @@
 SELECT *
-FROM fir_component;
+FROM fir_food;
 
 SELECT ((SELECT COUNT(*)
         FROM fir_food
@@ -35,42 +35,8 @@ SELECT * FROM fir_food
 WHERE MATCH (ORIGFDNM) AGAINST('Sir Blue');
 
 
--- FOOD SEARCH --
-ALTER TABLE fir_food ADD FULLTEXT(ORIGFDNM, ENGFDNAM, SCINAM);
 
-DROP PROCEDURE IF EXISTS search_foods;
-DELIMITER //
-CREATE PROCEDURE search_foods(keywords VARCHAR(255), `offset` INT, `count` INT)
-BEGIN
 
-DECLARE total INT DEFAULT 0;
-
-CREATE TEMPORARY TABLE results
-SELECT SQL_CALC_FOUND_ROWS *, 0 AS total,
-	(
-		MATCH(ORIGFDNM, ENGFDNAM, SCINAM)
-		AGAINST(keywords IN BOOLEAN MODE)
-	) / (LENGTH(ORIGFDNM) - LENGTH(REPLACE(ORIGFDNM, ' ', '')) +
-		 LENGTH(ENGFDNAM) - LENGTH(REPLACE(ENGFDNAM, ' ', '')) +
-		 LENGTH(SCINAM) - LENGTH(REPLACE(SCINAM, ' ', '')))
-    AS score
-FROM fir_food
-HAVING score > 0
-ORDER BY score DESC
-LIMIT `offset`, `count`;
-
-SELECT FOUND_ROWS() INTO total;
-UPDATE results SET results.total = total LIMIT 1;
-
-SELECT * FROM results;
-
-DROP TEMPORARY TABLE IF EXISTS results;
-
-END
-//
-DELIMITER ;
-
-CALL search_foods('world', 0, 10);
 
 SELECT SQL_CALC_FOUND_ROWS ORIGFDCD,ORIGFDNM,ACTIVE
 FROM fir_food
@@ -88,8 +54,13 @@ SHOW CREATE TABLE fir_food;
 SELECT * FROM fitbit_user;
 
 
+SELECT *
+FROM fir_food
+INNER JOIN fir_value ON((`fir_food`.`ORIGFDCD` = `fir_value`.`ORIGFDCD`))
+INNER JOIN fir_component ON((`fir_component`.`ECOMPID` = `fir_value`.`COMPID`))
 
-
+SELECT * FROM fir_food
+ORDER BY ORIGFDCD DESC;
 
 
 

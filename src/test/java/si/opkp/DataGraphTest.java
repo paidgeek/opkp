@@ -2,6 +2,8 @@ package si.opkp;
 
 import com.google.common.collect.Sets;
 
+import com.moybl.restql.ast.AstNode;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import si.opkp.model.Database;
-import si.opkp.query.ConditionBuilder;
-import si.opkp.util.DirectedGraph;
+import si.opkp.util.Graph;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -31,14 +32,14 @@ public class DataGraphTest extends BaseTest {
 
 	@Test
 	public void nodes() {
-		DirectedGraph<String, ConditionBuilder> dg = database.getDataGraph();
+		Graph<String, AstNode> dg = database.getDataGraph();
 
 		assertThat(dg.getNodes(), is(Sets.newHashSet("a", "b", "c", "d", "e", "f")));
 	}
 
 	@Test
 	public void structure() {
-		DirectedGraph<String, ConditionBuilder> dg = database.getDataGraph();
+		Graph<String, AstNode> dg = database.getDataGraph();
 
 		assertEquals(Optional.of(1), dg.getDistance("c", "a"));
 		assertEquals(Optional.of(1), dg.getDistance("e", "b"));

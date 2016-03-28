@@ -1,16 +1,17 @@
 package si.opkp.model;
 
+import com.moybl.restql.ast.AstNode;
+
 import java.util.List;
 import java.util.Map;
 
-import si.opkp.query.ConditionBuilder;
 import si.opkp.query.SelectBuilder;
-import si.opkp.util.DirectedGraph;
+import si.opkp.util.Graph;
 import si.opkp.util.Pojo;
 
 public interface Database {
 
-	DirectedGraph<String, ConditionBuilder> getDataGraph();
+	Graph<String, AstNode> getDataGraph();
 
 	Map<String, ModelDefinition> getModels();
 

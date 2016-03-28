@@ -6,19 +6,19 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Optional;
 
-import si.opkp.util.DirectedGraph;
+import si.opkp.util.Graph;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 
-public class DirectedGraphTest {
+public class GraphTest {
 
-	private DirectedGraph<String, Integer> graph;
+	private Graph<String, Integer> graph;
 
 	@Before
 	public void setup() {
-		graph = new DirectedGraph<>();
+		graph = new Graph<>();
 
 		graph.addEdge("C", "A", 1);
 		graph.addEdge("C", "D", 1);
@@ -35,9 +35,9 @@ public class DirectedGraphTest {
 		assertEquals(Optional.of(1), graph.getDistance("E", "B"));
 		assertEquals(Optional.of(2), graph.getDistance("E", "F"));
 		assertEquals(Optional.of(2), graph.getDistance("F", "D"));
-		assertEquals(Optional.of(4), graph.getDistance("E", "A"));
+		assertEquals(Optional.of(3), graph.getDistance("E", "A"));
+		assertEquals(Optional.of(1), graph.getDistance("A", "C"));
 
-		assertEquals(Optional.empty(), graph.getDistance("A", "C"));
 		assertEquals(Optional.empty(), graph.getDistance("A", "Z"));
 	}
 
@@ -50,9 +50,9 @@ public class DirectedGraphTest {
 		assertThat(graph.findPath("E", "F")
 							 .get(), is(Arrays.asList("E", "B", "F")));
 		assertThat(graph.findPath("E", "A")
-							 .get(), is(Arrays.asList("E", "B", "F", "C", "A")));
-
-		assertThat(graph.findPath("A", "B"), is(Optional.empty()));
+							 .get(), is(Arrays.asList("E", "B", "C", "A")));
+		assertThat(graph.findPath("A", "B")
+							 .get(), is(Arrays.asList("A", "C", "B")));
 	}
 
 }

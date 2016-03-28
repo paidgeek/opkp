@@ -1,5 +1,7 @@
 package si.opkp;
 
+import com.moybl.restql.ast.AstNode;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
@@ -12,18 +14,15 @@ import javax.sql.DataSource;
 import si.opkp.model.Database;
 import si.opkp.model.FieldDefinition;
 import si.opkp.model.ModelDefinition;
-import si.opkp.query.ConditionBuilder;
-import si.opkp.query.Field;
-import si.opkp.query.QueryFactory;
 import si.opkp.query.SelectBuilder;
-import si.opkp.util.DirectedGraph;
+import si.opkp.util.Graph;
 import si.opkp.util.Pojo;
 
 @Component
 @Primary
 class DatabaseMock implements Database {
 
-	private DirectedGraph<String, ConditionBuilder> dataGraph;
+	private Graph<String, AstNode> dataGraph;
 	private Map<String, ModelDefinition> definitions;
 	private Connection connection;
 
@@ -32,7 +31,7 @@ class DatabaseMock implements Database {
 		connection = dataSource.getConnection();
 		DatabaseMetaData meta = connection.getMetaData();
 		definitions = new HashMap<>();
-		dataGraph = new DirectedGraph<>();
+		dataGraph = new Graph<>();
 
 		ResultSet tables = meta.getTables(null, "%", "%", null);
 
@@ -108,16 +107,18 @@ class DatabaseMock implements Database {
 				ModelDefinition thisTable = definitions.get(tableName);
 				ModelDefinition otherTable = definitions.get(fks.getString("FKTABLE_NAME"));
 
+				/*
 				ConditionBuilder conditionBuilder = QueryFactory.condition()
 																				.equal(thisTable.getField(pk), otherTable.getField(fk));
 
 				dataGraph.addEdge(tableName, otherTable.getName(), conditionBuilder);
+				*/
 			}
 		}
 	}
 
 	@Override
-	public DirectedGraph<String, ConditionBuilder> getDataGraph() {
+	public Graph<String, AstNode> getDataGraph() {
 		return dataGraph;
 	}
 
@@ -180,7 +181,7 @@ class DatabaseMock implements Database {
 
 	@Override
 	public long count(SelectBuilder selectBuilder, Object... args) {
-		selectBuilder.fields(new Field("COUNT(*) as total"));
+		//selectBuilder.fields("COUNT(*) as total");
 		Pojo result = queryObject(selectBuilder, args);
 
 		return result.getLong("total");

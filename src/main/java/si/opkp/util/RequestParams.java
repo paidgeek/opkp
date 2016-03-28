@@ -1,98 +1,119 @@
 package si.opkp.util;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.moybl.restql.RestQL;
+import com.moybl.restql.Token;
+import com.moybl.restql.ast.AstNode;
+import com.moybl.restql.ast.Literal;
+import com.moybl.restql.ast.Sequence;
 
-import si.opkp.query.Field;
+import java.util.Collections;
+import java.util.List;
 
 @JsonDeserialize(using = RequestParamsDeserializer.class)
 public class RequestParams {
 
-	private Field[] fields;
-	private Field[] sort;
-	private Field[] group;
-	private String query;
-	private int skip;
-	private int take;
+	private Sequence fields;
+	private Sequence sort;
+	private Sequence group;
+	private AstNode where;
+	private AstNode skip;
+	private AstNode take;
 
 	public RequestParams() {
-		skip = 0;
-		take = 100;
+		skip = new Literal(0, Token.NUMBER);
+		take = new Literal(50, Token.NUMBER);
 	}
 
-	public Field[] getFields() {
-		return fields;
+	@JsonCreator
+	public RequestParams(@JsonProperty("fields") List<String> fieldList,
+								@JsonProperty("sort") List<String> sortList,
+								@JsonProperty("group") List<String> groupList,
+								@JsonProperty("where") String where,
+								@JsonProperty("skip") Integer skip,
+								@JsonProperty("take") Integer take) {
+		this();
+
+		setFields(String.join(",", fieldList));
+		setSort(String.join(",", sortList));
+		setGroup(String.join(",", groupList));
+		setWhere(where);
+		this.skip = new Literal(skip, Token.NUMBER);
+		this.take = new Literal(take, Token.NUMBER);
 	}
 
-	public void setFields(Field[] fields) {
-		this.fields = fields;
-	}
-
-	public Field[] getSort() {
-		return sort;
-	}
-
-	public void setSort(Field[] sort) {
-		this.sort = sort;
-	}
-
-	public Field[] getGroup() {
-		return group;
-	}
-
-	public void setGroup(Field[] group) {
-		this.group = group;
-	}
-
-	public String getQuery() {
-		return query;
-	}
-
-	public void setQuery(String query) {
-		this.query = query;
-	}
-
-	public int getSkip() {
-		return skip;
-	}
-
-	public void setSkip(int skip) {
-		this.skip = skip;
-	}
-
-	public int getTake() {
-		return take;
-	}
-
-	public void setTake(int take) {
-		this.take = take;
-	}
-
-	// setters for @ModelAttribute
 	public void setFields(String fieldList) {
-		String[] cols = fieldList.split(",");
-		this.fields = new Field[cols.length];
+		AstNode node = RestQL.parse(fieldList)
+									.getElements()
+									.get(0);
 
-		for (int i = 0; i < cols.length; i++) {
-			this.fields[i] = new Field(cols[i]);
+		if (node instanceof Sequence) {
+			fields = (Sequence) node;
+		} else {
+			fields = new Sequence(Collections.singletonList(node));
 		}
 	}
 
 	public void setSort(String sortList) {
-		String[] cols = sortList.split(",");
-		this.sort = new Field[cols.length];
+		AstNode node = RestQL.parse(sortList)
+									.getElements()
+									.get(0);
 
-		for (int i = 0; i < cols.length; i++) {
-			this.sort[i] = new Field(cols[i]);
+		if (node instanceof Sequence) {
+			sort = (Sequence) node;
+		} else {
+			sort = new Sequence(Collections.singletonList(node));
 		}
 	}
 
 	public void setGroup(String groupList) {
-		String[] cols = groupList.split(",");
-		this.group = new Field[cols.length];
+		AstNode node = RestQL.parse(groupList)
+									.getElements()
+									.get(0);
 
-		for (int i = 0; i < cols.length; i++) {
-			this.group[i] = new Field(cols[i]);
+		if (node instanceof Sequence) {
+			group = (Sequence) node;
+		} else {
+			group = new Sequence(Collections.singletonList(node));
 		}
+	}
+
+	public void setWhere(String where) {
+		this.where = RestQL.parse(where);
+	}
+
+	public void setSkip(String skip) {
+		this.skip = RestQL.parse(skip);
+	}
+
+	public void setTake(String take) {
+		this.take = RestQL.parse(take);
+	}
+
+	public AstNode getSkip() {
+		return skip;
+	}
+
+	public AstNode getTake() {
+		return take;
+	}
+
+	public AstNode getWhere() {
+		return where;
+	}
+
+	public Sequence getFields() {
+		return fields;
+	}
+
+	public Sequence getGroup() {
+		return group;
+	}
+
+	public Sequence getSort() {
+		return sort;
 	}
 
 }
