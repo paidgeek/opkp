@@ -147,7 +147,8 @@ public class SQLSelectBuilder implements SelectBuilder {
 					UnaryOperation sortUnary = (UnaryOperation) sortNode;
 
 					if (sortUnary.getChild() instanceof Call) {
-						Aggregate aggregate = SQLSourceFactory.aggregateConverter.apply(((Identifier) ((Call) sortUnary.getChild()).getTarget()).getName());
+						Aggregate aggregate = SQLSourceFactory.aggregateConverter.apply(((Identifier) ((Call) sortUnary.getChild()).getTarget()).getName()
+																																														.toUpperCase());
 
 						query.append(aggregate)
 							  .append("_")

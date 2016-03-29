@@ -133,9 +133,14 @@ class MySQLDatabase implements Database {
 	public QueryResult queryObjects(SelectBuilder selectBuilder, Object... args) {
 		try {
 			String stmt = buildStatement(selectBuilder.build(), args);
+
 			logger.log(Level.INFO, "Executing statement:\n" + stmt);
 			ResultSet rs = connection.createStatement()
 											 .executeQuery(stmt);
+			selectBuilder.skip(null);
+			selectBuilder.take(null);
+			ResultSet totalRs = connection.createStatement()
+													.executeQuery("SELECT COUNT(*) FROM (" + selectBuilder.build() + ") AS __total");
 
 			ResultSetMetaData meta = rs.getMetaData();
 			List<Pojo> objects = new ArrayList<>();
@@ -150,7 +155,10 @@ class MySQLDatabase implements Database {
 				objects.add(obj);
 			}
 
-			return QueryResult.result(objects, -1);
+			totalRs.next();
+			long total = totalRs.getLong(1);
+
+			return QueryResult.result(objects, total);
 		} catch (SQLException e) {
 			return QueryResult.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

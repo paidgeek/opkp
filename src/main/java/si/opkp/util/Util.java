@@ -10,7 +10,11 @@ import com.moybl.restql.ast.Sequence;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FastByteArrayOutputStream;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -141,6 +145,27 @@ public class Util {
 		}
 
 		return queryArguments;
+	}
+
+	public static Object copy(Object original) {
+		Object obj = null;
+
+		try {
+			FastByteArrayOutputStream fbos = new FastByteArrayOutputStream();
+			ObjectOutputStream out = new ObjectOutputStream(fbos);
+			out.writeObject(original);
+			out.flush();
+			out.close();
+
+			ObjectInputStream in = new ObjectInputStream(fbos.getInputStream());
+			obj = in.readObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException cnfe) {
+			cnfe.printStackTrace();
+		}
+
+		return obj;
 	}
 
 }

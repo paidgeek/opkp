@@ -57,10 +57,19 @@ SELECT * FROM fitbit_user;
 SELECT *
 FROM fir_food
 INNER JOIN fir_value ON((`fir_food`.`ORIGFDCD` = `fir_value`.`ORIGFDCD`))
-INNER JOIN fir_component ON((`fir_component`.`ECOMPID` = `fir_value`.`COMPID`))
-
-SELECT * FROM fir_food
-ORDER BY ORIGFDCD DESC;
+INNER JOIN fir_component ON((`fir_component`.`ECOMPID` = `fir_value`.`COMPID`));
 
 
+
+
+
+
+
+SELECT COUNT(*) FROM (
+	SELECT ORIGFDNM, COUNT(RECID) AS count_RECID
+FROM fir_food
+INNER JOIN fir_ingredients ON((fir_food.ORIGFDCD = fir_ingredients.FOODID))
+GROUP BY ORIGFDCD
+ORDER BY count_RECID DESC
+) AS total;
 
