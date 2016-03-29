@@ -4,6 +4,7 @@ import com.moybl.restql.ast.AstNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 import si.opkp.model.Database;
 import si.opkp.model.FieldDefinition;
 import si.opkp.model.ModelDefinition;
+import si.opkp.model.QueryResult;
 import si.opkp.query.SelectBuilder;
 import si.opkp.util.Graph;
 import si.opkp.util.Pojo;
@@ -128,7 +130,7 @@ class DatabaseMock implements Database {
 	}
 
 	@Override
-	public List<Pojo> queryObjects(SelectBuilder selectBuilder, Object... args) {
+	public QueryResult queryObjects(SelectBuilder selectBuilder, Object... args) {
 		try {
 			ResultSet rs = connection.createStatement()
 											 .executeQuery(buildStatement(selectBuilder.build(), args));
@@ -146,49 +148,16 @@ class DatabaseMock implements Database {
 				objects.add(obj);
 			}
 
-			return objects;
+			return QueryResult.result(objects, -1);
 		} catch (SQLException e) {
 			e.printStackTrace();
+
+			return QueryResult.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		return Collections.emptyList();
 	}
 
 	@Override
-	public Pojo queryObject(SelectBuilder selectBuilder, Object... args) {
-		try {
-			ResultSet rs = connection.createStatement()
-											 .executeQuery(buildStatement(selectBuilder.build(), args));
-
-			if (!rs.next()) {
-				return null;
-			}
-
-			ResultSetMetaData meta = rs.getMetaData();
-			Pojo obj = new Pojo();
-
-			for (int i = 1; i <= meta.getColumnCount(); i++) {
-				obj.setProperty(meta.getColumnName(i), rs.getObject(i));
-			}
-
-			return obj;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	@Override
-	public long count(SelectBuilder selectBuilder, Object... args) {
-		//selectBuilder.fields("COUNT(*) as total");
-		Pojo result = queryObject(selectBuilder, args);
-
-		return result.getLong("total");
-	}
-
-	@Override
-	public List<Pojo> callFunction(String function, Object... args) {
+	public QueryResult callFunction(String function, Object... args) {
 		List<Pojo> result = new ArrayList<>();
 
 		if (function.equals("ping")) {
@@ -197,7 +166,7 @@ class DatabaseMock implements Database {
 					.build());
 		}
 
-		return result;
+		return QueryResult.result(result, 1);
 	}
 
 	private String buildStatement(String statement, Object... args) {

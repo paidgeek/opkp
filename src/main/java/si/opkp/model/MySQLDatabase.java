@@ -5,6 +5,7 @@ import com.moybl.restql.ast.AstNode;
 import com.moybl.restql.factory.RestQLBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
@@ -129,7 +130,7 @@ class MySQLDatabase implements Database {
 	}
 
 	@Override
-	public List<Pojo> queryObjects(SelectBuilder selectBuilder, Object... args) {
+	public QueryResult queryObjects(SelectBuilder selectBuilder, Object... args) {
 		try {
 			String stmt = buildStatement(selectBuilder.build(), args);
 			logger.log(Level.INFO, "Executing statement:\n" + stmt);
@@ -149,49 +150,14 @@ class MySQLDatabase implements Database {
 				objects.add(obj);
 			}
 
-			return objects;
+			return QueryResult.result(objects, -1);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			return QueryResult.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		return Collections.emptyList();
 	}
 
 	@Override
-	public Pojo queryObject(SelectBuilder selectBuilder, Object... args) {
-		try {
-			ResultSet rs = connection.createStatement()
-											 .executeQuery(buildStatement(selectBuilder.build(), args));
-
-			if (!rs.next()) {
-				return null;
-			}
-
-			ResultSetMetaData meta = rs.getMetaData();
-			Pojo obj = new Pojo();
-
-			for (int i = 1; i <= meta.getColumnCount(); i++) {
-				obj.setProperty(meta.getColumnName(i), rs.getObject(i));
-			}
-
-			return obj;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	@Override
-	public long count(SelectBuilder selectBuilder, Object... args) {
-		//selectBuilder.fields("COUNT(*) as total");
-		Pojo result = queryObject(selectBuilder, args);
-
-		return result.getLong("total");
-	}
-
-	@Override
-	public List<Pojo> callFunction(String function, Object... args) {
+	public QueryResult callFunction(String function, Object... args) {
 		return null;
 	}
 

@@ -1,16 +1,17 @@
 package si.opkp.controller;
 
+import com.moybl.restql.Engine;
 import com.moybl.restql.ast.Identifier;
+import com.moybl.restql.ast.Literal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.Map;
 
 import si.opkp.batch.Batch;
 import si.opkp.batch.Command;
@@ -27,50 +28,49 @@ public class BatchController {
 	private PathController pathController;
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Pojo> perform(@RequestBody Batch batch) {
+	public ResponseEntity<?> perform(@RequestBody Batch batch) {
 		try {
 			Pojo result = new Pojo();
+			Map<String, Engine> states = new HashMap<>();
 			List<Command> commands = batch.getCommands();
-			Set<String> failed = new HashSet<>();
 
+			OUTER:
 			for (Command command : commands) {
-				Optional<Dependency> failedDependency = command.getDependencies()
-																			  .stream()
-																			  .filter(failed::contains)
-																			  .findAny();
+				for (Dependency dependency : command.getDependencies()) {
+					Engine state = states.get(dependency.getCommand());
 
-				if (failedDependency.isPresent()) {
-					failed.add(command.getName());
+					if (!state.evaluate(dependency.getCondition())
+								 .equals(Literal.trueLiteral())) {
+						result.setProperty(command.getName(),
+								String.format("command was terminated, because condition '%s' failed for command '%s'",
+										dependency.getCondition(),
+										dependency.getCommand()));
 
-					result.setProperty(command.getName(), Util.createError(
-							String.format("command was terminated, because '%s' failed", failedDependency.get())));
-
-					continue;
+						continue OUTER;
+					}
 				}
 
+				Engine state = new Engine();
 				String controller = command.getController();
 				List<Identifier> arguments = command.getArguments();
 
-				ResponseEntity<Pojo> response;
+				states.put(command.getName(), state);
+
+				ResponseEntity<?> response;
 
 				switch (controller) {
 					case "path":
 						response = pathController.get(arguments, command.getParams());
 						break;
 					default:
-						failed.add(command.getName());
+						state.setVariable("status", (double) HttpStatus.BAD_REQUEST.value());
 						result.setProperty(command.getName(), Util.createError("invalid controller"));
 
 						continue;
 				}
 
-				if (response.getStatusCode() != HttpStatus.OK) {
-					failed.add(command.getName());
-					result.setProperty(command.getName(), response.getBody());
-
-					continue;
-				}
-
+				state.setVariable("status", response.getStatusCode()
+																.value());
 				result.setProperty(command.getName(), response.getBody());
 			}
 

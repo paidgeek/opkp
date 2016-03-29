@@ -1,13 +1,16 @@
 package si.opkp.batch;
 
-import com.moybl.restql.ast.AstNode;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dependency {
 
 	private String command;
-	private AstNode condition;
+	private String condition;
 
-	public Dependency(String command, AstNode condition) {
+	@JsonCreator
+	public Dependency(@JsonProperty("command") String command,
+							@JsonProperty("condition") String condition) {
 		this.command = command;
 		this.condition = condition;
 	}
@@ -16,7 +19,7 @@ public class Dependency {
 		return command;
 	}
 
-	public AstNode getCondition() {
+	public String getCondition() {
 		return condition;
 	}
 

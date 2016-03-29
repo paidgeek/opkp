@@ -11,8 +11,8 @@ import si.opkp.util.RequestParams;
 
 interface Controller {
 
-	ResponseEntity<Pojo> get(List<Identifier> arguments, RequestParams params);
+	ResponseEntity<?> get(List<Identifier> arguments, RequestParams params);
 
-	ResponseEntity<Pojo> post(List<Identifier> arguments, RequestParams params, Pojo body);
+	ResponseEntity<?> post(List<Identifier> arguments, RequestParams params, Pojo body);
 
 }

@@ -2,7 +2,6 @@ package si.opkp.controller;
 
 import com.moybl.restql.ast.AstNode;
 import com.moybl.restql.ast.Identifier;
-import com.moybl.restql.factory.RestQLBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import si.opkp.model.Database;
+import si.opkp.model.QueryResult;
 import si.opkp.query.QueryFactory;
 import si.opkp.query.SelectBuilder;
 import si.opkp.util.Pojo;
@@ -26,26 +26,27 @@ public class PathController implements Controller {
 	private Database database;
 
 	@Override
-	public ResponseEntity<Pojo> get(List<Identifier> arguments, RequestParams params) {
+	public ResponseEntity<?> get(List<Identifier> arguments, RequestParams params) {
 		SelectBuilder select = QueryFactory.select();
-		RestQLBuilder b = new RestQLBuilder();
 
 		select.fields(params.getFields());
 		select.from(arguments.get(0));
 
 		// joins
-		String from = arguments.get(0)
-									  .getName();
-
 		for (int i = 1; i < arguments.size(); i++) {
 			String other = arguments.get(i)
 											.getName();
 
 			Optional<List<String>> optPath = database.getDataGraph()
-																  .findPath(from, other);
+																  .findPath(arguments.get(i - 1)
+																							.getName(), other);
 
 			if (!optPath.isPresent()) {
-				return Util.responseError("cannot join '" + from + "' and '" + other + "'", HttpStatus.BAD_REQUEST);
+				return Util.responseError(String.format("cannot join '%s' and '%s'",
+						arguments.get(i - 1)
+									.getName(),
+						other),
+						HttpStatus.BAD_REQUEST);
 			}
 
 			List<String> path = optPath.get();
@@ -58,21 +59,19 @@ public class PathController implements Controller {
 			}
 		}
 
-		select.skip(params.getSkip());
-		select.take(params.getTake());
-
-		if (params.getGroup() != null) {
-			select.group(params.getGroup());
+		if (params.getWhere() != null) {
+			select.where(params.getWhere());
 		}
 
-		if (params.getSort() != null) {
-			select.sort(params.getSort());
-		}
+		select.skip(params.getSkip())
+				.take(params.getTake())
+				.group(params.getGroup())
+				.sort(params.getSort());
 
 		try {
-			List<Pojo> objects = database.queryObjects(select);
+			QueryResult qr = database.queryObjects(select);
 
-			return Util.createResult(objects, -1);
+			return new ResponseEntity<>(qr, HttpStatus.valueOf(qr.getStatus()));
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -81,7 +80,7 @@ public class PathController implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<Pojo> post(List<Identifier> arguments, RequestParams params, Pojo body) {
+	public ResponseEntity<?> post(List<Identifier> arguments, RequestParams params, Pojo body) {
 		return Util.responseError(HttpStatus.BAD_REQUEST);
 	}
 

@@ -75,20 +75,28 @@ public class Util {
 		return list;
 	}
 
-	public static Pojo createError(String message) {
-		Pojo error = new Pojo();
-
-		error.setProperty("message", message);
-
-		return error;
-	}
-
 	public static ResponseEntity<Pojo> responseError(HttpStatus httpStatus) {
 		return responseError("undefined error", httpStatus);
 	}
 
 	public static ResponseEntity<Pojo> responseError(String message, HttpStatus httpStatus) {
-		return new ResponseEntity(createError(message), httpStatus);
+		Pojo error = new Pojo();
+
+		error.setProperty("timestamp", System.currentTimeMillis());
+		error.setProperty("status", httpStatus.value());
+		error.setProperty("message", message);
+
+		return new ResponseEntity(error, httpStatus);
+	}
+
+	public static Pojo createError(String message) {
+		Pojo error = new Pojo();
+
+		error.setProperty("timestamp", System.currentTimeMillis());
+		error.setProperty("status", HttpStatus.BAD_REQUEST.value());
+		error.setProperty("message", message);
+
+		return error;
 	}
 
 	public static Object readJSONFile(String pathname) {
@@ -112,19 +120,6 @@ public class Util {
 		}
 
 		return null;
-	}
-
-	public static ResponseEntity<Pojo> createResult(List<Pojo> objects, long total) {
-		Pojo result = new Pojo();
-		Pojo meta = new Pojo();
-
-		meta.setProperty("count", (long) objects.size());
-		meta.setProperty("total", total);
-
-		result.setProperty("meta", meta);
-		result.setProperty("result", objects);
-
-		return ResponseEntity.ok(result);
 	}
 
 	public static List<Identifier> parseQueryArguments(String arguments) {

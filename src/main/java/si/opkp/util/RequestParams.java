@@ -25,6 +25,9 @@ public class RequestParams {
 	public RequestParams() {
 		skip = new Literal(0, Token.NUMBER);
 		take = new Literal(50, Token.NUMBER);
+		fields = new Sequence(Collections.emptyList());
+		sort = new Sequence(Collections.emptyList());
+		group = new Sequence(Collections.emptyList());
 	}
 
 	@JsonCreator
@@ -36,12 +39,29 @@ public class RequestParams {
 								@JsonProperty("take") Integer take) {
 		this();
 
-		setFields(String.join(",", fieldList));
-		setSort(String.join(",", sortList));
-		setGroup(String.join(",", groupList));
-		setWhere(where);
-		this.skip = new Literal(skip, Token.NUMBER);
-		this.take = new Literal(take, Token.NUMBER);
+		if (fieldList != null) {
+			setFields(String.join(",", fieldList));
+		}
+
+		if (sortList != null) {
+			setSort(String.join(",", sortList));
+		}
+
+		if (groupList != null) {
+			setGroup(String.join(",", groupList));
+		}
+
+		if (where != null) {
+			setWhere(where);
+		}
+
+		if (skip != null) {
+			this.skip = new Literal(skip, Token.NUMBER);
+		}
+
+		if (take != null) {
+			this.take = new Literal(take, Token.NUMBER);
+		}
 	}
 
 	public void setFields(String fieldList) {

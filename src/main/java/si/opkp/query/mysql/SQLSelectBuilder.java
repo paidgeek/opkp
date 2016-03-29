@@ -6,6 +6,7 @@ import com.moybl.restql.ast.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import si.opkp.query.Aggregate;
 import si.opkp.query.SelectBuilder;
 import si.opkp.util.Pair;
 
@@ -137,18 +138,20 @@ public class SQLSelectBuilder implements SelectBuilder {
 
 			for (AstNode sortNode : sort.getElements()) {
 				if (sortNode instanceof Call) {
-					Call sortCall = (Call) sortNode;
+					Aggregate aggregate = SQLSourceFactory.aggregateConverter.apply(((Identifier) ((Call) sortNode).getTarget()).getName());
 
-					query.append("count_");
-					query.append(SQLSourceFactory.build(sortCall.getArguments()));
+					query.append(aggregate)
+						  .append("_")
+						  .append(SQLSourceFactory.build(((Call) sortNode).getArguments()));
 				} else if (sortNode instanceof UnaryOperation) {
 					UnaryOperation sortUnary = (UnaryOperation) sortNode;
 
 					if (sortUnary.getChild() instanceof Call) {
-						Call sortCall = (Call) sortUnary.getChild();
+						Aggregate aggregate = SQLSourceFactory.aggregateConverter.apply(((Identifier) ((Call) sortUnary.getChild()).getTarget()).getName());
 
-						query.append("count_");
-						query.append(SQLSourceFactory.build(sortCall.getArguments()));
+						query.append(aggregate)
+							  .append("_")
+							  .append(SQLSourceFactory.build(((Call) sortUnary.getChild()).getArguments()));
 					} else {
 						query.append(SQLSourceFactory.build(sortUnary.getChild()));
 					}
@@ -165,9 +168,11 @@ public class SQLSelectBuilder implements SelectBuilder {
 
 		if (skip != null || take != null) {
 			query.append("LIMIT ")
-				  .append(SQLSourceFactory.build(skip))
+				  .append(SQLSourceFactory.build(skip)
+												  .replaceAll("\\.[0-9]*$", ""))
 				  .append(", ")
-				  .append(SQLSourceFactory.build(take))
+				  .append(SQLSourceFactory.build(take)
+												  .replaceAll("\\.[0-9]*$", ""))
 				  .append("\n");
 		}
 

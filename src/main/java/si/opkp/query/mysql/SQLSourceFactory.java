@@ -1,11 +1,18 @@
 package si.opkp.query.mysql;
 
+import com.google.common.base.Enums;
+import com.google.common.base.Function;
+
 import com.moybl.restql.Token;
 import com.moybl.restql.ast.*;
 
 import java.util.Iterator;
 
+import si.opkp.query.Aggregate;
+
 public class SQLSourceFactory implements Visitor {
+
+	public static Function<String, Aggregate> aggregateConverter = Enums.stringConverter(Aggregate.class);
 
 	public static String build(AstNode root) {
 		SQLSourceFactory f = new SQLSourceFactory();
@@ -93,22 +100,25 @@ public class SQLSourceFactory implements Visitor {
 
 	@Override
 	public void visit(Call acceptor) {
-		if (acceptor.getTarget() instanceof Identifier &&
-				((Identifier) acceptor.getTarget()).getName()
-															  .equalsIgnoreCase("COUNT")) {
-			query.append("COUNT(");
+		if (acceptor.getTarget() instanceof Identifier) {
+			Aggregate aggregate = aggregateConverter.apply(((Identifier) acceptor.getTarget()).getName()
+																														 .toUpperCase());
+
+			switch (aggregate) {
+				case COUNT:
+					query.append("COUNT(");
+					break;
+				case COUNT_DISTINCT:
+					query.append("COUNT(DISTINCT ");
+					break;
+			}
 			acceptor.getArguments()
 					  .accept(this);
-			query.append(") AS count_");
+			query.append(") AS ")
+				  .append(aggregate)
+				  .append("_");
 			acceptor.getArguments()
 					  .accept(this);
-		} else {
-			acceptor.getTarget()
-					  .accept(this);
-			query.append("(");
-			acceptor.getArguments()
-					  .accept(this);
-			query.append(")");
 		}
 	}
 

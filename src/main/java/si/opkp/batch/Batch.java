@@ -22,13 +22,7 @@ public class Batch {
 	private void sort() {
 		Map<String, List<Dependency>> graph = new HashMap<>();
 
-		commands.forEach(cmd -> {
-			if (cmd.getDependencies() == null) {
-				graph.put(cmd.getName(), Collections.emptyList());
-			} else {
-				graph.put(cmd.getName(), cmd.getDependencies());
-			}
-		});
+		commands.forEach(cmd -> graph.put(cmd.getName(), cmd.getDependencies()));
 
 		List<String> sorted = topologicalSort(graph);
 		List<Command> sortedCommands = new ArrayList<>();
@@ -43,31 +37,32 @@ public class Batch {
 	}
 
 	private List<String> topologicalSort(Map<String, List<Dependency>> graph) {
-		Map<String, Boolean> used = new HashMap<>();
+		Map<String, Boolean> visited = new HashMap<>();
 		List<String> sorted = new ArrayList<>();
 
 		graph.keySet()
-			  .forEach(node -> used.put(node, false));
+			  .forEach(node -> visited.put(node, false));
 
 		graph.keySet()
 			  .forEach(node -> {
-				  if (!used.get(node)) {
-					  dfs(graph, used, sorted, node);
+				  if (!visited.get(node)) {
+					  dfs(graph, visited, sorted, node);
 				  }
 			  });
 
 		return sorted;
 	}
 
-	private void dfs(Map<String, List<Dependency>> graph, Map<String, Boolean> used, List<String> sorted, String u) {
-		used.put(u, true);
+	private void dfs(Map<String, List<Dependency>> graph, Map<String, Boolean> visited, List<String> sorted, String u) {
+		visited.put(u, true);
 
-		graph.get(u)
-			  .forEach(v -> {
-				  if (!used.get(v)) {
-					  dfs(graph, used, sorted, v.getCommand());
-				  }
-			  });
+		for (Dependency dependency : graph.get(u)) {
+			String v = dependency.getCommand();
+
+			if (!visited.get(v)) {
+				dfs(graph, visited, sorted, v);
+			}
+		}
 
 		sorted.add(u);
 	}

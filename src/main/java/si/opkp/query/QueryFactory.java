@@ -1,8 +1,6 @@
 package si.opkp.query;
 
-import com.moybl.restql.ast.AstNode;
-
-import si.opkp.query.mysql.*;
+import si.opkp.query.mysql.SQLSelectBuilder;
 
 public class QueryFactory {
 

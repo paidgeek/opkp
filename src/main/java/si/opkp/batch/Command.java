@@ -6,7 +6,7 @@ import com.moybl.restql.ast.Identifier;
 
 import org.springframework.http.HttpMethod;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import si.opkp.util.Pojo;
@@ -36,7 +36,7 @@ public class Command {
 		this.controller = controller;
 		this.arguments = Util.parseQueryArguments(arguments);
 		this.body = body;
-		this.dependencies = dependencies == null ? new ArrayList<>() : dependencies;
+		this.dependencies = dependencies == null ? Collections.emptyList() : dependencies;
 		this.params = params;
 	}
 
