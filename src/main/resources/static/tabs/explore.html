@@ -1,0 +1,73 @@
+<div ng-controller="graphs">
+
+   <div class="row">
+      <div class="col-md-12">
+         <div class="panel panel-default">
+            <form class="panel-body form-horizontal">
+               <h4>Tables</h4>
+
+               <div class="row voffset-1" ng-repeat="i in range(pathLength) track by $index">
+                  <div class="col-md-3">
+                     <select class="form-control" ng-model="selection[i]" ng-change="selectNode(i, selection[i])">
+                        <option ng-repeat="node in getSteps(i - 1) track by $index" value="{{node}}">{{node}}</option>
+                     </select>
+                  </div>
+                  <div class="col-md-2 form-inline">
+                     <button ng-if="getSteps(i).length != 0 && i == pathLength - 1" type="button" class="btn btn-primary form-control" ng-click="addNode()">+</button>
+                     <button ng-if="i > 0" type="button" class="btn btn-danger form-control" ng-click="removeNode(i)">-</button>
+                  </div>
+               </div>
+
+               <h4>Columns</h4>
+               <div ng-repeat="i in range(pathLength) track by $index" ng-if="dataGraph.fields[path[i]]">
+                  {{path[i]}}
+                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns[i].length}} columns selected" ng-model="selectedColumns[i]" ms-header="Select fields" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
+               </div>
+
+               <h4>Conditions</h4>
+
+               <button type="button" class="btn btn-default" ng-click="update()">Update</button>
+
+            </form>
+         </div>
+      </div>
+   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <table class="table table-hover">
+            <thead>
+               <tr>
+                  <th>
+                     #
+                  </th>
+                  <th ng-repeat="(identifier, value) in responseData.objects[0]" ng-if="$index > 0">
+                     {{identifier}}
+                  </th>
+                  <th></th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr ng-repeat="row in responseData.objects">
+                  <td class="row-number">
+                     {{$index + 1 + (currentPage - 1) * pageSize}}
+                  </td>
+                  <td ng-repeat="value in row" ng-if="$index > 0">
+                     {{value}}
+                  </td>
+                  <td>
+                     <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
+                        <i class="glyphicon glyphicon-edit"></i>
+                     </button>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+
+         <div class="row text-center">
+            <uib-pagination ng-change="onPageChanged(currentPage)" total-items="data.meta.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+         </div>
+
+      </div>
+   </div>
+
+</div>

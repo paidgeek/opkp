@@ -6,7 +6,9 @@ app.controller("graphs", function($scope, opkpService, dataGraph) {
    $scope.selectedColumns = [];
 
    $scope.getColumns = function(index) {
-      return Object.keys($scope.dataGraph.definitions[$scope.path[index]]);
+      return $scope.dataGraph.fields[$scope.path[index]].map(function(field) {
+         return field.name;
+      });
    }
 
    $scope.selectNode = function(index, node) {
@@ -19,10 +21,10 @@ app.controller("graphs", function($scope, opkpService, dataGraph) {
 
    $scope.getSteps = function(start) {
       if (start < 0) {
-         return Object.keys($scope.dataGraph.definitions);
+         return Object.keys($scope.dataGraph.fields).sort();
       }
 
-      var nodes = Object.keys($scope.dataGraph.definitions);
+      var nodes = Object.keys($scope.dataGraph.fields).sort();
 
       if ($scope.pathLength > start && nodes) {
          var steps = [];
@@ -54,22 +56,14 @@ app.controller("graphs", function($scope, opkpService, dataGraph) {
    }
 
    $scope.update = function() {
-      if (!$scope.selectedColumns) {
+      if ($scope.path.length == 0 || !$scope.selectedColumns) {
          return;
       }
 
-      var start = $scope.path[0];
-      var goals = $scope.path.slice(1);
       var columns = [].concat.apply([], $scope.selectedColumns);
 
-      if (goals.length == 0) {
-         opkpService.graph(start, columns).then(function(data) {
-            $scope.responseData = data;
-         });
-      } else {
-         opkpService.path(start, goals, columns).then(function(data) {
-            $scope.responseData = data;
-         });
-      }
+      opkpService.path($scope.path, columns).then(function(data) {
+         $scope.responseData = data;
+      });
    }
 });

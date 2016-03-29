@@ -9,7 +9,7 @@
                      <span class="input-group-addon">
                         <span class="glyphicon glyphicon-search"></span>
                      </span>
-                     <input class="form-control" ng-arguments="keywords" placeholder="Search" type="search"/>
+                     <input class="form-control" ng-model="keywords" placeholder="Search" type="search"/>
                   </div>
                </div>
                <div class="form-group">
@@ -17,7 +17,7 @@
                      Rows count
                   </label>
                   <div class="col-md-2">
-                     <select id="select-page-size" class="form-control" ng-init="pageSize = 10" ng-options="i for i in pageSizes" ng-arguments="pageSize" ng-change="search()"></select>
+                     <select id="select-page-size" class="form-control" ng-init="pageSize = 10" ng-options="i for i in pageSizes" ng-model="pageSize" ng-change="search()"></select>
                   </div>
                </div>
 
@@ -62,7 +62,7 @@
       </div>
 
       <div class="row text-center">
-         <uib-pagination ng-change="onPageChanged(currentPage)" total-items="data.meta.total" ng-arguments="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+         <uib-pagination ng-change="onPageChanged(currentPage)" total-items="data.meta.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
       </div>
    </div>
 

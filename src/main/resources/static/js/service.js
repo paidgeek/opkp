@@ -81,23 +81,10 @@ OPKPService.create = function() {
                }]
             });
          },
-         graph: function(model, fields) {
-            if (model.constructor === Array) {
-               model = model.join(",");
-            }
+         path: function(arguments, fields) {
+            var url = OPKPService.host + "path/" + arguments.join(",") + "?";
 
-            var url = OPKPService.host + "graph/" + model + "?";
-
-            if (fields) {
-               url += "fields=" + fields.join(",");
-            }
-
-            return get($http, $q, url);
-         },
-         path: function(start, goals, fields) {
-            var url = OPKPService.host + "path/" + start + "/" + goals.join(",") + "?";
-
-            if (fields) {
+            if (fields && fields.length > 0) {
                url += "fields=" + fields.join(",");
             }
 

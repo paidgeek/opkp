@@ -66,6 +66,11 @@ public class Graph<T, S> {
 		dirty = true;
 	}
 
+	public Set<T> getNeighbours(T node) {
+		return nodes.get(node)
+						.keySet();
+	}
+
 	public Optional<Integer> getDistance(T start, T goal) {
 		if (dirty) {
 			calculatePaths();

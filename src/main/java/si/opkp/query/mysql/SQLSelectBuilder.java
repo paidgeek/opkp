@@ -6,11 +6,14 @@ import com.moybl.restql.ast.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import si.opkp.model.Database;
 import si.opkp.query.Aggregate;
 import si.opkp.query.SelectBuilder;
 import si.opkp.util.Pair;
 
 public class SQLSelectBuilder implements SelectBuilder {
+
+	private Database database;
 
 	private Sequence fields;
 	private AstNode from;
@@ -20,7 +23,9 @@ public class SQLSelectBuilder implements SelectBuilder {
 	private Sequence group;
 	private AstNode skip, take;
 
-	public SQLSelectBuilder() {
+	public SQLSelectBuilder(Database database) {
+		this.database = database;
+
 		joins = new ArrayList<>();
 		skip = new Literal(0, Token.NUMBER);
 		take = new Literal(100, Token.NUMBER);

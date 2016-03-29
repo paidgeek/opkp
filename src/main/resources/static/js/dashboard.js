@@ -4,11 +4,11 @@ app.factory("opkpService", OPKPService.create());
 
 app.controller("nav", function($scope) {
    $scope.tabs = [{
-      title: "Foods",
-      href: "tabs/foods.html"
+      title: "Search",
+      href: "tabs/search.html"
    }, {
-      title: "Graphs",
-      href: "tabs/graphs.html"
+      title: "Explore",
+      href: "tabs/explore.html"
    }];
    $scope.selectedTab = $scope.tabs[0];
    $scope.onClickTab = function(tab) {

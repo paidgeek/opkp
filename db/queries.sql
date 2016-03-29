@@ -61,15 +61,11 @@ INNER JOIN fir_component ON((`fir_component`.`ECOMPID` = `fir_value`.`COMPID`));
 
 
 
-
-
-
-
-SELECT COUNT(*) FROM (
-	SELECT ORIGFDNM, COUNT(RECID) AS count_RECID
+SELECT COUNT(1) AS __total FROM (SELECT 1
 FROM fir_food
-INNER JOIN fir_ingredients ON((fir_food.ORIGFDCD = fir_ingredients.FOODID))
-GROUP BY ORIGFDCD
-ORDER BY count_RECID DESC
-) AS total;
+INNER JOIN fir_value ON((fir_food.ORIGFDCD = fir_value.ORIGFDCD))
+INNER JOIN fir_component ON((fir_component.ECOMPID = fir_value.COMPID))
+) AS __total
+
+
 

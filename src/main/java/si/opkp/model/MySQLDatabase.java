@@ -2,6 +2,8 @@ package si.opkp.model;
 
 import com.moybl.restql.Token;
 import com.moybl.restql.ast.AstNode;
+import com.moybl.restql.ast.Literal;
+import com.moybl.restql.ast.Sequence;
 import com.moybl.restql.factory.RestQLBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import javax.sql.DataSource;
 import si.opkp.query.SelectBuilder;
 import si.opkp.util.Graph;
 import si.opkp.util.Pojo;
+import si.opkp.util.Util;
 
 @Component
 class MySQLDatabase implements Database {
@@ -71,16 +74,28 @@ class MySQLDatabase implements Database {
 
 				switch (cols.getInt("DATA_TYPE")) {
 					case Types.INTEGER:
+					case Types.TINYINT:
+					case Types.BIT:
+					case Types.BIGINT:
 						type = FieldDefinition.Type.INTEGER;
 						break;
 					case Types.DATE:
+					case Types.TIMESTAMP:
+					case Types.TIME:
 						type = FieldDefinition.Type.DATETIME;
 						break;
 					case Types.NVARCHAR:
 					case Types.VARCHAR:
+					case Types.LONGNVARCHAR:
+					case Types.LONGVARCHAR:
+					case Types.LONGVARBINARY:
+					case Types.CHAR:
+					case Types.NCHAR:
 						type = FieldDefinition.Type.STRING;
 						break;
 					case Types.DECIMAL:
+					case Types.FLOAT:
+					case Types.DOUBLE:
 						type = FieldDefinition.Type.DECIMAL;
 						break;
 				}
@@ -117,6 +132,44 @@ class MySQLDatabase implements Database {
 				//dataGraph.addEdge(tableName, otherTable.getName(), conditionBuilder);
 			}
 		}
+
+		Map<String, Set<String>> neighbours = new HashMap<>();
+		Map<String, List<Pojo>> fields = new HashMap<>();
+
+		dataGraph.getNodes()
+					.forEach(node -> {
+						neighbours.put(node, dataGraph.getNeighbours(node));
+
+						List<Pojo> nodeFields = new ArrayList<>();
+
+						for (FieldDefinition fd : definitions.get(node)
+																		 .getFields()
+																		 .values()) {
+							Pojo field = new Pojo();
+							field.setProperty("name", fd.getName());
+							field.setProperty("notNull", fd.isNotNull());
+
+							switch (fd.getType()) {
+								case DATETIME:
+									field.setProperty("type", "date");
+									break;
+								case DECIMAL:
+								case INTEGER:
+									field.setProperty("type", "number");
+									break;
+								case STRING:
+									field.setProperty("type", "string");
+									break;
+							}
+
+							nodeFields.add(field);
+						}
+
+						fields.put(node, nodeFields);
+					});
+
+		System.out.println(Util.prettyJson(fields));
+		System.out.println(Util.prettyJson(neighbours));
 	}
 
 	@Override
@@ -139,8 +192,10 @@ class MySQLDatabase implements Database {
 											 .executeQuery(stmt);
 			selectBuilder.skip(null);
 			selectBuilder.take(null);
+			// select "1" to avoid "duplicate column name" error
+			selectBuilder.fields(new Sequence(Collections.singletonList(Literal.trueLiteral())));
 			ResultSet totalRs = connection.createStatement()
-													.executeQuery("SELECT COUNT(*) FROM (" + selectBuilder.build() + ") AS __total");
+													.executeQuery("SELECT COUNT(*) AS __total FROM (" + selectBuilder.build() + ") AS __total");
 
 			ResultSetMetaData meta = rs.getMetaData();
 			List<Pojo> objects = new ArrayList<>();

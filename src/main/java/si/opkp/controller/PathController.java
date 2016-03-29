@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +28,14 @@ public class PathController implements Controller {
 
 	@Override
 	public ResponseEntity<?> get(List<Identifier> arguments, RequestParams params) {
-		SelectBuilder select = QueryFactory.select();
+		SelectBuilder select = QueryFactory.select(database);
 
 		select.fields(params.getFields());
 		select.from(arguments.get(0));
+
+		List<String> nodes = new ArrayList<>();
+		nodes.add(arguments.get(0)
+								 .getName());
 
 		// joins
 		for (int i = 1; i < arguments.size(); i++) {
@@ -52,11 +57,18 @@ public class PathController implements Controller {
 			List<String> path = optPath.get();
 
 			for (int j = 1; j < path.size(); j++) {
-				AstNode edge = database.getDataGraph()
-											  .getEdge(path.get(j - 1), path.get(j))
-											  .get();
-				select.join(new Identifier(path.get(j)), edge);
+				if (!nodes.contains(path.get(j))) {
+					nodes.add(path.get(j));
+				}
 			}
+		}
+
+		for (int i = 1; i < nodes.size(); i++) {
+			AstNode edge = database.getDataGraph()
+										  .getEdge(nodes.get(i - 1), nodes.get(i))
+										  .get();
+
+			select.join(new Identifier(nodes.get(i)), edge);
 		}
 
 		if (params.getWhere() != null) {
