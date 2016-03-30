@@ -49,7 +49,7 @@ public class Graph<T, S> {
 		dirty = true;
 	}
 
-	public void addEdge(T nodeA, T nodeB, S edge) {
+	public void addDirectedEdge(T nodeA, T nodeB, S edge) {
 		if (!nodes.containsKey(nodeA)) {
 			nodes.put(nodeA, new HashMap<>());
 		}
@@ -60,10 +60,13 @@ public class Graph<T, S> {
 
 		nodes.get(nodeA)
 			  .put(nodeB, new Edge(nodeA, nodeB, edge));
-		nodes.get(nodeB)
-			  .put(nodeA, new Edge(nodeB, nodeA, edge));
 
 		dirty = true;
+	}
+
+	public void addEdge(T nodeA, T nodeB, S edge) {
+		addDirectedEdge(nodeA, nodeB, edge);
+		addDirectedEdge(nodeB, nodeA, edge);
 	}
 
 	public Set<T> getNeighbours(T node) {
@@ -160,6 +163,37 @@ public class Graph<T, S> {
 		}
 
 		dirty = false;
+	}
+
+	public Optional<List<T>> topologicalSort() {
+		List<T> sorted = new ArrayList<>();
+		Set<T> visited = new HashSet<>();
+
+		for (T node : nodes.keySet()) {
+			if (!visited.contains(node)) {
+				try {
+					rdfs(node, visited, sorted);
+				} catch (NullPointerException e) {
+					return Optional.empty();
+				}
+			}
+		}
+
+		return Optional.of(sorted);
+	}
+
+	private void rdfs(T u, Set<T> visited, List<T> sorted) {
+		visited.add(u);
+
+		nodes.get(u)
+			  .keySet()
+			  .stream()
+			  .forEach(v -> {
+				  if (!visited.contains(v))
+					  rdfs(v, visited, sorted);
+			  });
+
+		sorted.add(u);
 	}
 
 }

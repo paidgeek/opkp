@@ -2,21 +2,14 @@ package si.opkp.model;
 
 public class FieldDefinition {
 
-	public enum Type {
-		STRING,
-		DATETIME,
-		DECIMAL,
-		INTEGER
-	}
-
 	private String name;
 	private String model;
-	private Type type;
+	private FieldType type;
 	private boolean notNull;
 	private boolean identifier;
 	private Object defaultValue;
 
-	public FieldDefinition(String name, String model, Type type, boolean notNull, boolean identifier, Object defaultValue) {
+	public FieldDefinition(String name, String model, FieldType type, boolean notNull, boolean identifier, Object defaultValue) {
 		this.name = name;
 		this.model = model;
 		this.type = type;
@@ -33,7 +26,7 @@ public class FieldDefinition {
 		return model;
 	}
 
-	public Type getType() {
+	public FieldType getType() {
 		return type;
 	}
 

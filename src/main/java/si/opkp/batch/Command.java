@@ -2,7 +2,7 @@ package si.opkp.batch;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.moybl.restql.ast.Identifier;
+import com.moybl.restql.ast.AstNode;
 
 import org.springframework.http.HttpMethod;
 
@@ -18,7 +18,7 @@ public class Command {
 	private String name;
 	private HttpMethod method;
 	private String controller;
-	private List<Identifier> arguments;
+	private List<AstNode> arguments;
 	private Pojo body;
 	private RequestParams params;
 	private List<Dependency> dependencies;
@@ -52,7 +52,7 @@ public class Command {
 		return controller;
 	}
 
-	public List<Identifier> getArguments() {
+	public List<AstNode> getArguments() {
 		return arguments;
 	}
 

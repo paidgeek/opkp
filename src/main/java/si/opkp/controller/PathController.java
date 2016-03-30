@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import si.opkp.model.Database;
 import si.opkp.model.QueryResult;
@@ -27,29 +28,29 @@ public class PathController implements Controller {
 	private Database database;
 
 	@Override
-	public ResponseEntity<?> get(List<Identifier> arguments, RequestParams params) {
+	public ResponseEntity<?> get(List<AstNode> arguments, RequestParams params) {
+		List<String> argPath = arguments.stream()
+												  .map(node -> ((Identifier) node).getName())
+												  .collect(Collectors.toList());
+
 		SelectBuilder select = QueryFactory.select(database);
 
 		select.fields(params.getFields());
 		select.from(arguments.get(0));
 
 		List<String> nodes = new ArrayList<>();
-		nodes.add(arguments.get(0)
-								 .getName());
+		nodes.add(argPath.get(0));
 
 		// joins
 		for (int i = 1; i < arguments.size(); i++) {
-			String other = arguments.get(i)
-											.getName();
+			String other = argPath.get(i);
 
 			Optional<List<String>> optPath = database.getDataGraph()
-																  .findPath(arguments.get(i - 1)
-																							.getName(), other);
+																  .findPath(argPath.get(i - 1), other);
 
 			if (!optPath.isPresent()) {
 				return Util.responseError(String.format("cannot join '%s' and '%s'",
-						arguments.get(i - 1)
-									.getName(),
+						argPath.get(i - 1),
 						other),
 						HttpStatus.BAD_REQUEST);
 			}
@@ -92,7 +93,7 @@ public class PathController implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<?> post(List<Identifier> arguments, RequestParams params, Pojo body) {
+	public ResponseEntity<?> post(List<AstNode> arguments, RequestParams params, Pojo body) {
 		return Util.responseError(HttpStatus.BAD_REQUEST);
 	}
 

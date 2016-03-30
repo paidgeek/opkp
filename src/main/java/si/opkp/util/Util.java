@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moybl.restql.RestQL;
 import com.moybl.restql.ast.AstNode;
-import com.moybl.restql.ast.Identifier;
 import com.moybl.restql.ast.Sequence;
 
 import org.springframework.core.io.ClassPathResource;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Util {
 
@@ -126,21 +124,18 @@ public class Util {
 		return null;
 	}
 
-	public static List<Identifier> parseQueryArguments(String arguments) {
+	public static List<AstNode> parseQueryArguments(String arguments) {
 		List<AstNode> argumentElements = RestQL.parse(arguments)
 															.getElements();
-		List<Identifier> queryArguments = new ArrayList<>();
+		List<AstNode> queryArguments = new ArrayList<>();
 
 		if (!argumentElements.isEmpty()) {
 			AstNode arg = argumentElements.get(0);
 
 			if (arg instanceof Sequence) {
-				queryArguments = ((Sequence) arg).getElements()
-															.stream()
-															.map(node -> (Identifier) node)
-															.collect(Collectors.toList());
+				queryArguments = ((Sequence) arg).getElements();
 			} else {
-				queryArguments.add((Identifier) arg);
+				queryArguments.add(arg);
 			}
 		}
 

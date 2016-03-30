@@ -13,6 +13,7 @@ app.controller("graphs", function($scope, opkpService, dataGraph) {
 
    $scope.selectNode = function(index, node) {
       $scope.path[index] = node;
+      $scope.selectedColumns[index] = [];
    }
 
    $scope.addNode = function() {
@@ -53,11 +54,18 @@ app.controller("graphs", function($scope, opkpService, dataGraph) {
    $scope.removeNode = function(i) {
       $scope.path.splice(i, $scope.pathLength);
       $scope.pathLength = $scope.path.length;
+      $scope.selectedColumns.splice(i);
    }
 
    $scope.update = function() {
       if ($scope.path.length == 0 || !$scope.selectedColumns) {
          return;
+      }
+
+      for (var i = 0; i < $scope.selectedColumns.length; i++) {
+         for (var j = 0; j < $scope.selectedColumns[i].length; j++) {
+            $scope.selectedColumns[i][j] = $scope.path[i] + "." + $scope.selectedColumns[i][j];
+         }
       }
 
       var columns = [].concat.apply([], $scope.selectedColumns);

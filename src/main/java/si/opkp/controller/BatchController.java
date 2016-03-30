@@ -1,7 +1,7 @@
 package si.opkp.controller;
 
 import com.moybl.restql.Engine;
-import com.moybl.restql.ast.Identifier;
+import com.moybl.restql.ast.AstNode;
 import com.moybl.restql.ast.Literal;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class BatchController {
 
 				Engine state = new Engine();
 				String controller = command.getController();
-				List<Identifier> arguments = command.getArguments();
+				List<AstNode> arguments = command.getArguments();
 
 				states.put(command.getName(), state);
 

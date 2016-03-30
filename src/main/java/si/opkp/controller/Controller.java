@@ -1,6 +1,6 @@
 package si.opkp.controller;
 
-import com.moybl.restql.ast.Identifier;
+import com.moybl.restql.ast.AstNode;
 
 import org.springframework.http.ResponseEntity;
 
@@ -11,8 +11,8 @@ import si.opkp.util.RequestParams;
 
 interface Controller {
 
-	ResponseEntity<?> get(List<Identifier> arguments, RequestParams params);
+	ResponseEntity<?> get(List<AstNode> arguments, RequestParams params);
 
-	ResponseEntity<?> post(List<Identifier> arguments, RequestParams params, Pojo body);
+	ResponseEntity<?> post(List<AstNode> arguments, RequestParams params, Pojo body);
 
 }

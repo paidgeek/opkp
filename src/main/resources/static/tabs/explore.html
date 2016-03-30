@@ -17,15 +17,18 @@
                      <button ng-if="i > 0" type="button" class="btn btn-danger form-control" ng-click="removeNode(i)">-</button>
                   </div>
                </div>
+               <br/>
 
-               <h4>Columns</h4>
+               <h4 ng-if="dataGraph.fields[path[i]]">Columns</h4>
                <div ng-repeat="i in range(pathLength) track by $index" ng-if="dataGraph.fields[path[i]]">
                   {{path[i]}}
                   <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns[i].length}} columns selected" ng-model="selectedColumns[i]" ms-header="Select fields" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
                </div>
+               <br/>
 
+               <!--
                <h4>Conditions</h4>
-
+-->
                <button type="button" class="btn btn-default" ng-click="update()">Update</button>
 
             </form>
@@ -40,8 +43,8 @@
                   <th>
                      #
                   </th>
-                  <th ng-repeat="(identifier, value) in responseData.objects[0]" ng-if="$index > 0">
-                     {{identifier}}
+                  <th ng-repeat="(key, value) in responseData.objects[0]">
+                     {{key}}
                   </th>
                   <th></th>
                </tr>
@@ -51,7 +54,7 @@
                   <td class="row-number">
                      {{$index + 1 + (currentPage - 1) * pageSize}}
                   </td>
-                  <td ng-repeat="value in row" ng-if="$index > 0">
+                  <td ng-repeat="value in row">
                      {{value}}
                   </td>
                   <td>

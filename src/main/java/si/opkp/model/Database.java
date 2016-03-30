@@ -13,8 +13,10 @@ public interface Database {
 
 	Map<String, ModelDefinition> getModels();
 
+	Map<String, FunctionDefinition> getFunctions();
+
 	QueryResult queryObjects(SelectBuilder selectBuilder, Object... args);
 
-	QueryResult callFunction(String function, Object... args);
+	QueryResult callFunction(String function, Object... params);
 
 }
