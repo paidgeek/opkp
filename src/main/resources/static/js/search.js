@@ -15,7 +15,7 @@ app.controller('food-modal', function($scope, $uibModalInstance, opkpService, fo
    };
 });
 
-app.controller("food-search", function($scope, $uibModal, opkpService) {
+app.controller("search", function($scope, $uibModal, opkpService) {
    $scope.pageSizes = [10, 25, 100];
 
    $scope.search = function() {
@@ -34,18 +34,20 @@ app.controller("food-search", function($scope, $uibModal, opkpService) {
 
       if (keywords && keywords.trim()) {
          keywords = keywords.trim().replace(/\W/g, '').split(/ +/);
-         var promise = opkpService.searchFood(keywords, ($scope.currentPage - 1) * $scope.pageSize, $scope.pageSize);
+         var promise = opkpService.search("fir_food", keywords, ($scope.currentPage - 1) * $scope.pageSize, $scope.pageSize);
+         var startTime = new Date().getTime();
          $scope.searchPromise = promise;
 
          promise.then(function(data) {
-            $scope.data = data;
+            $scope.responseTime = (new Date().getTime() - startTime) / 1000.0;
+            $scope.responseData = data;
 
             if (success) {
                success();
             }
          });
       } else {
-         $scope.data = null;
+         $scope.responseData = null;
          if (error) {
             error();
          }

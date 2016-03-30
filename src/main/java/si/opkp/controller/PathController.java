@@ -84,7 +84,7 @@ public class PathController implements Controller {
 		try {
 			QueryResult qr = database.queryObjects(select);
 
-			return new ResponseEntity<>(qr, HttpStatus.valueOf(qr.getStatus()));
+			return new ResponseEntity<>(qr, qr.getStatus());
 		} catch (Exception e) {
 			e.printStackTrace();
 

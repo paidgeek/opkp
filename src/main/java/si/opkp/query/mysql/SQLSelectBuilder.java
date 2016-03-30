@@ -1,6 +1,5 @@
 package si.opkp.query.mysql;
 
-import com.moybl.restql.Token;
 import com.moybl.restql.ast.*;
 
 import java.util.ArrayList;
@@ -21,14 +20,14 @@ public class SQLSelectBuilder implements SelectBuilder {
 	private AstNode where;
 	private Sequence sort;
 	private Sequence group;
-	private AstNode skip, take;
+	private long skip, take;
 
 	public SQLSelectBuilder(Database database) {
 		this.database = database;
 
 		joins = new ArrayList<>();
-		skip = new Literal(0, Token.NUMBER);
-		take = new Literal(100, Token.NUMBER);
+		skip = -1;
+		take = -1;
 	}
 
 	@Override
@@ -74,14 +73,14 @@ public class SQLSelectBuilder implements SelectBuilder {
 	}
 
 	@Override
-	public SelectBuilder skip(AstNode skip) {
+	public SelectBuilder skip(long skip) {
 		this.skip = skip;
 
 		return this;
 	}
 
 	@Override
-	public SelectBuilder take(AstNode take) {
+	public SelectBuilder take(long take) {
 		this.take = take;
 
 		return this;
@@ -172,14 +171,14 @@ public class SQLSelectBuilder implements SelectBuilder {
 			query.append("\n");
 		}
 
-		if (skip != null || take != null) {
+		if (skip >= 0 && take >= 0) {
 			query.append("LIMIT ")
-				  .append(SQLSourceFactory.build(skip)
-												  .replaceAll("\\.[0-9]*$", ""))
+				  .append(skip)
 				  .append(", ")
-				  .append(SQLSourceFactory.build(take)
-												  .replaceAll("\\.[0-9]*$", ""))
+				  .append(take)
 				  .append("\n");
+		} else {
+			query.append("LIMIT 50\n");
 		}
 
 		return query.toString();

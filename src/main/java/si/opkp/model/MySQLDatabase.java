@@ -202,8 +202,8 @@ class MySQLDatabase implements Database {
 
 			ResultSet rs = connection.createStatement()
 											 .executeQuery(stmt);
-			selectBuilder.skip(null);
-			selectBuilder.take(null);
+			selectBuilder.skip(-1);
+			selectBuilder.take(-1);
 			// select "1" to avoid "duplicate column name" error
 			selectBuilder.fields(new Sequence(Collections.singletonList(Literal.trueLiteral())));
 			ResultSet totalRs = connection.createStatement()

@@ -24,8 +24,8 @@ public class RequestParamsDeserializer extends JsonDeserializer<RequestParams> {
 				(List<String>) map.get("sort"),
 				(List<String>) map.get("group"),
 				(String) map.get("where"),
-				(Integer) map.get("skip"),
-				(Integer) map.get("take"));
+				(Long) map.get("skip"),
+				(Long) map.get("take"));
 	}
 
 }

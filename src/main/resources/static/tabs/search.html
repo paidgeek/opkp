@@ -1,4 +1,4 @@
-<div ng-controller="food-search">
+<div ng-controller="search">
    <div class="row">
       <div class="col-md-12">
          <div class="panel panel-default">
@@ -25,8 +25,15 @@
          </div>
       </div>
    </div>
-   <div ng-if="data">
+   <div ng-if="responseData">
       <div class="row">
+         <div class="col-md-12">
+            <p>
+               {{responseData.total}}
+               results ({{responseTime}}
+               seconds)
+            </p>
+         </div>
          <div class="col-md-12">
             <div class="panel panel-default" cg-busy="searchPromise">
                <table class="table table-hover">
@@ -35,14 +42,14 @@
                         <th>
                            #
                         </th>
-                        <th ng-repeat="(identifier, value) in data.result[0]" ng-if="$index > 0">
-                           {{identifier}}
+                        <th ng-repeat="(key, value) in responseData.objects[0]" ng-if="$index > 0">
+                           {{key}}
                         </th>
                         <th></th>
                      </tr>
                   </thead>
                   <tbody>
-                     <tr ng-repeat="row in data.result">
+                     <tr ng-repeat="row in responseData.objects">
                         <td class="row-number">
                            {{$index + 1 + (currentPage - 1) * pageSize}}
                         </td>
@@ -62,7 +69,7 @@
       </div>
 
       <div class="row text-center">
-         <uib-pagination ng-change="onPageChanged(currentPage)" total-items="data.meta.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+         <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
       </div>
    </div>
 

@@ -10,18 +10,18 @@ DECLARE total INT DEFAULT 0;
 
 DROP TEMPORARY TABLE IF EXISTS results;
 CREATE TEMPORARY TABLE results
-SELECT *, 0 AS total,
+SELECT ORIGFDCD, ORIGFDNM, ENGFDNAM, SCINAM, 0 AS __total,
 	(
 		MATCH(ORIGFDNM, ENGFDNAM, SCINAM)
 		AGAINST(p_keywords)
 	)
-    AS score
+    AS __score
 FROM fir_food
-HAVING score > 0
-ORDER BY score DESC;
+HAVING __score > 0
+ORDER BY __score DESC;
 
 SELECT FOUND_ROWS() INTO total;
-UPDATE results SET results.total = total LIMIT 1;
+UPDATE results SET results.__total = total LIMIT 1;
 
 SELECT * FROM results
 LIMIT p_skip, p_take;
@@ -34,7 +34,7 @@ END
 DELIMITER ;
 
 -- TESTS --
-CALL search_foods('*corn* *bread*',0, 100);
+CALL search_foods('corn bread',0, 100);
 
 
 

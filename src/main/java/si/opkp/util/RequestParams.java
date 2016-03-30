@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.moybl.restql.RestQL;
-import com.moybl.restql.Token;
 import com.moybl.restql.ast.AstNode;
 import com.moybl.restql.ast.Literal;
 import com.moybl.restql.ast.Sequence;
@@ -19,12 +18,12 @@ public class RequestParams {
 	private Sequence sort;
 	private Sequence group;
 	private AstNode where;
-	private AstNode skip;
-	private AstNode take;
+	private long skip;
+	private long take;
 
 	public RequestParams() {
-		skip = new Literal(0, Token.NUMBER);
-		take = new Literal(50, Token.NUMBER);
+		skip = 0;
+		take = 50;
 		fields = new Sequence(Collections.emptyList());
 		sort = new Sequence(Collections.emptyList());
 		group = new Sequence(Collections.emptyList());
@@ -35,8 +34,8 @@ public class RequestParams {
 								@JsonProperty("sort") List<String> sortList,
 								@JsonProperty("group") List<String> groupList,
 								@JsonProperty("where") String where,
-								@JsonProperty("skip") Integer skip,
-								@JsonProperty("take") Integer take) {
+								@JsonProperty("skip") Long skip,
+								@JsonProperty("take") Long take) {
 		this();
 
 		if (fieldList != null) {
@@ -56,11 +55,11 @@ public class RequestParams {
 		}
 
 		if (skip != null) {
-			this.skip = new Literal(skip, Token.NUMBER);
+			this.skip = skip;
 		}
 
 		if (take != null) {
-			this.take = new Literal(take, Token.NUMBER);
+			this.take = take;
 		}
 	}
 
@@ -105,18 +104,22 @@ public class RequestParams {
 	}
 
 	public void setSkip(String skip) {
-		this.skip = RestQL.parse(skip);
+		this.skip = (long) ((Literal) RestQL.parse(skip)
+														.getElements()
+														.get(0)).numberValue();
 	}
 
 	public void setTake(String take) {
-		this.take = RestQL.parse(take);
+		this.take = (long) ((Literal) RestQL.parse(take)
+														.getElements()
+														.get(0)).numberValue();
 	}
 
-	public AstNode getSkip() {
+	public long getSkip() {
 		return skip;
 	}
 
-	public AstNode getTake() {
+	public long getTake() {
 		return take;
 	}
 

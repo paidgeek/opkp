@@ -51,9 +51,9 @@ function post($http, $q, url, data) {
 OPKPService.create = function() {
    return function($http, $q) {
       return {
-         searchFood: function(keywords, offset, count) {
+         search: function(node, keywords, skip, take) {
             keywords = keywords.join(",");
-            var url = OPKPService.host + "search/fir_food?fields=ORIGFDCD,ORIGFDNM,ENGFDNAM,SCINAM&keywords=" + keywords + "&limit=" + offset + "," + count;
+            var url = OPKPService.host + "opkp/search/" + node + "/" + keywords + "?skip=" + skip + "&take=" + take;
 
             return get($http, $q, url);
          },

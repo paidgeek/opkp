@@ -17,9 +17,9 @@ public interface SelectBuilder {
 
 	SelectBuilder group(Sequence fields);
 
-	SelectBuilder skip(AstNode skip);
+	SelectBuilder skip(long skip);
 
-	SelectBuilder take(AstNode take);
+	SelectBuilder take(long take);
 
 	String build();
 
