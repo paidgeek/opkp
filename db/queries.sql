@@ -65,7 +65,16 @@ SELECT COUNT(1) AS __total FROM (SELECT 1
 FROM fir_food
 INNER JOIN fir_value ON((fir_food.ORIGFDCD = fir_value.ORIGFDCD))
 INNER JOIN fir_component ON((fir_component.ECOMPID = fir_value.COMPID))
-) AS __total
+) AS __total;
+
+SELECT * FROM fc_foodgroup;
+
+SELECT ORIGFDNM, RECPROC, AUTHOR
+FROM fir_food
+JOIN fir_recipe USING(ORIGFDCD);
+
+
+SELECT COUNT(*) FROM fir_recipe;
 
 
 

@@ -26,6 +26,8 @@ public class BatchController {
 
 	@Autowired
 	private PathController pathController;
+	@Autowired
+	private SearchController searchController;
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> perform(@RequestBody Batch batch) {
@@ -34,7 +36,7 @@ public class BatchController {
 			Map<String, Engine> states = new HashMap<>();
 			List<Command> commands = batch.getCommands();
 
-			OUTER:
+			OUTER_FOR:
 			for (Command command : commands) {
 				for (Dependency dependency : command.getDependencies()) {
 					Engine state = states.get(dependency.getCommand());
@@ -46,7 +48,7 @@ public class BatchController {
 										dependency.getCondition(),
 										dependency.getCommand()));
 
-						continue OUTER;
+						continue OUTER_FOR;
 					}
 				}
 
@@ -61,6 +63,9 @@ public class BatchController {
 				switch (controller) {
 					case "path":
 						response = pathController.get(arguments, command.getParams());
+						break;
+					case "search":
+						response = searchController.get(arguments, command.getParams());
 						break;
 					default:
 						state.setVariable("status", (double) HttpStatus.BAD_REQUEST.value());

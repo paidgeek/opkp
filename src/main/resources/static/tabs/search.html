@@ -1,80 +1,124 @@
 <div ng-controller="search">
    <div class="row">
       <div class="col-md-12">
-         <div class="panel panel-default">
-            <form class="panel-body form-horizontal" ng-submit="search()">
-
-               <div class="form-group col-md-6">
-                  <div class="input-group">
-                     <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-search"></span>
-                     </span>
-                     <!--<input class="form-control" ng-model="keywords" placeholder="Search" type="search"/>-->
-
-                     <input type="search" ng-model="keywords" typeahead-focus-first="false" placeholder="Search" uib-typeahead="name for name in getSearches($viewValue)" typeahead-loading="loading" typeahead-no-results="noResults" class="form-control">
-
-                  </div>
+         <form class=" form-horizontal" ng-submit="search()">
+            <div class="form-group col-md-6">
+               <div class="input-group">
+                  <span class="input-group-addon">
+                     <span class="glyphicon glyphicon-search"></span>
+                  </span>
+                  <input type="search" ng-model="keywords" typeahead-focus-first="false" placeholder="Search" uib-typeahead="name for name in getSearches($viewValue)" typeahead-loading="loading" typeahead-no-results="noResults" class="form-control">
                </div>
-               <div class="form-group">
-                  <label for="select-page-size" class="col-md-2 control-label">
-                     Rows count
-                  </label>
-                  <div class="col-md-2">
-                     <select id="select-page-size" class="form-control" ng-init="pageSize = 10" ng-options="i for i in pageSizes" ng-model="pageSize" ng-change="search()"></select>
-                  </div>
-               </div>
-
-            </form>
-         </div>
+            </div>
+         </form>
       </div>
    </div>
-   <div ng-if="responseData && responseData.total > 0">
+
+   <div ng-if="responseData">
       <div class="row">
          <div class="col-md-12">
             <p>
-               {{responseData.total}}
+               {{responseData.foods.total + responseData.recipes.total}}
                results ({{responseTime}}
                seconds)
             </p>
          </div>
-         <div class="col-md-12">
-            <div class="panel panel-default" cg-busy="searchPromise">
-               <table class="table table-hover">
-                  <thead>
-                     <tr>
-                        <th>
-                           #
-                        </th>
-                        <th ng-repeat="(key, value) in responseData.objects[0]" ng-if="$index > 0">
-                           {{key}}
-                        </th>
-                        <th></th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     <tr ng-repeat="row in responseData.objects">
-                        <td class="row-number">
-                           {{$index + 1 + (currentPage - 1) * pageSize}}
-                        </td>
-                        <td ng-repeat="value in row" ng-if="$index > 0">
-                           {{value}}
-                        </td>
-                        <td>
-                           <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
-                              <i class="glyphicon glyphicon-edit"></i>
-                           </button>
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
-            </div>
-         </div>
       </div>
 
-      <div class="row text-center">
-         <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
-      </div>
-   </div>
+      <uib-tabset active="activeJustified" justified="true">
+         <uib-tab index="0" heading="Foods">
+            <!-- Food results -->
+            <div ng-if="responseData.foods.total > 0">
+               <div class="row">
+                  <div class="col-md-12">
+                     <div class="panel panel-default" cg-busy="searchPromise">
+                        <table class="table table-hover table-condensed table-borderless">
+                           <thead>
+                              <tr>
+                                 <th>
+                                    #
+                                 </th>
+                                 <th ng-repeat="(key, value) in responseData.foods.objects[0]" ng-if="$index > 0">
+                                    {{key}}
+                                 </th>
+                                 <th></th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr ng-repeat="row in responseData.foods.objects">
+                                 <td class="row-number">
+                                    {{$index + 1 + (currentPage - 1) * pageSize}}
+                                 </td>
+                                 <td ng-repeat="value in row" ng-if="$index > 0">
+                                    {{value}}
+                                 </td>
+                                 <td>
+                                    <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
+                                       <i class="glyphicon glyphicon-edit"></i>
+                                    </button>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+
+               </div>
+
+               <div class="row text-center">
+                  <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.foods.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+               </div>
+            </div>
+         </uib-tab>
+         <uib-tab index="1" heading="Recipes">
+
+            <!-- Recipe results -->
+            <div ng-if="responseData.recipes.total > 0">
+               <div class="row">
+                  <div class="col-md-12">
+                     <div class="panel panel-default" cg-busy="searchPromise">
+                        <table class="table table-hover table-condensed table-borderless">
+                           <thead>
+                              <tr>
+                                 <th>
+                                    #
+                                 </th>
+                                 <th ng-repeat="(key, value) in responseData.recipes.objects[0]" ng-if="$index > 0">
+                                    {{key}}
+                                 </th>
+                                 <th></th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr ng-repeat="row in responseData.recipes.objects">
+                                 <td class="row-number">
+                                    {{$index + 1 + (currentPage - 1) * pageSize}}
+                                 </td>
+                                 <td ng-repeat="value in row" ng-if="$index > 0">
+                                    {{value}}
+                                 </td>
+                                 <td>
+                                    <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
+                                       <i class="glyphicon glyphicon-edit"></i>
+                                    </button>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+
+               </div>
+
+               <div class="row text-center">
+                  <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.recipes.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+               </div>
+            </div>
+
+         </div>
+
+      </uib-tab>
+   </uib-tabset>
 
    <script type="text/ng-template" id="food-modal.html">
       <div class="modal-header">
@@ -87,24 +131,18 @@
                <h3 class="panel-title">Components</h3>
             </div>
             <div class="panel-body">
-               <table class="table table-hover">
+               <table class="table table-hover table-condensed">
                   <thead>
                      <tr>
-                        <th ng-repeat="(identifier, value) in data.components[0]">
-                           {{identifier}}
+                        <th ng-repeat="(key, value) in data.components[0]">
+                           {{key}}
                         </th>
-                        <th></th>
                      </tr>
                   </thead>
                   <tbody>
                      <tr ng-repeat="component in data.components">
                         <td ng-repeat="value in component">
-                           {{value}}
-                        </td>
-                        <td>
-                           <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
-                              <i class="glyphicon glyphicon-edit"></i>
-                           </button>
+                           <span editable-text="value">{{value}}</span>
                         </td>
                      </tr>
                   </tbody>

@@ -1,4 +1,8 @@
-var app = angular.module("app", ["cgBusy", "ui.bootstrap", "am.multiselect"]);
+var app = angular.module("app", ["cgBusy", "ui.bootstrap", "am.multiselect", "xeditable"]);
+
+app.run(function(editableOptions) {
+   editableOptions.theme = "bs3";
+});
 
 app.factory("opkpService", OPKPService.create());
 

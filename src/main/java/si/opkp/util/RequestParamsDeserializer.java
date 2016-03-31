@@ -20,12 +20,27 @@ public class RequestParamsDeserializer extends JsonDeserializer<RequestParams> {
 		Map<String, Object> map = jsonParser.readValuesAs(HashMap.class)
 														.next();
 
+		long skip = 0;
+		long take = 0;
+
+		if (map.get("skip") instanceof Integer) {
+			skip = ((Integer) map.get("skip"));
+		} else if (map.get("skip") instanceof Long) {
+			skip = ((Long) map.get("skip"));
+		}
+
+		if (map.get("take") instanceof Integer) {
+			take = (Integer) map.get("take");
+		} else if (map.get("take") instanceof Long) {
+			take = ((Long) map.get("take"));
+		}
+
 		return new RequestParams((List<String>) map.get("fields"),
 				(List<String>) map.get("sort"),
 				(List<String>) map.get("group"),
 				(String) map.get("where"),
-				(Long) map.get("skip"),
-				(Long) map.get("take"));
+				skip,
+				take);
 	}
 
 }

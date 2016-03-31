@@ -1,7 +1,7 @@
 app.controller('food-modal', function($scope, $uibModalInstance, opkpService, food) {
    opkpService.getFood(food["ORIGFDCD"]).then(function(data) {
       console.log(data);
-      
+
       $scope.data = {
          components: data.components.total == 0 ? null : data.components.objects,
          food: data.food.objects[0]
@@ -18,7 +18,7 @@ app.controller('food-modal', function($scope, $uibModalInstance, opkpService, fo
 });
 
 app.controller("search", function($scope, $uibModal, opkpService, $http) {
-   $scope.pageSizes = [10, 25, 100];
+   $scope.pageSize = 20;
 
    $scope.search = function() {
       $scope.currentPage = 1;
@@ -26,8 +26,8 @@ app.controller("search", function($scope, $uibModal, opkpService, $http) {
    }
 
    $scope.getSearches = function(val) {
-      return opkpService.search("fir_food", val.split(/ +/), 0, 5).then(function(res) {
-         return res.objects.map(function(food) {
+      return opkpService.search(val.split(/ +/), 0, 5).then(function(res) {
+         return res.foods.objects.map(function(food) {
             return food.ORIGFDNM;
          });
       });
@@ -46,7 +46,7 @@ app.controller("search", function($scope, $uibModal, opkpService, $http) {
       if (keywords && keywords.trim()) {
          console.log( keywords.trim().replace(/\W/g, ','));
 
-         var promise = opkpService.search("fir_food", keywords, ($scope.currentPage - 1) * $scope.pageSize, $scope.pageSize);
+         var promise = opkpService.search(keywords, ($scope.currentPage - 1) * $scope.pageSize, $scope.pageSize);
          var startTime = new Date().getTime();
          $scope.searchPromise = promise;
 
