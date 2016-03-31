@@ -49,7 +49,7 @@ public class PathController implements Controller {
 																  .findPath(argPath.get(i - 1), other);
 
 			if (!optPath.isPresent()) {
-				return Util.responseError(String.format("cannot join '%s' and '%s'",
+				return Util.responseError(String.format("Cannot join '%s' and '%s'",
 						argPath.get(i - 1),
 						other),
 						HttpStatus.BAD_REQUEST);

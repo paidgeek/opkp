@@ -13,7 +13,7 @@ CREATE TEMPORARY TABLE results
 SELECT ORIGFDCD, ORIGFDNM, ENGFDNAM, SCINAM, 0 AS __total,
 	(
 		MATCH(ORIGFDNM, ENGFDNAM, SCINAM)
-		AGAINST(p_keywords)
+		AGAINST(p_keywords IN BOOLEAN MODE)
 	)
     AS __score
 FROM fir_food
@@ -34,7 +34,7 @@ END
 DELIMITER ;
 
 -- TESTS --
-CALL search_foods('corn bread',0, 100);
+CALL search_foods('*Dehidrirana* *banana* *ali* *banana* *v* *prahu*',0, 100);
 
 
 

@@ -3,7 +3,7 @@ OPKPService.version = "v1";
 OPKPService.host = "https://localhost:8080/" + OPKPService.version + "/";
 OPKPService.timeout = 3000;
 
-function get($http, $q, url) {
+function get($http, $q, url, params) {
    var deferred = $q.defer();
 
    $http({
@@ -13,6 +13,7 @@ function get($http, $q, url) {
          "Accept": "application/json",
          "Content-Type": "application/json"
       },
+      params: params,
       timeout: OPKPService.timeout
    }).success(function(data) {
       deferred.resolve(data);
@@ -24,10 +25,8 @@ function get($http, $q, url) {
    return deferred.promise;
 }
 
-function post($http, $q, url, data) {
+function post($http, $q, url, data, params) {
    var deferred = $q.defer();
-
-   console.log(data);
 
    $http({
       method: "POST",
@@ -36,6 +35,7 @@ function post($http, $q, url, data) {
          "Accept": "application/json",
          "Content-Type": "application/json"
       },
+      params: params,
       timeout: OPKPService.timeout,
       data: data
    }).success(function(data) {
@@ -52,10 +52,16 @@ OPKPService.create = function() {
    return function($http, $q) {
       return {
          search: function(node, keywords, skip, take) {
-            keywords = keywords.join(",");
-            var url = OPKPService.host + "opkp/search/" + node + "/" + keywords + "?skip=" + skip + "&take=" + take;
+            if (typeof keywords === "object") {
+               keywords = keywords.join(",");
+            }
 
-            return get($http, $q, url);
+            var url = OPKPService.host + "opkp/search/" + node + "/" + keywords;
+
+            return get($http, $q, url, {
+               skip: skip,
+               take: take
+            });
          },
          getFood: function(id) {
             var url = OPKPService.host + "batch";
@@ -63,32 +69,40 @@ OPKPService.create = function() {
             return post($http, $q, url, {
                commands: [{
                   name: "food",
-                  controller: "crud",
+                  controller: "path",
                   method: "GET",
-                  model: "fir_food",
+                  arguments: "fir_food",
                   params: {
-                     query: "ORIGFDCD:'" + id + "'"
+                     where: "ORIGFDCD:'" + id + "'"
                   }
                }, {
                   name: "components",
-                  controller: "graph",
-                  model: "fir_food,fir_value,fir_component",
+                  controller: "path",
+                  arguments: "fir_food,fir_value,fir_component",
                   params: {
-                     query: "ORIGFDCD:'" + id + "'",
-                     fields: ["ORIGCPNM", "SELVAL", "UNIT"]
+                     where: "fir_food.ORIGFDCD:'" + id + "'",
+                     fields: [
+                        "fir_component.ORIGCPNM",
+                        "fir_value.SELVAL",
+                        "fir_value.UNIT"
+                     ]
                   },
-                  dependencies: ["food"]
+                  dependencies: [{
+                     command: "food",
+                     condition: "status:200"
+                  }]
                }]
             });
          },
          path: function(arguments, fields) {
-            var url = OPKPService.host + "path/" + arguments.join(",") + "?";
+            var url = OPKPService.host + "path/" + arguments.join(",");
+            var params = {};
 
             if (fields && fields.length > 0) {
-               url += "fields=" + fields.join(",");
+               params.fields = fields.join(",");
             }
 
-            return get($http, $q, url);
+            return get($http, $q, url, params);
          }
       }
    }

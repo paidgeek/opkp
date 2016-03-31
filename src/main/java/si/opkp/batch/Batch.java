@@ -16,8 +16,13 @@ public class Batch {
 		Graph<Command, Dependency> graph = new Graph<>();
 
 		commands.forEach(cmd -> commandNames.put(cmd.getName(), cmd));
-		commands.forEach(cmd -> cmd.getDependencies()
-											.forEach(dep -> graph.addDirectedEdge(cmd, commandNames.get(dep.getCommand()), dep)));
+		commands.forEach(graph::addNode);
+
+		for (Command cmd : commands) {
+			for (Dependency dep : cmd.getDependencies()) {
+				graph.addDirectedEdge(cmd, commandNames.get(dep.getCommand()), dep);
+			}
+		}
 
 		Optional<List<Command>> sorted = graph.topologicalSort();
 

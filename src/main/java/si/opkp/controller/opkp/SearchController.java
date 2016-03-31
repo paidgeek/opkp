@@ -31,11 +31,17 @@ public class SearchController {
 
 	@RequestMapping("{node}/{keywords}")
 	public ResponseEntity<?> get(@PathVariable("node") String node,
-										  @PathVariable("keywords") String keywords,
+										  @PathVariable("keywords") String keywordList,
 										  @ModelAttribute RequestParams params) {
 		try {
+			String[] keywords = keywordList.split(",");
+
+			for (int i = 0; i < keywords.length; i++) {
+				keywords[i] = "*" + keywords[i] + "*";
+			}
+
 			String function = SEARCH_FUNCTIONS.get(node);
-			String keywordParam = String.join(" ", (CharSequence[]) keywords.split(","));
+			String keywordParam = String.join(" ", (CharSequence[]) keywords);
 
 			QueryResult result = database.callFunction(function, keywordParam, params.getSkip(), params.getTake());
 

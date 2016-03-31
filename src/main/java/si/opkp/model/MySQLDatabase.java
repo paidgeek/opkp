@@ -282,7 +282,7 @@ class MySQLDatabase implements Database {
 				objects.add(obj);
 			}
 
-			return QueryResult.result(objects, -1);
+			return QueryResult.result(objects, 0);
 		} catch (SQLException e) {
 			return QueryResult.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}

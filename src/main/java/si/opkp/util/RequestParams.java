@@ -104,15 +104,20 @@ public class RequestParams {
 	}
 
 	public void setSkip(String skip) {
-		this.skip = (long) ((Literal) RestQL.parse(skip)
-														.getElements()
-														.get(0)).numberValue();
+		// TODO there has to be a better way
+		this.skip = (long) ((Literal) ((Sequence) RestQL.parse(skip)
+																		.getElements()
+																		.get(0)).getElements()
+																				  .get(0))
+				.numberValue();
 	}
 
 	public void setTake(String take) {
-		this.take = (long) ((Literal) RestQL.parse(take)
-														.getElements()
-														.get(0)).numberValue();
+		this.take = (long) ((Literal) ((Sequence) RestQL.parse(take)
+																		.getElements()
+																		.get(0)).getElements()
+																				  .get(0))
+				.numberValue();
 	}
 
 	public long getSkip() {

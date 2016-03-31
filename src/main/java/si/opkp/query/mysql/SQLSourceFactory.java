@@ -91,6 +91,12 @@ public class SQLSourceFactory implements Visitor {
 			case GREATER_OR_EQUAL:
 				query.append(" >= ");
 				break;
+			case AND:
+				query.append(" AND ");
+				break;
+			case OR:
+				query.append(" OR ");
+				break;
 		}
 
 		acceptor.getRight()
