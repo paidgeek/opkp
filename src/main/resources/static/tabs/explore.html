@@ -8,7 +8,7 @@
 
                <div class="row voffset-1" ng-repeat="i in range(pathLength) track by $index">
                   <div class="col-md-3">
-                     <select class="form-control" ng-model="selection[i]" ng-change="selectNode(i, selection[i])">
+                     <select class="form-control" ng-node="selection[i]" ng-change="selectNode(i, selection[i])">
                         <option ng-repeat="node in getSteps(i - 1) track by $index" value="{{node}}">{{node}}</option>
                      </select>
                   </div>
@@ -22,7 +22,7 @@
                <h4 ng-if="dataGraph.fields[path[i]]">Columns</h4>
                <div ng-repeat="i in range(pathLength) track by $index" ng-if="dataGraph.fields[path[i]]">
                   {{path[i]}}
-                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns[i].length}} columns selected" ng-model="selectedColumns[i]" ms-header="Select fields" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
+                  <am-multiselect class="input-lg" multiple="true" ms-selected="There are {{selectedColumns[i].length}} columns selected" ng-node="selectedColumns[i]" ms-header="Select fields" options="col for col in getColumns($index)" change="selected()"></am-multiselect>
                </div>
                <br/>
 
@@ -67,7 +67,7 @@
          </table>
 
          <div class="row text-center">
-            <uib-pagination ng-change="onPageChanged(currentPage)" total-items="data.meta.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+            <uib-pagination ng-change="onPageChanged(currentPage)" total-items="data.meta.total" ng-node="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
          </div>
 
       </div>

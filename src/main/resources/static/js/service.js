@@ -78,6 +78,33 @@ OPKPService.create = function() {
                }]
             });
          },
+         getRecipe: function(id) {
+            var url = OPKPService.host + "batch";
+
+            return post($http, $q, url, {
+               commands: [{
+                  name: "recipe",
+                  controller: "path",
+                  method: "GET",
+                  arguments: "fir_recipe",
+                  params: {
+                     where: "RECID:'" + id + "'",
+                     fields: ["RECID", "INGNAM", "INGAMOUNT", "INGUNIT", "HMID", "RANK", "EDIBLE", "WHOLE_WHEAT", "SOAK", "REMARKS", "ORIGCPNM", "ENGFDNAM", "SCINAM"]
+                  }
+               }, {
+                  name: "ingredients",
+                  controller: "path",
+                  arguments: "fir_ingredients,fir_food",
+                  params: {
+                     where: "fir_ingredients.RECID:'" + id + "'"
+                  },
+                  dependencies: [{
+                     command: "recipe",
+                     condition: "status:200"
+                  }]
+               }]
+            });
+         },
          getFood: function(id) {
             var url = OPKPService.host + "batch";
 
@@ -86,7 +113,7 @@ OPKPService.create = function() {
                   name: "food",
                   controller: "path",
                   method: "GET",
-                  arguments: "fir_food",
+                  arguments: "fir_food,fc_foodsubgroup,fc_foodgroup",
                   params: {
                      where: "ORIGFDCD:'" + id + "'"
                   }

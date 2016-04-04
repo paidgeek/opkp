@@ -7,7 +7,7 @@
                   <span class="input-group-addon">
                      <span class="glyphicon glyphicon-search"></span>
                   </span>
-                  <input type="search" ng-model="keywords" typeahead-focus-first="false" placeholder="Search" uib-typeahead="name for name in getSearches($viewValue)" typeahead-loading="loading" typeahead-no-results="noResults" class="form-control">
+                  <input type="search" ng-node="keywords" typeahead-focus-first="false" placeholder="Search" uib-typeahead="name for name in getSearches($viewValue)" typeahead-loading="loading" typeahead-no-results="noResults" class="form-control">
                </div>
             </div>
          </form>
@@ -53,7 +53,7 @@
                                     {{value}}
                                  </td>
                                  <td>
-                                    <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
+                                    <button class="btn btn-sm btn-default" ng-click="onEditFoodClick(row)">
                                        <i class="glyphicon glyphicon-edit"></i>
                                     </button>
                                  </td>
@@ -66,7 +66,7 @@
                </div>
 
                <div class="row text-center">
-                  <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.foods.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+                  <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.foods.total" ng-node="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
                </div>
             </div>
          </uib-tab>
@@ -98,7 +98,7 @@
                                     {{value}}
                                  </td>
                                  <td>
-                                    <button class="btn btn-sm btn-default" ng-click="onEditClick(row)">
+                                    <button class="btn btn-sm btn-default" ng-click="onEditRecipeClick(row)">
                                        <i class="glyphicon glyphicon-edit"></i>
                                     </button>
                                  </td>
@@ -111,7 +111,7 @@
                </div>
 
                <div class="row text-center">
-                  <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.recipes.total" ng-model="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
+                  <uib-pagination ng-change="onPageChanged(currentPage)" total-items="responseData.recipes.total" ng-node="currentPage" max-size="5" class="pagination-sm" boundary-link-numbers="true"></uib-pagination>
                </div>
             </div>
 
@@ -119,41 +119,5 @@
 
       </uib-tab>
    </uib-tabset>
-
-   <script type="text/ng-template" id="food-modal.html">
-      <div class="modal-header">
-         <h3 class="modal-title">{{data.food.ORIGFDNM}}</h3>
-      </div>
-      <div class="modal-body">
-         <!-- Components -->
-         <div class="panel panel-default" ng-if="data.components">
-            <div class="panel-heading">
-               <h3 class="panel-title">Components</h3>
-            </div>
-            <div class="panel-body">
-               <table class="table table-hover table-condensed">
-                  <thead>
-                     <tr>
-                        <th ng-repeat="(key, value) in data.components[0]">
-                           {{key}}
-                        </th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     <tr ng-repeat="component in data.components">
-                        <td ng-repeat="value in component">
-                           <span editable-text="value">{{value}}</span>
-                        </td>
-                     </tr>
-                  </tbody>
-               </table>
-            </div>
-         </div>
-      </div>
-      <div class="modal-footer">
-         <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-         <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-      </div>
-   </script>
 
 </div>

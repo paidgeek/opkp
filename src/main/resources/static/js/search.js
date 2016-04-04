@@ -17,6 +17,23 @@ app.controller('food-modal', function($scope, $uibModalInstance, opkpService, fo
    };
 });
 
+app.controller('recipe-modal', function($scope, $uibModalInstance, opkpService, recipe) {
+   opkpService.getRecipe(recipe["RECID"]).then(function(data) {
+      $scope.data = {
+         ingredients: data.ingredients.objects[0],
+         recipe: data.recipe.objects[0]
+      };
+   });
+
+   $scope.ok = function() {
+      $uibModalInstance.close();
+   };
+
+   $scope.cancel = function() {
+      $uibModalInstance.dismiss('cancel');
+   };
+});
+
 app.controller("search", function($scope, $uibModal, opkpService, $http) {
    $scope.pageSize = 20;
 
@@ -44,8 +61,6 @@ app.controller("search", function($scope, $uibModal, opkpService, $http) {
       var keywords = $scope.keywords;
 
       if (keywords && keywords.trim()) {
-         console.log( keywords.trim().replace(/\W/g, ','));
-
          var promise = opkpService.search(keywords, ($scope.currentPage - 1) * $scope.pageSize, $scope.pageSize);
          var startTime = new Date().getTime();
          $scope.searchPromise = promise;
@@ -66,9 +81,9 @@ app.controller("search", function($scope, $uibModal, opkpService, $http) {
       }
    }
 
-   $scope.onEditClick = function(row) {
+   $scope.onEditFoodClick = function(row) {
       var modal = $uibModal.open({
-         templateUrl: "food-modal.html",
+         templateUrl: "templates/food-modal.html",
          controller: "food-modal",
          size: "lg",
          resolve: {
@@ -78,4 +93,17 @@ app.controller("search", function($scope, $uibModal, opkpService, $http) {
          }
       });
    };
+
+   $scope.onEditRecipeClick = function(row) {
+      var modal = $uibModal.open({
+         templateUrl: "templates/recipe-modal.html",
+         controller: "recipe-modal",
+         size: "lg",
+         resolve: {
+            recipe: function() {
+               return row;
+            }
+         }
+      });
+   }
 });

@@ -10,12 +10,12 @@ import java.util.Iterator;
 
 import si.opkp.query.Aggregate;
 
-public class SQLSourceFactory implements Visitor {
+public class MySQLSourceFactory implements Visitor {
 
 	public static Function<String, Aggregate> aggregateConverter = Enums.stringConverter(Aggregate.class);
 
 	public static String build(AstNode root) {
-		SQLSourceFactory f = new SQLSourceFactory();
+		MySQLSourceFactory f = new MySQLSourceFactory();
 
 		root.accept(f);
 
@@ -24,7 +24,7 @@ public class SQLSourceFactory implements Visitor {
 
 	private StringBuilder query;
 
-	private SQLSourceFactory() {
+	private MySQLSourceFactory() {
 		query = new StringBuilder();
 	}
 

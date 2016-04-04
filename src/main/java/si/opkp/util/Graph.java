@@ -87,7 +87,7 @@ public class Graph<T, S> {
 														.get(goal));
 	}
 
-	public Optional<S> getEdge(T nodeA, T nodeB) {
+	public Optional<Edge> getEdge(T nodeA, T nodeB) {
 		if (!nodes.containsKey(nodeA)) {
 			return Optional.empty();
 		}
@@ -98,8 +98,7 @@ public class Graph<T, S> {
 		}
 
 		return Optional.ofNullable(nodes.get(nodeA)
-												  .get(nodeB)
-												  .getValue());
+												  .get(nodeB));
 	}
 
 	public Set<T> getNodes() {

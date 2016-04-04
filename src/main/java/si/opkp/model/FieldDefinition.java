@@ -3,15 +3,15 @@ package si.opkp.model;
 public class FieldDefinition {
 
 	private String name;
-	private String model;
+	private String node;
 	private FieldType type;
 	private boolean notNull;
 	private boolean identifier;
 	private Object defaultValue;
 
-	public FieldDefinition(String name, String model, FieldType type, boolean notNull, boolean identifier, Object defaultValue) {
+	public FieldDefinition(String name, String node, FieldType type, boolean notNull, boolean identifier, Object defaultValue) {
 		this.name = name;
-		this.model = model;
+		this.node = node;
 		this.type = type;
 		this.notNull = notNull;
 		this.identifier = identifier;
@@ -22,8 +22,8 @@ public class FieldDefinition {
 		return name;
 	}
 
-	public String getModel() {
-		return model;
+	public String getNode() {
+		return node;
 	}
 
 	public FieldType getType() {

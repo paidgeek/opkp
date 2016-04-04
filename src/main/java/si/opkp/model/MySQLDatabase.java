@@ -2,8 +2,6 @@ package si.opkp.model;
 
 import com.moybl.restql.Token;
 import com.moybl.restql.ast.AstNode;
-import com.moybl.restql.ast.Literal;
-import com.moybl.restql.ast.Sequence;
 import com.moybl.restql.factory.RestQLBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +13,17 @@ import java.util.*;
 
 import javax.sql.DataSource;
 
-import si.opkp.query.SelectBuilder;
+import si.opkp.query.SelectOperation;
+import si.opkp.query.mysql.MySQLSelectOperationBuilder;
 import si.opkp.util.Graph;
 import si.opkp.util.Pojo;
+import si.opkp.util.RequestField;
 
 @Component
-class MySQLDatabase implements Database {
+public class MySQLDatabase implements Database {
 
 	private Graph<String, AstNode> dataGraph;
-	private Map<String, ModelDefinition> definitions;
+	private Map<String, NodeDefinition> definitions;
 	private Map<String, FunctionDefinition> functions;
 	private Connection connection;
 
@@ -80,7 +80,7 @@ class MySQLDatabase implements Database {
 				}
 			}
 
-			definitions.put(tableName, new ModelDefinition(tableName, fields, primaryKeys));
+			definitions.put(tableName, new NodeDefinition(tableName, fields, primaryKeys));
 		}
 
 		// set graph's edges based on foreign keys
@@ -90,15 +90,14 @@ class MySQLDatabase implements Database {
 			while (fks.next()) {
 				String pk = fks.getString("PKCOLUMN_NAME");
 				String fk = fks.getString("FKCOLUMN_NAME");
-				ModelDefinition thisTable = definitions.get(tableName);
-				ModelDefinition otherTable = definitions.get(fks.getString("FKTABLE_NAME"));
+				NodeDefinition thisTable = definitions.get(tableName);
+				NodeDefinition otherTable = definitions.get(fks.getString("FKTABLE_NAME"));
 
 				RestQLBuilder b = new RestQLBuilder();
-				dataGraph.addEdge(tableName, otherTable.getName(), b.binaryOperation(b.member(b.identifier(tableName), b.identifier(pk)),
+				AstNode connection = b.binaryOperation(b.member(b.identifier(tableName), b.identifier(pk)),
 						Token.EQUAL,
-						b.member(b.identifier(otherTable.getName()), b.identifier(fk))));
-
-				//dataGraph.addEdge(tableName, otherTable.getName(), conditionBuilder);
+						b.member(b.identifier(otherTable.getName()), b.identifier(fk)));
+				dataGraph.addEdge(tableName, otherTable.getName(), connection);
 			}
 		}
 
@@ -186,7 +185,7 @@ class MySQLDatabase implements Database {
 	}
 
 	@Override
-	public Map<String, ModelDefinition> getModels() {
+	public Map<String, NodeDefinition> getNodes() {
 		return definitions;
 	}
 
@@ -196,43 +195,170 @@ class MySQLDatabase implements Database {
 	}
 
 	@Override
-	public QueryResult queryObjects(SelectBuilder selectBuilder, Object... args) {
+	public NodeResult query(SelectOperation selectOperation) {
+		List<RequestField> fields = flattenFieldList(selectOperation.getFields());
+		List<RequestField> edgeFields = new ArrayList<>();
+		Iterator<RequestField> fieldIterator = fields.iterator();
+
+		while (fieldIterator.hasNext()) {
+			RequestField rf = fieldIterator.next();
+
+			if (rf.isEdge()) {
+				String from = selectOperation.getFrom();
+
+				if (rf.getParent() != null) {
+					from = rf.getParent()
+								.getName();
+				}
+
+				Optional<Graph<String, AstNode>.Edge> edge = dataGraph.getEdge(from, rf.getName());
+
+				if (!edge.isPresent()) {
+					return new NodeErrorResult("Cannot join '" + from + "' and '" + rf.getName() + "'", HttpStatus.BAD_REQUEST);
+				}
+
+				selectOperation.join(edge.get());
+
+				edgeFields.add(rf);
+				fieldIterator.remove();
+			}
+		}
+
+		addDefaultFields(selectOperation.getFrom(), fields);
+
+		for (Graph<String, AstNode>.Edge edge : selectOperation.getJoins()) {
+			addDefaultFields(edge.getNodeB(), fields);
+		}
+
+		selectOperation.fields(fields);
+
 		try {
-			String stmt = buildStatement(selectBuilder.build(), args);
+			String stmt = new MySQLSelectOperationBuilder().build(selectOperation);
 
 			ResultSet rs = connection.createStatement()
 											 .executeQuery(stmt);
-			selectBuilder.skip(-1);
-			selectBuilder.take(-1);
-			// select "1" to avoid "duplicate column name" error
-			selectBuilder.fields(new Sequence(Collections.singletonList(Literal.trueLiteral())));
-			ResultSet totalRs = connection.createStatement()
-													.executeQuery("SELECT COUNT(*) AS __total FROM (" + selectBuilder.build() + ") AS __total");
 
 			ResultSetMetaData meta = rs.getMetaData();
-			List<Pojo> objects = new ArrayList<>();
+			List<Pojo> rows = new ArrayList<>();
 
 			while (rs.next()) {
 				Pojo obj = new Pojo();
 
 				for (int i = 1; i <= meta.getColumnCount(); i++) {
-					obj.setProperty(meta.getColumnName(i), rs.getObject(i));
+					obj.setProperty(meta.getColumnLabel(i), rs.getObject(i));
 				}
 
-				objects.add(obj);
+				rows.add(obj);
 			}
 
-			totalRs.next();
-			long total = totalRs.getLong(1);
+			for (RequestField field : edgeFields) {
+				createEdgeGroup(selectOperation.getFrom(), field, rows);
+			}
 
-			return QueryResult.result(objects, total);
+			return new NodeSuccessResult(rows, -1);
 		} catch (SQLException e) {
-			return QueryResult.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new NodeErrorResult(e.getMessage());
 		}
 	}
 
+	private void createEdgeGroup(String node, RequestField field, List<Pojo> rows) {
+		Map<Object, List<Pojo>> groups = new HashMap<>();
+		Map<Object, Pojo> groupedObjects = new HashMap<>();
+		FieldDefinition groupBy = definitions.get(node)
+														 .getIdentifiers()
+														 .iterator()
+														 .next();
+
+
+		for (Pojo row : rows) {
+			Object id = row.getProperty(groupBy.getNode() + "." + groupBy.getName());
+
+			if (!groups.containsKey(id)) {
+				groups.put(id, new ArrayList<>());
+
+				Pojo pojo = new Pojo();
+
+				row.getProperties()
+					.entrySet()
+					.forEach(prop -> {
+						if (prop.getKey()
+								  .startsWith(node)) {
+							String propName = prop.getKey()
+														 .substring(prop.getKey()
+																			 .indexOf('.') + 1);
+							pojo.setProperty(propName, prop.getValue());
+						}
+					});
+
+				groupedObjects.put(id, pojo);
+			}
+
+			Pojo edgeObject = new Pojo();
+
+			row.getProperties()
+				.entrySet()
+				.forEach(prop -> {
+					if (prop.getKey()
+							  .startsWith(field.getName())) {
+						String propName = prop.getKey()
+													 .substring(prop.getKey()
+																		 .indexOf('.') + 1);
+						edgeObject.setProperty(propName, prop.getValue());
+					}
+				});
+
+			groups.get(id)
+					.add(edgeObject);
+		}
+
+		rows.clear();
+
+		// populate edges
+		for (Map.Entry<Object, Pojo> entry : groupedObjects.entrySet()) {
+			List<Pojo> edge = groups.get(entry.getKey());
+			Pojo obj = entry.getValue();
+
+			obj.setProperty(field.getName(), edge);
+
+			rows.add(obj);
+		}
+	}
+
+	private List<RequestField> flattenFieldList(List<RequestField> fields) {
+		List<RequestField> result = new ArrayList<>();
+		Stack<List<RequestField>> stack = new Stack<>();
+
+		stack.add(fields);
+
+		while (!stack.isEmpty()) {
+			List<RequestField> list = stack.pop();
+
+			for (RequestField field : list) {
+				if (field.isEdge()) {
+					stack.add(field.getNestedFields());
+				}
+
+				result.add(field);
+			}
+		}
+
+		return result;
+	}
+
+	private void addDefaultFields(String node, List<RequestField> fields) {
+		definitions.get(node)
+					  .getIdentifiers()
+					  .forEach(id -> {
+						  if (!fields.stream()
+										 .anyMatch(rf -> rf.getName()
+																 .equals(id.getName()))) {
+							  fields.add(new RequestField(id.getName(), id.getNode()));
+						  }
+					  });
+	}
+
 	@Override
-	public QueryResult callFunction(String function, Object... params) {
+	public NodeResult callFunction(String function, Object... params) {
 		StringBuilder stmt = new StringBuilder();
 		List<ParameterDefinition> pd = functions.get(function)
 															 .getParameters();
@@ -282,29 +408,10 @@ class MySQLDatabase implements Database {
 				objects.add(obj);
 			}
 
-			return QueryResult.result(objects, 0);
+			return new NodeSuccessResult(objects, 0);
 		} catch (SQLException e) {
-			return QueryResult.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new NodeErrorResult(e.getMessage());
 		}
-	}
-
-	private String buildStatement(String statement, Object... args) {
-		if (args == null || args.length == 0) {
-			return statement;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		int i = 0;
-
-		for (char ch : statement.toCharArray()) {
-			if (ch == '?') {
-				sb.append(args[i++].toString());
-			} else {
-				sb.append(ch);
-			}
-		}
-
-		return sb.toString();
 	}
 
 }
