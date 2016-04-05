@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -196,9 +197,10 @@ public class MySQLDatabase implements Database {
 
 	@Override
 	public NodeResult query(SelectOperation selectOperation) {
-		List<RequestField> fields = flattenFieldList(selectOperation.getFields());
+		List<RequestField> fields = selectOperation.getFields();
+		List<RequestField> flatFields = flattenFieldList(selectOperation.getFields());
 		List<RequestField> edgeFields = new ArrayList<>();
-		Iterator<RequestField> fieldIterator = fields.iterator();
+		Iterator<RequestField> fieldIterator = flatFields.iterator();
 
 		while (fieldIterator.hasNext()) {
 			RequestField rf = fieldIterator.next();
@@ -219,18 +221,21 @@ public class MySQLDatabase implements Database {
 
 				selectOperation.join(edge.get());
 
-				edgeFields.add(rf);
+				if (rf.getParent() == null) {
+					edgeFields.add(rf);
+				}
+
 				fieldIterator.remove();
 			}
 		}
 
-		addDefaultFields(selectOperation.getFrom(), fields);
+		addDefaultFields(selectOperation.getFrom(), flatFields);
 
 		for (Graph<String, AstNode>.Edge edge : selectOperation.getJoins()) {
-			addDefaultFields(edge.getNodeB(), fields);
+			addDefaultFields(edge.getNodeB(), flatFields);
 		}
 
-		selectOperation.fields(fields);
+		selectOperation.fields(flatFields);
 
 		try {
 			String stmt = new MySQLSelectOperationBuilder().build(selectOperation);
@@ -251,77 +256,52 @@ public class MySQLDatabase implements Database {
 				rows.add(obj);
 			}
 
-			for (RequestField field : edgeFields) {
-				createEdgeGroup(selectOperation.getFrom(), field, rows);
-			}
+			Set<FieldDefinition> ids = definitions.get(selectOperation.getFrom())
+															  .getIdentifiers();
+			List<Pojo> objects = transformRows(selectOperation.getFrom(), ids, fields, rows);
 
-			return new NodeSuccessResult(rows, -1);
+			return new NodeSuccessResult(objects, -1);
 		} catch (SQLException e) {
 			return new NodeErrorResult(e.getMessage());
 		}
 	}
 
-	private void createEdgeGroup(String node, RequestField field, List<Pojo> rows) {
-		Map<Object, List<Pojo>> groups = new HashMap<>();
-		Map<Object, Pojo> groupedObjects = new HashMap<>();
-		FieldDefinition groupBy = definitions.get(node)
-														 .getIdentifiers()
-														 .iterator()
-														 .next();
+	private List<Pojo> transformRows(String node, Set<FieldDefinition> ids, List<RequestField> fields, List<Pojo> rows) {
+		List<Pojo> result = new ArrayList<>();
 
+		Map<Set<Object>, List<Pojo>> groups = rows.stream()
+																.collect(Collectors.groupingBy(row -> ids.stream()
+																													  .map(id -> row.getProperty(id.getNode() + "." + id.getName()))
+																													  .collect(Collectors.toSet())));
 
-		for (Pojo row : rows) {
-			Object id = row.getProperty(groupBy.getNode() + "." + groupBy.getName());
+		groups.entrySet()
+				.forEach(g -> {
+					Pojo obj = new Pojo();
 
-			if (!groups.containsKey(id)) {
-				groups.put(id, new ArrayList<>());
+					fields.forEach(field -> {
+						if (!field.isEdge()) {
+							String fieldLabel = field.getNode() + "." + field.getName();
 
-				Pojo pojo = new Pojo();
+							obj.setProperty(field.getName(),
+									g.getValue()
+									 .get(0)
+									 .getProperty(fieldLabel));
+						} else {
+							Set<FieldDefinition> nestedIds = new HashSet<>(ids);
+							nestedIds.addAll(definitions.get(field.getName())
+																 .getIdentifiers());
 
-				row.getProperties()
-					.entrySet()
-					.forEach(prop -> {
-						if (prop.getKey()
-								  .startsWith(node)) {
-							String propName = prop.getKey()
-														 .substring(prop.getKey()
-																			 .indexOf('.') + 1);
-							pojo.setProperty(propName, prop.getValue());
+							obj.setProperty(field.getName(),
+									transformRows(field.getName(), nestedIds,
+											field.getNestedFields(),
+											g.getValue()));
 						}
 					});
 
-				groupedObjects.put(id, pojo);
-			}
-
-			Pojo edgeObject = new Pojo();
-
-			row.getProperties()
-				.entrySet()
-				.forEach(prop -> {
-					if (prop.getKey()
-							  .startsWith(field.getName())) {
-						String propName = prop.getKey()
-													 .substring(prop.getKey()
-																		 .indexOf('.') + 1);
-						edgeObject.setProperty(propName, prop.getValue());
-					}
+					result.add(obj);
 				});
 
-			groups.get(id)
-					.add(edgeObject);
-		}
-
-		rows.clear();
-
-		// populate edges
-		for (Map.Entry<Object, Pojo> entry : groupedObjects.entrySet()) {
-			List<Pojo> edge = groups.get(entry.getKey());
-			Pojo obj = entry.getValue();
-
-			obj.setProperty(field.getName(), edge);
-
-			rows.add(obj);
-		}
+		return result;
 	}
 
 	private List<RequestField> flattenFieldList(List<RequestField> fields) {

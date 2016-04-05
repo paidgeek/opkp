@@ -29,4 +29,25 @@ public class Pair<T, S> {
 		this.second = second;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || obj.getClass()
+									 .equals(getClass())) {
+			return false;
+		}
+
+		if (obj == this) {
+			return true;
+		}
+
+		Pair other = (Pair) obj;
+
+		return first.equals(other.first) && second.equals(other.second);
+	}
+
+	@Override
+	public int hashCode() {
+		return first.hashCode() + (second.hashCode() << 16);
+	}
+
 }

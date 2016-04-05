@@ -67,15 +67,16 @@ INNER JOIN fir_value ON((fir_food.ORIGFDCD = fir_value.ORIGFDCD))
 INNER JOIN fir_component ON((fir_component.ECOMPID = fir_value.COMPID))
 ) AS __total;
 
-SELECT * FROM fc_foodgroup;
 
 SELECT ORIGFDNM, RECPROC, AUTHOR
 FROM fir_food
 JOIN fir_recipe USING(ORIGFDCD);
 
 
-SELECT fir_food.ORIGFDNM AS 'fir_food.ORIGFDNM', fir_ingredients.RECID FROM fir_food
-JOIN fir_ingredients ON(FOODID = ORIGFDCD)
+SELECT ORIGFDCD, ORIGFDNM, ENGFDNAM, COMPID, SELVAL, ECOMPID, ORIGCPNM
+FROM fir_food
+JOIN fir_value USING(ORIGFDCD)
+JOIN fir_component ON(ECOMPID = COMPID)
 WHERE ORIGFDCD = 'S0201B';
 
 SELECT ORIGFDCD, ORIGFDNM, COUNT(RECID) AS COUNT_RECID
