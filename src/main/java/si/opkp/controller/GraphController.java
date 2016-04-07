@@ -25,16 +25,15 @@ import si.opkp.util.RequestWhere;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/v1")
+@RequestMapping("/v1/graph")
 public class GraphController {
 
 	@Autowired
 	private Database database;
 
 	@RequestMapping(value = "/{node}", method = RequestMethod.GET)
-	public ResponseEntity<?> get(@PathVariable("node") String node,
+	public ResponseEntity<?> get(@PathVariable String node,
 										  RequestParams params) {
-
 		NodeResult result = database.query(new SelectOperation().fields(params.getFields())
 				.from(node)
 				.where(params.getWhere()));

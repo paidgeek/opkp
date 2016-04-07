@@ -24,7 +24,7 @@ import si.opkp.util.Pojo;
 import si.opkp.util.Util;
 
 @RestController
-@RequestMapping("v1/batch")
+@RequestMapping("/v1/batch")
 @CrossOrigin
 public class BatchController {
 

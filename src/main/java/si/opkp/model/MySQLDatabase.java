@@ -259,7 +259,7 @@ public class MySQLDatabase implements Database {
 
 			Set<FieldDefinition> ids = definitions.get(selectOperation.getFrom())
 					.getIdentifiers();
-			List<Pojo> objects = transformRows(selectOperation.getFrom(), ids, fields, rows);
+			List<Pojo> objects = transformRows(ids, fields, rows);
 
 			return new NodeSuccessResult(objects, -1);
 		} catch (SQLException e) {
@@ -287,7 +287,7 @@ public class MySQLDatabase implements Database {
 				.forEach(field -> addDefaultFieldsRecursive(field.getName(), field.getFields()));
 	}
 
-	private List<Pojo> transformRows(String node, Set<FieldDefinition> ids, List<RequestField> fields, List<Pojo> rows) {
+	private List<Pojo> transformRows(Set<FieldDefinition> ids, List<RequestField> fields, List<Pojo> rows) {
 		List<Pojo> result = new ArrayList<>();
 
 		Map<Set<Object>, List<Pojo>> groups = rows.stream()
@@ -313,7 +313,7 @@ public class MySQLDatabase implements Database {
 									.getIdentifiers());
 
 							obj.setProperty(field.getName(),
-									transformRows(field.getName(), nestedIds,
+									transformRows(nestedIds,
 											field.getFields(),
 											g.getValue()));
 						}
