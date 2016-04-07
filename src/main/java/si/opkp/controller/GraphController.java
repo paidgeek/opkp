@@ -42,16 +42,12 @@ public class GraphController {
 		return result.toResponseEntity();
 	}
 
-	@RequestMapping(value = "/{node}/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?> getById(@PathVariable("node") String node,
-												@PathVariable("id") String id,
-												RequestParams params) {
-		List<Literal> ids = ((Sequence) RestQL.parse(id)
-				.getElements()
-				.get(0)).getElements()
+	public ResponseEntity<?> get(String node, Sequence id, RequestParams params) {
+		List<Literal> ids = id.getElements()
 				.stream()
 				.map(element -> (Literal) element)
 				.collect(Collectors.toList());
+
 		RestQLBuilder b = new RestQLBuilder();
 		AstNode condition = null;
 		int i = 0;
@@ -77,6 +73,15 @@ public class GraphController {
 				.where(where));
 
 		return result.toResponseEntity();
+	}
+
+	@RequestMapping(value = "/{node}/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> get(@PathVariable("node") String node,
+										  @PathVariable("id") String id,
+										  RequestParams params) {
+		return get(node, (Sequence) RestQL.parse(id)
+				.getElements()
+				.get(0), params);
 	}
 
 	private void setMissingNodeValues(String node, List<RequestField> fields) {

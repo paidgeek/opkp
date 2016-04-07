@@ -116,7 +116,7 @@ public class Util {
 	public static String prettyJson(Object obj) {
 		try {
 			return new ObjectMapper().writerWithDefaultPrettyPrinter()
-											 .writeValueAsString(obj);
+					.writeValueAsString(obj);
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
@@ -124,22 +124,17 @@ public class Util {
 		return null;
 	}
 
-	public static List<AstNode> parseQueryArguments(String arguments) {
-		List<AstNode> argumentElements = RestQL.parse(arguments)
-															.getElements();
-		List<AstNode> queryArguments = new ArrayList<>();
+	public static List<AstNode> parsePath(String path) {
+		String[] pathElements = path.split("/");
+		List<AstNode> args = new ArrayList<>();
 
-		if (!argumentElements.isEmpty()) {
-			AstNode arg = argumentElements.get(0);
-
-			if (arg instanceof Sequence) {
-				queryArguments = ((Sequence) arg).getElements();
-			} else {
-				queryArguments.add(arg);
-			}
+		for (int i = 0; i < pathElements.length; i++) {
+			args.add(RestQL.parse(pathElements[i])
+					.getElements()
+					.get(0));
 		}
 
-		return queryArguments;
+		return args;
 	}
 
 	public static Object copy(Object original) {
