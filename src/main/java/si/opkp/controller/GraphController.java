@@ -84,7 +84,7 @@ public class GraphController {
 				.filter(field -> field.getNode() == null)
 				.forEach(field -> {
 					if (field.isEdge()) {
-						setMissingNodeValues(field.getName(), field.getNestedFields());
+						setMissingNodeValues(field.getName(), field.getFields());
 					} else {
 						field.setNode(node);
 					}

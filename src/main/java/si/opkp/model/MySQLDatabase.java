@@ -293,7 +293,7 @@ public class MySQLDatabase implements Database {
 
 							obj.setProperty(field.getName(),
 									transformRows(field.getName(), nestedIds,
-											field.getNestedFields(),
+											field.getFields(),
 											g.getValue()));
 						}
 					});
@@ -315,7 +315,7 @@ public class MySQLDatabase implements Database {
 
 			for (RequestField field : list) {
 				if (field.isEdge()) {
-					stack.add(field.getNestedFields());
+					stack.add(field.getFields());
 				}
 
 				result.add(field);

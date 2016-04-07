@@ -86,3 +86,22 @@ GROUP BY ORIGFDCD
 ORDER BY COUNT_RECID DESC;
 
 
+SELECT *
+FROM fir_food
+INNER JOIN fir_value ON((fir_food.ORIGFDCD = fir_value.ORIGFDCD))
+
+SELECT *
+FROM (
+	SELECT *
+    FROM fir_food
+    LIMIT 3
+) fir_food
+INNER JOIN (
+	SELECT *
+    FROM fir_value
+    INNER JOIN fir_value ON fir_value.ORIGFDCD = fir_value.ORIGFDCD
+    GROUP BY fir_value.ORIGFDCD
+    HAVING COUNT(*) < 2
+) fir_value ON(fir_food.ORIGFDCD = fir_value.ORIGFDCD)
+
+

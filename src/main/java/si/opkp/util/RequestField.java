@@ -3,7 +3,9 @@ package si.opkp.util;
 import com.moybl.restql.ast.AstNode;
 import com.moybl.restql.ast.Call;
 import com.moybl.restql.ast.Identifier;
+import com.moybl.restql.ast.Literal;
 import com.moybl.restql.ast.Member;
+import com.moybl.restql.ast.Sequence;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,36 +16,38 @@ public class RequestField {
 	private String name;
 	private String node;
 	private boolean isEdge;
+	private long skip;
+	private long take;
+	private List<RequestField> fields;
 	private RequestField parent;
-	private List<RequestField> nestedFields;
 
 	public RequestField(String name) {
 		this.name = name;
 
 		node = null;
-		nestedFields = Collections.emptyList();
+		fields = Collections.emptyList();
 	}
 
 	public RequestField(String name, String node) {
 		this.name = name;
 		this.node = node;
 
-		nestedFields = Collections.emptyList();
+		fields = Collections.emptyList();
 	}
 
-	public RequestField(String name, List<RequestField> nestedFields) {
+	public RequestField(String name, List<RequestField> fields) {
 		this.name = name;
-		this.nestedFields = nestedFields;
+		this.fields = fields;
 		this.parent = parent;
 
 		node = null;
 		isEdge = true;
 	}
 
-	public RequestField(String name, String node, List<RequestField> nestedFields, RequestField parent) {
+	public RequestField(String name, String node, List<RequestField> fields, RequestField parent) {
 		this.name = name;
 		this.node = node;
-		this.nestedFields = nestedFields;
+		this.fields = fields;
 		this.parent = parent;
 
 		isEdge = true;
@@ -73,8 +77,8 @@ public class RequestField {
 		return parent;
 	}
 
-	public List<RequestField> getNestedFields() {
-		return nestedFields;
+	public List<RequestField> getFields() {
+		return fields;
 	}
 
 	public static RequestField fromAst(AstNode ast) {
@@ -90,27 +94,62 @@ public class RequestField {
 				String name = ((Identifier) member.getExpression()).getName();
 
 				return new RequestField(name, node);
-			}
-		} else if (ast instanceof Call) {
-			Call call = (Call) ast;
+			} else if (member.getTarget() instanceof Call) {
+				Call call = (Call) member.getTarget();
 
-			if (call.getTarget() instanceof Identifier) {
-				String name = ((Identifier) call.getTarget()).getName();
-				RequestField rf = new RequestField(name);
+				if (call.getTarget() instanceof Identifier) {
+					String name = ((Identifier) call.getTarget()).getName();
+					RequestField rf = new RequestField(name);
+					rf.isEdge = true;
 
-				rf.nestedFields = call.getArguments()
-											 .getElements()
-											 .stream()
-											 .map(node -> {
-												 RequestField nf = RequestField.fromAst(node);
-												 nf.parent = rf;
+					AstNode t = null;
+					AstNode e = null;
 
-												 return nf;
-											 })
-											 .collect(Collectors.toList());
-				rf.isEdge = true;
+					if (member.getExpression() instanceof Member) {
+						Member m = (Member) member.getExpression();
 
-				return rf;
+						t = m.getTarget();
+						e = m.getExpression();
+					} else {
+						t = member.getExpression();
+					}
+
+					do {
+						String paramName = ((Identifier) ((Call) t).getTarget()).getName();
+						Sequence paramArgs = ((Call) t).getArguments();
+
+						if (paramName.equalsIgnoreCase("fields")) {
+							rf.fields = paramArgs.getElements()
+									.stream()
+									.map(node -> {
+										RequestField nf = RequestField.fromAst(node);
+
+										if (nf != null) {
+											nf.parent = rf;
+										}
+
+										return nf;
+									})
+									.collect(Collectors.toList());
+						} else if (paramName.equalsIgnoreCase("skip")) {
+							rf.skip = (long) ((Literal) paramArgs.getElements()
+									.get(0)).numberValue();
+						} else if (paramName.equalsIgnoreCase("take")) {
+							rf.take = (long) ((Literal) paramArgs.getElements()
+									.get(0)).numberValue();
+						}
+
+						if (e instanceof Member) {
+							t = ((Member) e).getTarget();
+							e = ((Member) e).getExpression();
+						} else if (e instanceof Call) {
+							t = e;
+							e = null;
+						}
+					} while (e != null);
+
+					return rf;
+				}
 			}
 		}
 

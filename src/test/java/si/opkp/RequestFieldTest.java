@@ -47,10 +47,10 @@ public class RequestFieldTest {
 		assertEquals("posts", field.getName());
 		assertTrue(field.isEdge());
 
-		assertEquals("date", field.getNestedFields()
+		assertEquals("date", field.getFields()
 										  .get(0)
 										  .getName());
-		assertEquals("content", field.getNestedFields()
+		assertEquals("content", field.getFields()
 											  .get(1)
 											  .getName());
 	}
@@ -66,22 +66,22 @@ public class RequestFieldTest {
 		assertEquals("posts", field.getName());
 		assertTrue(field.isEdge());
 
-		assertEquals("date", field.getNestedFields()
+		assertEquals("date", field.getFields()
 										  .get(0)
 										  .getName());
-		assertEquals("content", field.getNestedFields()
+		assertEquals("content", field.getFields()
 											  .get(1)
 											  .getName());
-		assertEquals("owner", field.getNestedFields()
+		assertEquals("owner", field.getFields()
 											.get(2)
 											.getName());
 
-		assertTrue(field.getNestedFields()
+		assertTrue(field.getFields()
 							 .get(2)
 							 .isEdge());
-		assertEquals("name", field.getNestedFields()
+		assertEquals("name", field.getFields()
 										  .get(2)
-										  .getNestedFields()
+										  .getFields()
 										  .get(0)
 										  .getName());
 	}
