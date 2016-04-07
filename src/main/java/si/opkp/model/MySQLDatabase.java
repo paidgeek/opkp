@@ -40,7 +40,7 @@ public class MySQLDatabase implements Database {
 
 		while (tables.next()) {
 			String tableName = tables.getString("TABLE_NAME")
-											 .toLowerCase();
+					.toLowerCase();
 
 			// ignore 'sqlite*'
 			if (tableName.startsWith("sqlite")) {
@@ -210,7 +210,7 @@ public class MySQLDatabase implements Database {
 
 				if (rf.getParent() != null) {
 					from = rf.getParent()
-								.getName();
+							.getName();
 				}
 
 				Optional<Graph<String, AstNode>.Edge> edge = dataGraph.getEdge(from, rf.getName());
@@ -230,6 +230,7 @@ public class MySQLDatabase implements Database {
 		}
 
 		addDefaultFields(selectOperation.getFrom(), flatFields);
+		addDefaultFieldsRecursive(selectOperation.getFrom(), fields);
 
 		for (Graph<String, AstNode>.Edge edge : selectOperation.getJoins()) {
 			addDefaultFields(edge.getNodeB(), flatFields);
@@ -241,7 +242,7 @@ public class MySQLDatabase implements Database {
 			String stmt = new MySQLSelectOperationBuilder().build(selectOperation);
 
 			ResultSet rs = connection.createStatement()
-											 .executeQuery(stmt);
+					.executeQuery(stmt);
 
 			ResultSetMetaData meta = rs.getMetaData();
 			List<Pojo> rows = new ArrayList<>();
@@ -257,7 +258,7 @@ public class MySQLDatabase implements Database {
 			}
 
 			Set<FieldDefinition> ids = definitions.get(selectOperation.getFrom())
-															  .getIdentifiers();
+					.getIdentifiers();
 			List<Pojo> objects = transformRows(selectOperation.getFrom(), ids, fields, rows);
 
 			return new NodeSuccessResult(objects, -1);
@@ -266,13 +267,33 @@ public class MySQLDatabase implements Database {
 		}
 	}
 
+	private void addDefaultFields(String node, List<RequestField> fields) {
+		definitions.get(node)
+				.getIdentifiers()
+				.forEach(id -> {
+					if (!fields.stream()
+							.anyMatch(rf -> rf.getName()
+									.equals(id.getName()))) {
+						fields.add(new RequestField(id.getName(), id.getNode()));
+					}
+				});
+	}
+
+	private void addDefaultFieldsRecursive(String node, List<RequestField> fields) {
+		addDefaultFields(node, fields);
+
+		fields.stream()
+				.filter(RequestField::isEdge)
+				.forEach(field -> addDefaultFieldsRecursive(field.getName(), field.getFields()));
+	}
+
 	private List<Pojo> transformRows(String node, Set<FieldDefinition> ids, List<RequestField> fields, List<Pojo> rows) {
 		List<Pojo> result = new ArrayList<>();
 
 		Map<Set<Object>, List<Pojo>> groups = rows.stream()
-																.collect(Collectors.groupingBy(row -> ids.stream()
-																													  .map(id -> row.getProperty(id.getNode() + "." + id.getName()))
-																													  .collect(Collectors.toSet())));
+				.collect(Collectors.groupingBy(row -> ids.stream()
+						.map(id -> row.getProperty(id.getNode() + "." + id.getName()))
+						.collect(Collectors.toSet())));
 
 		groups.entrySet()
 				.forEach(g -> {
@@ -284,12 +305,12 @@ public class MySQLDatabase implements Database {
 
 							obj.setProperty(field.getName(),
 									g.getValue()
-									 .get(0)
-									 .getProperty(fieldLabel));
+											.get(0)
+											.getProperty(fieldLabel));
 						} else {
 							Set<FieldDefinition> nestedIds = new HashSet<>(ids);
 							nestedIds.addAll(definitions.get(field.getName())
-																 .getIdentifiers());
+									.getIdentifiers());
 
 							obj.setProperty(field.getName(),
 									transformRows(field.getName(), nestedIds,
@@ -325,43 +346,31 @@ public class MySQLDatabase implements Database {
 		return result;
 	}
 
-	private void addDefaultFields(String node, List<RequestField> fields) {
-		definitions.get(node)
-					  .getIdentifiers()
-					  .forEach(id -> {
-						  if (!fields.stream()
-										 .anyMatch(rf -> rf.getName()
-																 .equals(id.getName()))) {
-							  fields.add(new RequestField(id.getName(), id.getNode()));
-						  }
-					  });
-	}
-
 	@Override
 	public NodeResult callFunction(String function, Object... params) {
 		StringBuilder stmt = new StringBuilder();
 		List<ParameterDefinition> pd = functions.get(function)
-															 .getParameters();
+				.getParameters();
 
 		stmt.append("CALL ")
-			 .append(function)
-			 .append("(");
+				.append(function)
+				.append("(");
 		for (int i = 0; i < params.length; i++) {
 			switch (pd.get(i)
-						 .getType()) {
+					.getType()) {
 				case DATETIME:
 					break;
 				case INTEGER:
 					stmt.append(params[i].toString()
-												.replaceAll("\\.[0-9]*$", ""));
+							.replaceAll("\\.[0-9]*$", ""));
 					break;
 				case DECIMAL:
 					stmt.append(params[i]);
 					break;
 				case STRING:
 					stmt.append("'")
-						 .append(params[i])
-						 .append("'");
+							.append(params[i])
+							.append("'");
 					break;
 			}
 
@@ -373,7 +382,7 @@ public class MySQLDatabase implements Database {
 
 		try {
 			ResultSet rs = connection.createStatement()
-											 .executeQuery(stmt.toString());
+					.executeQuery(stmt.toString());
 
 			ResultSetMetaData meta = rs.getMetaData();
 			List<Pojo> objects = new ArrayList<>();

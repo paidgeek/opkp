@@ -36,8 +36,8 @@ public class GraphController {
 										  RequestParams params) {
 
 		NodeResult result = database.query(new SelectOperation().fields(params.getFields())
-																				  .from(node)
-																				  .where(params.getWhere()));
+				.from(node)
+				.where(params.getWhere()));
 
 		return result.toResponseEntity();
 	}
@@ -47,18 +47,18 @@ public class GraphController {
 												@PathVariable("id") String id,
 												RequestParams params) {
 		List<Literal> ids = ((Sequence) RestQL.parse(id)
-														  .getElements()
-														  .get(0)).getElements()
-																	 .stream()
-																	 .map(element -> (Literal) element)
-																	 .collect(Collectors.toList());
+				.getElements()
+				.get(0)).getElements()
+				.stream()
+				.map(element -> (Literal) element)
+				.collect(Collectors.toList());
 		RestQLBuilder b = new RestQLBuilder();
 		AstNode condition = null;
 		int i = 0;
 
 		for (FieldDefinition identifier : database.getNodes()
-																.get(node)
-																.getIdentifiers()) {
+				.get(node)
+				.getIdentifiers()) {
 			Member left = b.member(b.identifier(identifier.getNode()), b.identifier(identifier.getName()));
 			Literal right = ids.get(i++);
 
@@ -73,8 +73,8 @@ public class GraphController {
 
 		RequestWhere where = new RequestWhere(condition);
 		NodeResult result = database.query(new SelectOperation().from(node)
-																				  .fields(params.getFields())
-																				  .where(where));
+				.fields(params.getFields())
+				.where(where));
 
 		return result.toResponseEntity();
 	}
