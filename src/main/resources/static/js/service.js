@@ -111,23 +111,17 @@ OPKPService.create = function() {
             return post($http, $q, url, {
                commands: [{
                   name: "food",
-                  controller: "path",
-                  method: "GET",
-                  arguments: "fir_food,fc_foodsubgroup,fc_foodgroup",
+                  controller: "graph",
+                  path: "fir_food/'" + id + "'",
                   params: {
-                     where: "ORIGFDCD:'" + id + "'"
+                     fields: "ORIGFDCD,ENGFDNAM,SCINAM"
                   }
                }, {
                   name: "components",
-                  controller: "path",
-                  arguments: "fir_food,fir_value,fir_component",
+                  controller: "graph",
+                  path: "fir_food/'" + id + "'",
                   params: {
-                     where: "fir_food.ORIGFDCD:'" + id + "'",
-                     fields: [
-                        "fir_component.ORIGCPNM",
-                        "fir_value.SELVAL",
-                        "fir_value.UNIT"
-                     ]
+                     fields: "fir_value().fields(SELVAL,fir_component().fields(ORIGCPNM))"
                   },
                   dependencies: [{
                      command: "food",
@@ -136,8 +130,8 @@ OPKPService.create = function() {
                }]
             });
          },
-         path: function(arguments, fields) {
-            var url = OPKPService.host + "path/" + arguments.join(",");
+         graph: function(arguments, fields) {
+            var url = OPKPService.host + "graph/" + arguments.join(",");
             var params = {};
 
             if (fields && fields.length > 0) {
