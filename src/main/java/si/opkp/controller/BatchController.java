@@ -30,6 +30,8 @@ public class BatchController {
 
 	@Autowired
 	private GraphController graphController;
+	@Autowired
+	private SearchController searchController;
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> perform(@RequestBody Batch batch) {
@@ -76,6 +78,16 @@ public class BatchController {
 
 							break;
 						}
+					case "search":
+						String node = ((Literal) path.get(0)).stringValue();
+						String keywordList = ((Sequence) path.get(1)).getElements()
+								.stream()
+								.map(ast -> ((Literal) ast).stringValue())
+								.collect(Collectors.joining(","));
+
+						response = searchController.get(node, keywordList, command.getParams());
+
+						break;
 					default:
 						state.setVariable("status", (double) HttpStatus.BAD_REQUEST.value());
 						result.setProperty(command.getName(), Util.createError("invalid controller"));
