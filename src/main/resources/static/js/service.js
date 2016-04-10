@@ -70,7 +70,7 @@ OPKPService.create = function() {
 					}, {
 						name: "recipes",
 						controller: "search",
-						arguments: "fir_recipe('" + keywords + "')",
+						path: "fir_recipe/" + keywords,
 						params: {
 							skip: skip,
 							take: take

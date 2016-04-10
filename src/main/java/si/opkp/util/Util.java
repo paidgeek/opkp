@@ -124,19 +124,6 @@ public class Util {
 		return null;
 	}
 
-	public static List<AstNode> parsePath(String path) {
-		String[] pathElements = path.split("/");
-		List<AstNode> args = new ArrayList<>();
-
-		for (int i = 0; i < pathElements.length; i++) {
-			args.add(RestQL.parse(pathElements[i])
-					.getElements()
-					.get(0));
-		}
-
-		return args;
-	}
-
 	public static Object copy(Object original) {
 		Object obj = null;
 

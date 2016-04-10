@@ -58,7 +58,7 @@ public class BatchController {
 
 				Engine state = new Engine();
 				String controller = command.getController();
-				List<AstNode> path = command.getPath();
+				List<String> path = command.getPath();
 
 				states.put(command.getName(), state);
 
@@ -67,24 +67,19 @@ public class BatchController {
 				switch (controller) {
 					case "graph":
 						if (path.size() == 1) {
-							String node = ((Literal) path.get(0)).stringValue();
+							String node = path.get(0);
 							response = graphController.get(node, command.getParams());
 
 							break;
 						} else if (path.size() == 2) {
-							String node = ((Identifier) ((Sequence) path.get(0)).getElements()
-									.get(0)).getName();
-							response = graphController.get(node, (Sequence) path.get(1), command.getParams());
+							String node = path.get(0);
+							response = graphController.get(node, path.get(1), command.getParams());
 
 							break;
 						}
 					case "search":
-						String node = ((Literal) path.get(0)).stringValue();
-						String keywordList = ((Sequence) path.get(1)).getElements()
-								.stream()
-								.map(ast -> ((Literal) ast).stringValue())
-								.collect(Collectors.joining(","));
-
+						String node = path.get(0);
+						String keywordList = path.get(1);
 						response = searchController.get(node, keywordList, command.getParams());
 
 						break;

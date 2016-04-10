@@ -9,7 +9,7 @@
                      <span class="glyphicon glyphicon-search"></span>
                   </span>
                   <input type="search"
-                     ng-node="keywords"
+                     ng-model="keywords"
                      typeahead-focus-first="false"
                      placeholder="Search"
                      uib-typeahead="name for name in getSearches($viewValue)"
@@ -80,7 +80,7 @@
                <div class="row text-center">
                   <uib-pagination ng-change="onPageChanged(currentPage)"
                      total-items="responseData.foods.total"
-                     ng-node="currentPage"
+                     ng-model="currentPage"
                      max-size="5"
                      class="pagination-sm"
                      boundary-link-numbers="true"></uib-pagination>
@@ -135,7 +135,7 @@
                <div class="row text-center">
                   <uib-pagination ng-change="onPageChanged(currentPage)"
                      total-items="responseData.recipes.total"
-                     ng-node="currentPage"
+                     ng-model="currentPage"
                      max-size="5"
                      class="pagination-sm"
                      boundary-link-numbers="true"></uib-pagination>

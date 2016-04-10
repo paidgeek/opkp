@@ -6,6 +6,7 @@ import com.moybl.restql.ast.AstNode;
 
 import org.springframework.http.HttpMethod;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class Command {
 	private String name;
 	private HttpMethod method;
 	private String controller;
-	private List<AstNode> path;
+	private List<String> path;
 	private Pojo body;
 	private RequestParams params;
 	private List<Dependency> dependencies;
@@ -34,7 +35,7 @@ public class Command {
 		this.name = name;
 		this.method = method == null ? HttpMethod.GET : method;
 		this.controller = controller;
-		this.path = Util.parsePath(path);
+		this.path = Arrays.asList(path.split("/"));
 		this.body = body;
 		this.dependencies = dependencies == null ? Collections.emptyList() : dependencies;
 		this.params = params;
@@ -52,7 +53,7 @@ public class Command {
 		return controller;
 	}
 
-	public List<AstNode> getPath() {
+	public List<String> getPath() {
 		return path;
 	}
 
