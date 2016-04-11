@@ -29,8 +29,6 @@ public class SearchController {
 		put("fir_food", "search_foods");
 		put("fir_recipe", "search_recipes");
 	}};
-	private static final String TOTAL_FIELD_NAME = "__total";
-	private static final String SCORE_FIELD_NAME = "__score";
 
 	@Autowired
 	private Database database;
@@ -50,22 +48,6 @@ public class SearchController {
 			String keywordParam = String.join(" ", (CharSequence[]) keywords);
 
 			NodeResult result = database.callFunction(function, keywordParam, params.getSkip(), params.getTake());
-
-			if (result instanceof NodeSuccessResult) {
-				NodeSuccessResult successResult = (NodeSuccessResult) result;
-
-				List<Pojo> objects = successResult.getObjects();
-
-				if (!objects.isEmpty()) {
-					successResult.setTotal(objects.get(0)
-							.getLong(TOTAL_FIELD_NAME));
-				}
-
-				for (Pojo object : objects) {
-					object.removeProperty(TOTAL_FIELD_NAME);
-					object.removeProperty(SCORE_FIELD_NAME);
-				}
-			}
 
 			return result.toResponseEntity();
 		} catch (Exception e) {

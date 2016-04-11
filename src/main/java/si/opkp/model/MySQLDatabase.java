@@ -23,6 +23,9 @@ import si.opkp.util.RequestField;
 @Component
 public class MySQLDatabase implements Database {
 
+	private static final String TOTAL_FIELD_NAME = "__total";
+	private static final String SCORE_FIELD_NAME = "__score";
+
 	private Graph<String, AstNode> dataGraph;
 	private Map<String, NodeDefinition> definitions;
 	private Map<String, FunctionDefinition> functions;
@@ -397,7 +400,19 @@ public class MySQLDatabase implements Database {
 				objects.add(obj);
 			}
 
-			return new NodeSuccessResult(objects, 0);
+			long total = 0;
+
+			if (!objects.isEmpty()) {
+				total = objects.get(0)
+						.getLong(TOTAL_FIELD_NAME);
+			}
+
+			for (Pojo object : objects) {
+				object.removeProperty(TOTAL_FIELD_NAME);
+				object.removeProperty(SCORE_FIELD_NAME);
+			}
+
+			return new NodeSuccessResult(objects, total);
 		} catch (SQLException e) {
 			return new NodeErrorResult(e.getMessage());
 		}

@@ -21,7 +21,7 @@ HAVING __score > 0
 ORDER BY __score DESC;
 
 SELECT FOUND_ROWS() INTO total;
-UPDATE results SET results.__total = total LIMIT 1;
+UPDATE results SET results.__total = total;
 
 SELECT * FROM results
 LIMIT p_skip, p_take;
@@ -56,7 +56,7 @@ HAVING __score > 0
 ORDER BY __score DESC;
 
 SELECT FOUND_ROWS() INTO total;
-UPDATE results SET results.__total = total LIMIT 1;
+UPDATE results SET results.__total = total;
 
 SELECT * FROM results
 LIMIT p_skip, p_take;
@@ -69,7 +69,7 @@ END
 DELIMITER ;
 
 -- TESTS --
-CALL search_foods('*Dehidrirana* *banana* *ali* *banana* *v* *prahu*',0, 100);
+CALL search_foods('*Dehidrirana* *banana* *ali* *banana* *v* *prahu*',20, 20);
 CALL search_recipes('*bread*', 0, 100)
 
 

@@ -51,31 +51,16 @@ function post($http, $q, url, data, params) {
 OPKPService.create = function() {
 	return function($http, $q) {
 		return {
-			search: function(keywords, skip, take) {
+			search: function(node, keywords, skip, take) {
 				if (typeof keywords === "object") {
 					keywords = keywords.join(",");
 				}
 
-				var url = OPKPService.host + "batch";
+				var url = OPKPService.host + "search/" + node + "/" + keywords;
 
-				return post($http, $q, url, {
-					commands: [{
-						name: "foods",
-						controller: "search",
-						path: "fir_food/" + keywords,
-						params: {
-							skip: skip,
-							take: take
-						}
-					}, {
-						name: "recipes",
-						controller: "search",
-						path: "fir_recipe/" + keywords,
-						params: {
-							skip: skip,
-							take: take
-						}
-					}]
+				return get($http, $q, url, {
+					skip: skip,
+					take: take
 				});
 			},
 			getRecipe: function(id) {
