@@ -201,7 +201,17 @@ public class MySQLDatabase implements Database {
 	@Override
 	public NodeResult query(SelectOperation selectOperation) {
 		List<RequestField> fields = selectOperation.getFields();
-		List<RequestField> flatFields = flattenFieldList(selectOperation.getFields());
+
+		// add all fields by default
+		if (fields.stream()
+				.noneMatch(rf -> !rf.isEdge())) {
+			definitions.get(selectOperation.getFrom())
+					.getFields()
+					.values()
+					.forEach(fd -> fields.add(new RequestField(fd.getName(), fd.getNode())));
+		}
+
+		List<RequestField> flatFields = flattenFieldList(fields);
 		List<RequestField> edgeFields = new ArrayList<>();
 		Iterator<RequestField> fieldIterator = flatFields.iterator();
 

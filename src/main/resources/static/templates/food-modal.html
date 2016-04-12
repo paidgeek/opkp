@@ -1,12 +1,8 @@
 <div class="modal-header">
 	<h3 class="modal-title">{{data.food.ORIGFDNM}}</h3>
 </div>
-<p>
-	{{data.group}}
-</p>
 <div class="modal-body">
-	<!-- Components -->
-	<div class="panel panel-default" ng-if="data.components">
+	<div class="panel panel-default" ng-if="data.values">
 		<div class="panel-heading">
 			<h3 class="panel-title">Components</h3>
 		</div>
@@ -14,16 +10,16 @@
 			<table class="table table-hover table-condensed table-borderless">
 				<thead>
 					<tr>
-						<th ng-repeat="(key, value) in data.components[0]">
-							{{key}}
-						</th>
+						<th>SELVAL</th>
+						<th>UNIT</th>
+						<th>ORIGCPNM</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="component in data.components">
-						<td ng-repeat="value in component">
-							{{value}}
-						</td>
+					<tr ng-repeat="value in data.values">
+						<td>{{value.SELVAL}}</td>
+						<td>{{value.UNIT}}</td>
+						<td>{{value.fir_component[0].ORIGCPNM}}</td>
 					</tr>
 				</tbody>
 			</table>

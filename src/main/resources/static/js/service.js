@@ -15,9 +15,9 @@ function get($http, $q, url, params) {
 		},
 		params: params,
 		timeout: OPKPService.timeout
-	}).success(function(data) {
+	}).success(function (data) {
 		deferred.resolve(data);
-	}).error(function(msg, code) {
+	}).error(function (msg, code) {
 		deferred.reject(msg);
 		console.error(msg);
 	});
@@ -38,9 +38,9 @@ function post($http, $q, url, data, params) {
 		params: params,
 		timeout: OPKPService.timeout,
 		data: data
-	}).success(function(data) {
+	}).success(function (data) {
 		deferred.resolve(data);
-	}).error(function(msg, code) {
+	}).error(function (msg, code) {
 		deferred.reject(msg);
 		console.error(msg);
 	});
@@ -48,10 +48,10 @@ function post($http, $q, url, data, params) {
 	return deferred.promise;
 }
 
-OPKPService.create = function() {
-	return function($http, $q) {
+OPKPService.create = function () {
+	return function ($http, $q) {
 		return {
-			search: function(node, keywords, skip, take) {
+			search: function (node, keywords, skip, take) {
 				if (typeof keywords === "object") {
 					keywords = keywords.join(",");
 				}
@@ -63,7 +63,7 @@ OPKPService.create = function() {
 					take: take
 				});
 			},
-			getRecipe: function(id) {
+			getRecipe: function (id) {
 				var url = OPKPService.host + "batch";
 
 				return post($http, $q, url, {
@@ -77,45 +77,42 @@ OPKPService.create = function() {
 							fields: ["RECID", "INGNAM", "INGAMOUNT", "INGUNIT", "HMID", "RANK", "EDIBLE", "WHOLE_WHEAT", "SOAK", "REMARKS", "ORIGCPNM", "ENGFDNAM", "SCINAM"]
 						}
 					}, {
-						name: "ingredients",
-						controller: "path",
-						arguments: "fir_ingredients,fir_food",
-						params: {
-							where: "fir_ingredients.RECID:'" + id + "'"
-						},
-						dependencies: [{
-							command: "recipe",
-							condition: "status:200"
+							name: "ingredients",
+							controller: "path",
+							arguments: "fir_ingredients,fir_food",
+							params: {
+								where: "fir_ingredients.RECID:'" + id + "'"
+							},
+							dependencies: [{
+								command: "recipe",
+								condition: "status:200"
+							}]
 						}]
-					}]
 				});
 			},
-			getFood: function(id) {
+			getFood: function (id) {
 				var url = OPKPService.host + "batch";
 
 				return post($http, $q, url, {
 					commands: [{
 						name: "food",
 						controller: "graph",
-						path: "fir_food/'" + id + "'",
-						params: {
-							fields: "ORIGFDCD,ENGFDNAM,SCINAM"
-						}
+						path: "fir_food/'" + id + "'"
 					}, {
-						name: "components",
-						controller: "graph",
-						path: "fir_food/'" + id + "'",
-						params: {
-							fields: "fir_value().fields(SELVAL,fir_component().fields(ORIGCPNM))"
-						},
-						dependencies: [{
-							command: "food",
-							condition: "status:200"
+							name: "components",
+							controller: "graph",
+							path: "fir_food/'" + id + "'",
+							params: {
+								fields: "fir_value().fields(SELVAL,UNIT,fir_component().fields(ORIGCPNM))"
+							},
+							dependencies: [{
+								command: "food",
+								condition: "status:200"
+							}]
 						}]
-					}]
 				});
 			},
-			graph: function(arguments, fields) {
+			graph: function (arguments, fields) {
 				var url = OPKPService.host + "graph/" + arguments.join(",");
 				var params = {};
 

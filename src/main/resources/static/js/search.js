@@ -1,9 +1,7 @@
 app.controller("food-modal", function ($scope, $uibModalInstance, opkpService, food) {
 	opkpService.getFood(food["ORIGFDCD"]).then(function (data) {
-		console.log(data);
-
 		$scope.data = {
-			components: data.components.total == 0 ? null : data.components.objects,
+			values: data.components.total == 0 ? null : data.components.objects[0].fir_value,
 			food: data.food.objects[0]
 		};
 	});
