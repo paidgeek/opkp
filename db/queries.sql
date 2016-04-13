@@ -105,3 +105,14 @@ INNER JOIN (
 ) fir_value ON(fir_food.ORIGFDCD = fir_value.ORIGFDCD)
 
 
+SELECT *
+FROM fir_food
+JOIN fc_foodsubgroup USING(FSGCD);
+
+SELECT *
+FROM fir_food
+LEFT JOIN fc_foodsubgroup ON((fc_foodsubgroup.FSGCD = fir_food.FSGCD))
+LEFT JOIN fc_foodgroup ON((fc_foodgroup.FGCD = fc_foodsubgroup.FGCD))
+WHERE (fir_food.ORIGFDCD = '03280')
+LIMIT 50
+

@@ -50,7 +50,7 @@ public class MySQLSelectOperationBuilder implements SelectOperationBuilder {
 			  .append("\n");
 
 		for (Graph<String, AstNode>.Edge edge : joins) {
-			query.append("INNER JOIN ")
+			query.append("LEFT JOIN ")
 				  .append(edge.getNodeB());
 
 			String cond = MySQLSourceFactory.build(edge.getValue());

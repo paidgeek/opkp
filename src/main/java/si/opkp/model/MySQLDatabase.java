@@ -201,18 +201,16 @@ public class MySQLDatabase implements Database {
 	@Override
 	public NodeResult query(SelectOperation selectOperation) {
 		List<RequestField> fields = selectOperation.getFields();
-
-		// add all fields by default
-		if (fields.stream()
-				.noneMatch(rf -> !rf.isEdge())) {
-			definitions.get(selectOperation.getFrom())
-					.getFields()
-					.values()
-					.forEach(fd -> fields.add(new RequestField(fd.getName(), fd.getNode())));
-		}
-
 		List<RequestField> flatFields = flattenFieldList(fields);
-		List<RequestField> edgeFields = new ArrayList<>();
+
+		addDefaultFieldsRecursive(selectOperation.getFrom(), fields);
+
+		flatFields = flattenFieldList(fields);
+		//addDefaultFields(selectOperation.getFrom(), flatFields);
+
+		//for (Graph<String, AstNode>.Edge edge : selectOperation.getJoins()) {
+		//	addDefaultFields(edge.getNodeB(), flatFields);
+		//}
 		Iterator<RequestField> fieldIterator = flatFields.iterator();
 
 		while (fieldIterator.hasNext()) {
@@ -234,19 +232,8 @@ public class MySQLDatabase implements Database {
 
 				selectOperation.join(edge.get());
 
-				if (rf.getParent() == null) {
-					edgeFields.add(rf);
-				}
-
 				fieldIterator.remove();
 			}
-		}
-
-		addDefaultFields(selectOperation.getFrom(), flatFields);
-		addDefaultFieldsRecursive(selectOperation.getFrom(), fields);
-
-		for (Graph<String, AstNode>.Edge edge : selectOperation.getJoins()) {
-			addDefaultFields(edge.getNodeB(), flatFields);
 		}
 
 		selectOperation.fields(flatFields);
@@ -281,6 +268,14 @@ public class MySQLDatabase implements Database {
 	}
 
 	private void addDefaultFields(String node, List<RequestField> fields) {
+		if (fields.stream()
+				.noneMatch(rf -> !rf.isEdge())) {
+			definitions.get(node)
+					.getFields()
+					.values()
+					.forEach(fd -> fields.add(new RequestField(fd.getName(), fd.getNode())));
+		}
+
 		definitions.get(node)
 				.getIdentifiers()
 				.forEach(id -> {

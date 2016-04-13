@@ -38,7 +38,7 @@ public class Command {
 		this.path = Arrays.asList(path.split("/"));
 		this.body = body;
 		this.dependencies = dependencies == null ? Collections.emptyList() : dependencies;
-		this.params = params;
+		this.params = params == null ? new RequestParams() : params;
 	}
 
 	public String getName() {

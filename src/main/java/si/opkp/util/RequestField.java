@@ -7,6 +7,7 @@ import com.moybl.restql.ast.Literal;
 import com.moybl.restql.ast.Member;
 import com.moybl.restql.ast.Sequence;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +39,6 @@ public class RequestField {
 	public RequestField(String name, List<RequestField> fields) {
 		this.name = name;
 		this.fields = fields;
-		this.parent = parent;
 
 		node = null;
 		isEdge = true;
@@ -101,6 +101,7 @@ public class RequestField {
 					String name = ((Identifier) call.getTarget()).getName();
 					RequestField rf = new RequestField(name);
 					rf.isEdge = true;
+					rf.fields = new ArrayList<>();
 
 					AstNode t = null;
 					AstNode e = null;
@@ -122,6 +123,10 @@ public class RequestField {
 							rf.fields = paramArgs.getElements()
 									.stream()
 									.map(node -> {
+										if (node instanceof Call) {
+											node = new Member(node, new Call(new Identifier("fields"), new Sequence(Collections.emptyList())));
+										}
+
 										RequestField nf = RequestField.fromAst(node);
 
 										if (nf != null) {

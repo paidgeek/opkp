@@ -91,25 +91,10 @@ OPKPService.create = function () {
 				});
 			},
 			getFood: function (id) {
-				var url = OPKPService.host + "batch";
-
-				return post($http, $q, url, {
-					commands: [{
-						name: "food",
-						controller: "graph",
-						path: "fir_food/'" + id + "'"
-					}, {
-							name: "components",
-							controller: "graph",
-							path: "fir_food/'" + id + "'",
-							params: {
-								fields: "fir_value().fields(SELVAL,UNIT,fir_component().fields(ORIGCPNM))"
-							},
-							dependencies: [{
-								command: "food",
-								condition: "status:200"
-							}]
-						}]
+				var url = OPKPService.host + "graph/fir_food/'" + id + "'";
+				
+				return get($http, $q, url, {
+					fields: "fc_foodsubgroup().fields(fc_foodgroup()),fir_value().fields(SELVAL,UNIT,fir_component().fields(ORIGCPNM))"
 				});
 			},
 			graph: function (arguments, fields) {
