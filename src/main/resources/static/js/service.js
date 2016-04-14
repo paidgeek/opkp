@@ -64,35 +64,15 @@ OPKPService.create = function () {
 				});
 			},
 			getRecipe: function (id) {
-				var url = OPKPService.host + "batch";
+				var url = OPKPService.host + "graph/fir_recipe/'" + id + "'";
 
-				return post($http, $q, url, {
-					commands: [{
-						name: "recipe",
-						controller: "path",
-						method: "GET",
-						arguments: "fir_recipe",
-						params: {
-							where: "RECID:'" + id + "'",
-							fields: ["RECID", "INGNAM", "INGAMOUNT", "INGUNIT", "HMID", "RANK", "EDIBLE", "WHOLE_WHEAT", "SOAK", "REMARKS", "ORIGCPNM", "ENGFDNAM", "SCINAM"]
-						}
-					}, {
-							name: "ingredients",
-							controller: "path",
-							arguments: "fir_ingredients,fir_food",
-							params: {
-								where: "fir_ingredients.RECID:'" + id + "'"
-							},
-							dependencies: [{
-								command: "recipe",
-								condition: "status:200"
-							}]
-						}]
+				return get($http, $q, url, {
+					fields: "fir_ingredients(),fir_food().fields(fc_foodsubgroup().fields(fc_foodgroup()))"
 				});
 			},
 			getFood: function (id) {
 				var url = OPKPService.host + "graph/fir_food/'" + id + "'";
-				
+
 				return get($http, $q, url, {
 					fields: "fc_foodsubgroup().fields(fc_foodgroup()),fir_value().fields(SELVAL,UNIT,fir_component().fields(ORIGCPNM))"
 				});

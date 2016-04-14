@@ -116,3 +116,23 @@ LEFT JOIN fc_foodgroup ON((fc_foodgroup.FGCD = fc_foodsubgroup.FGCD))
 WHERE (fir_food.ORIGFDCD = '03280')
 LIMIT 50
 
+
+SELECT fir_food.origfdnm      AS 'fir_food.ORIGFDNM', 
+       fir_food.origfdcd      AS 'fir_food.ORIGFDCD', 
+       fir_value.selval       AS 'fir_value.SELVAL', 
+       fir_value.valueid      AS 'fir_value.VALUEID', 
+       fir_value.origfdcd     AS 'fir_value.ORIGFDCD', 
+       fir_value.compid       AS 'fir_value.COMPID', 
+       fir_component.origcpnm AS 'fir_component.ORIGCPNM', 
+       fir_component.ecompid  AS 'fir_component.ECOMPID' 
+FROM   fir_food 
+       LEFT JOIN fir_value 
+              ON(( fir_food.origfdcd = fir_value.origfdcd )) 
+       LEFT JOIN fir_component 
+              ON(( fir_component.ecompid = fir_value.compid )) 
+WHERE  ( fir_food.origfdcd = '20008' ) 
+LIMIT  0, 100 
+
+
+
+

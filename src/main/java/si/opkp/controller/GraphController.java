@@ -69,6 +69,8 @@ public class GraphController {
 		RequestWhere where = new RequestWhere(condition);
 		NodeResult result = database.query(new SelectOperation().from(node)
 				.fields(params.getFields())
+				.skip(params.getSkip())
+				.take(params.getTake())
 				.where(where));
 
 		return result.toResponseEntity();

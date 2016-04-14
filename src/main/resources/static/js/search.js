@@ -14,10 +14,8 @@ app.controller("food-modal", function ($scope, $uibModalInstance, opkpService, f
 
 app.controller('recipe-modal', function ($scope, $uibModalInstance, opkpService, recipe) {
 	opkpService.getRecipe(recipe["RECID"]).then(function (data) {
-		$scope.data = {
-			ingredients: data.ingredients.objects[0],
-			recipe: data.recipe.objects[0]
-		};
+		console.log(data.objects[0]);
+		$scope.data = data.objects[0];
 	});
 
 	$scope.ok = function () {

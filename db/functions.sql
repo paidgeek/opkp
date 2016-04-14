@@ -70,7 +70,7 @@ DELIMITER ;
 
 -- TESTS --
 CALL search_foods('*Dehidrirana* *banana* *ali* *banana* *v* *prahu*',20, 20);
-CALL search_recipes('*bread*', 0, 100)
+CALL search_recipes('ban*', 0, 100)
 
 
 

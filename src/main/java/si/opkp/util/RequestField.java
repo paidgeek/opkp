@@ -86,6 +86,8 @@ public class RequestField {
 			String name = ((Identifier) ast).getName();
 
 			return new RequestField(name);
+		} else if (ast instanceof Call) {
+			return fromAst(new Member(ast, new Call(new Identifier("fields"), new Sequence(Collections.emptyList()))));
 		} else if (ast instanceof Member) {
 			Member member = (Member) ast;
 
