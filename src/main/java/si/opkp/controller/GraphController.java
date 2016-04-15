@@ -55,6 +55,11 @@ public class GraphController {
 				.get(node)
 				.getIdentifiers()) {
 			Member left = b.member(b.identifier(identifier.getNode()), b.identifier(identifier.getName()));
+
+			if (i >= ids.size()) {
+				break;
+			}
+
 			Literal right = ids.get(i++);
 
 			if (condition == null) {

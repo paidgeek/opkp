@@ -64,10 +64,24 @@ OPKPService.create = function () {
 				});
 			},
 			getRecipe: function (id) {
-				var url = OPKPService.host + "graph/fir_recipe/'" + id + "'";
+				var url = OPKPService.host + "batch";
 
-				return get($http, $q, url, {
-					fields: "fir_ingredients(),fir_food().fields(fc_foodsubgroup().fields(fc_foodgroup()))"
+				return post($http, $q, url, {
+					commands: [{
+						name: "recipe",
+						controller: "graph",
+						path: "fir_recipe/'" + id + "'",
+						params: {
+							fields: "fir_food().fields(fc_foodsubgroup().fields(fc_foodgroup()))"
+						}
+					}, {
+							name: "ingredients",
+							controller: "graph",
+							path: "fir_ingredients/'" + id + "'",
+							params: {
+								fields: "fir_food()"
+							}
+						}]
 				});
 			},
 			getFood: function (id) {

@@ -1,20 +1,19 @@
 <div class="modal-header">
-	<h3 class="modal-title">{{data.fir_food[0].ORIGFDNM}}</h3>
+	<h3 class="modal-title">{{data.recipe.fir_food[0].ORIGFDNM}}</h3>
 </div>
 <div class="modal-body">
 	<div>
 		<table class="table table-hover table-condensed table-borderless">
 			<tr>
 				<td><b>Food Group</b></td>
-				<td>{{data.fir_food[0].fc_foodsubgroup[0].fc_foodgroup[0].FGENGNM}}</td>
+				<td>{{data.recipe.fir_food[0].fc_foodsubgroup[0].fc_foodgroup[0].FGENGNM}}</td>
 			</tr>
 			<tr>
 				<td><b>Food Subgroup</b></td>
-				<td>{{data.fir_food[0].fc_foodsubgroup[0].FSGENGNM}}</td>
+				<td>{{data.recipe.fir_food[0].fc_foodsubgroup[0].FSGENGNM}}</td>
 			</tr>
 
-			<tr ng-repeat="(key, value) in data"
-				ng-if="data[key] && key != 'fir_ingredients' && key != 'fir_food'">
+			<tr ng-repeat="(key, value) in data.recipe" ng-if="data.recipe[key] && key != 'fir_ingredients' && key != 'fir_food'">
 				<td><b>{{key}}</b></td>
 				<td>{{value}}</td>
 			</tr>
@@ -22,7 +21,7 @@
 		</table>
 	</div>
 
-	<div class="panel panel-default" ng-if="data.fir_ingredients">
+	<div class="panel panel-default" ng-if="data.ingredients">
 		<div class="panel-heading">
 			<h3 class="panel-title">Ingredients</h3>
 		</div>
@@ -30,14 +29,14 @@
 			<table class="table table-hover table-condensed table-borderless">
 				<thead>
 					<tr>
-						<th>INGNAM</th>
+						<th>ORIGFDNM</th>
 						<th>INGAMOUNT</th>
 						<th>INGUNIT</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr ng-repeat="ingredient in data.fir_ingredients">
-						<td>{{ingredient.INGNAM}}</td>
+					<tr ng-repeat="ingredient in data.ingredients">
+						<td><a ng-click="onIngredientClick(ingredient)">{{ingredient.fir_food[0].ORIGFDNM}}</a></td>
 						<td>{{ingredient.INGAMOUNT}}</td>
 						<td>{{ingredient.INGUNIT}}</td>
 					</tr>

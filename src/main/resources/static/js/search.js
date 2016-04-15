@@ -1,5 +1,5 @@
-app.controller("food-modal", function ($scope, $uibModalInstance, opkpService, food) {
-	opkpService.getFood(food["ORIGFDCD"]).then(function (data) {
+app.controller("food-modal", function ($scope, $uibModalInstance, opkpService, foodId) {
+	opkpService.getFood(foodId).then(function (data) {
 		$scope.data = data.objects[0];
 	});
 
@@ -12,10 +12,12 @@ app.controller("food-modal", function ($scope, $uibModalInstance, opkpService, f
 	};
 });
 
-app.controller('recipe-modal', function ($scope, $uibModalInstance, opkpService, recipe) {
-	opkpService.getRecipe(recipe["RECID"]).then(function (data) {
-		console.log(data.objects[0]);
-		$scope.data = data.objects[0];
+app.controller('recipe-modal', function ($scope, $uibModalInstance, opkpService, recipeId, $modal) {
+	opkpService.getRecipe(recipeId).then(function (data) {
+		$scope.data = {
+			recipe: data.recipe.objects[0],
+			ingredients: data.ingredients.objects
+		};
 	});
 
 	$scope.ok = function () {
@@ -24,6 +26,22 @@ app.controller('recipe-modal', function ($scope, $uibModalInstance, opkpService,
 
 	$scope.cancel = function () {
 		$uibModalInstance.dismiss('cancel');
+	};
+
+	$scope.onIngredientClick = function (ingredient) {
+		var foodId = ingredient["FOODID"];
+
+		//$uibModalInstance.dismiss('cancel');
+		var modal = $modal.open({
+			templateUrl: "templates/food-modal.html",
+			controller: "food-modal",
+			size: "lg",
+			resolve: {
+				foodId: function () {
+					return foodId;
+				}
+			}
+		});
 	};
 });
 
@@ -92,8 +110,8 @@ app.controller("search", function ($scope, $uibModal, opkpService, $http) {
 				controller: "food-modal",
 				size: "lg",
 				resolve: {
-					food: function () {
-						return row;
+					foodId: function () {
+						return row["ORIGFDCD"];
 					}
 				}
 			});
@@ -103,8 +121,11 @@ app.controller("search", function ($scope, $uibModal, opkpService, $http) {
 				controller: "recipe-modal",
 				size: "lg",
 				resolve: {
-					recipe: function () {
-						return row;
+					recipeId: function () {
+						return row["RECID"];
+					},
+					$modal: function () {
+						return $uibModal;
 					}
 				}
 			});
