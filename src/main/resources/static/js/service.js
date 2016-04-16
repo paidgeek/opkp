@@ -85,11 +85,27 @@ OPKPService.create = function () {
 				});
 			},
 			getFood: function (id) {
-				var url = OPKPService.host + "graph/fir_food/'" + id + "'";
+				var url = OPKPService.host + "batch";
 
-				return get($http, $q, url, {
-					fields: "fc_foodsubgroup().fields(fc_foodgroup()),fir_value().fields(SELVAL,UNIT,fir_component().fields(ORIGCPNM))"
+				return post($http, $q, url, {
+					commands: [{
+						name: "food",
+						controller: "graph",
+						path: "fir_food/'" + id + "'",
+						params: {
+							fields: "fc_foodsubgroup().fields(fc_foodgroup()),fir_value().fields(SELVAL,UNIT,fir_component().fields(ORIGCPNM))"
+						}
+					}, {
+							name: "ingredients",
+							controller: "graph",
+							path: "fir_ingredients",
+							params: {
+								fields: "fir_recipe().fields(fir_food())",
+								where: "FOODID:'" + id + "'"
+							}
+						}]
 				});
+
 			},
 			graph: function (arguments, fields) {
 				var url = OPKPService.host + "graph/" + arguments.join(",");
