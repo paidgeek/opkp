@@ -1,7 +1,7 @@
 app.controller("food-modal", function ($scope, $uibModalInstance, opkpService, foodId) {
 	opkpService.getFood(foodId).then(function (data) {
 		console.log(data);
-		
+
 		$scope.data = data.food.objects[0];
 		$scope.data.ingredients = data.ingredients.objects;
 	});
@@ -18,7 +18,7 @@ app.controller("food-modal", function ($scope, $uibModalInstance, opkpService, f
 app.controller('recipe-modal', function ($scope, $uibModalInstance, opkpService, recipeId, $modal) {
 	opkpService.getRecipe(recipeId).then(function (data) {
 		console.log(data);
-		
+
 		$scope.data = {
 			recipe: data.recipe.objects[0],
 			ingredients: data.ingredients.objects
@@ -77,6 +77,7 @@ app.controller("search", function ($scope, $uibModal, opkpService, $http) {
 
 	$scope.onPageChanged = function (nodeIndex, page) {
 		$scope.currentPage = page;
+		$scope.response = {};
 		window.scrollTo(0, 0);
 
 		search();
@@ -84,6 +85,7 @@ app.controller("search", function ($scope, $uibModal, opkpService, $http) {
 
 	$scope.selectSearchTab = function (nodeIndex) {
 		$scope.currentNodeIndex = nodeIndex;
+		$scope.response = {};
 
 		search();
 	};
