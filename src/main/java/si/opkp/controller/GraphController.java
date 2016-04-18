@@ -9,7 +9,9 @@ import com.moybl.restql.ast.Sequence;
 import com.moybl.restql.factory.RestQLBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,71 +25,68 @@ import si.opkp.util.RequestField;
 import si.opkp.util.RequestParams;
 import si.opkp.util.RequestWhere;
 
-@RestController
-@CrossOrigin
-@RequestMapping("/v1/graph")
-public class GraphController {
+@Service
+public class GraphController extends Controller {
 
 	@Autowired
 	private Database database;
 
-	@RequestMapping(value = "/{node}", method = RequestMethod.GET)
-	public ResponseEntity<?> get(@PathVariable String node,
-										  RequestParams params) {
-		NodeResult result = database.query(new SelectOperation().fields(params.getFields())
-				.from(node)
-				.where(params.getWhere()));
+	@Override
+	public ResponseEntity<?> get(String[] path, RequestParams params) {
+		if (path.length == 1) {
+			String node = path[0];
 
-		return result.toResponseEntity();
-	}
+			NodeResult result = database.query(new SelectOperation().fields(params.getFields())
+																					  .from(node)
+																					  .where(params.getWhere()));
 
-	public ResponseEntity<?> get(String node, Sequence id, RequestParams params) {
-		List<Literal> ids = id.getElements()
-				.stream()
-				.map(element -> (Literal) element)
-				.collect(Collectors.toList());
+			return result.toResponseEntity();
+		} else if (path.length == 2) {
+			String node = path[0];
+			Sequence id = (Sequence) RestQL.parse(path[1])
+													 .getElements()
+													 .get(0);
 
-		RestQLBuilder b = new RestQLBuilder();
-		AstNode condition = null;
-		int i = 0;
+			List<Literal> ids = id.getElements()
+										 .stream()
+										 .map(element -> (Literal) element)
+										 .collect(Collectors.toList());
 
-		for (FieldDefinition identifier : database.getNodes()
-				.get(node)
-				.getIdentifiers()) {
-			Member left = b.member(b.identifier(identifier.getNode()), b.identifier(identifier.getName()));
+			RestQLBuilder b = new RestQLBuilder();
+			AstNode condition = null;
+			int i = 0;
 
-			if (i >= ids.size()) {
-				break;
+			for (FieldDefinition identifier : database.getNodes()
+																	.get(node)
+																	.getIdentifiers()) {
+				Member left = b.member(b.identifier(identifier.getNode()), b.identifier(identifier.getName()));
+
+				if (i >= ids.size()) {
+					break;
+				}
+
+				Literal right = ids.get(i++);
+
+				if (condition == null) {
+					condition = b.sequence(b.binaryOperation(left, Token.EQUAL, right));
+				} else {
+					condition = b.binaryOperation(condition, Token.AND, b.binaryOperation(left, Token.EQUAL, right));
+				}
 			}
 
-			Literal right = ids.get(i++);
+			setMissingNodeValues(node, params.getFields());
 
-			if (condition == null) {
-				condition = b.sequence(b.binaryOperation(left, Token.EQUAL, right));
-			} else {
-				condition = b.binaryOperation(condition, Token.AND, b.binaryOperation(left, Token.EQUAL, right));
-			}
+			RequestWhere where = new RequestWhere(condition);
+			NodeResult result = database.query(new SelectOperation().from(node)
+																					  .fields(params.getFields())
+																					  .skip(params.getSkip())
+																					  .take(params.getTake())
+																					  .where(where));
+
+			return result.toResponseEntity();
 		}
 
-		setMissingNodeValues(node, params.getFields());
-
-		RequestWhere where = new RequestWhere(condition);
-		NodeResult result = database.query(new SelectOperation().from(node)
-				.fields(params.getFields())
-				.skip(params.getSkip())
-				.take(params.getTake())
-				.where(where));
-
-		return result.toResponseEntity();
-	}
-
-	@RequestMapping(value = "/{node}/{id}", method = RequestMethod.GET)
-	public ResponseEntity<?> get(@PathVariable("node") String node,
-										  @PathVariable("id") String id,
-										  RequestParams params) {
-		return get(node, (Sequence) RestQL.parse(id)
-				.getElements()
-				.get(0), params);
+		return super.get(path, params);
 	}
 
 	private void setMissingNodeValues(String node, List<RequestField> fields) {

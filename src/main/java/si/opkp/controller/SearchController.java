@@ -3,6 +3,7 @@ package si.opkp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +21,8 @@ import si.opkp.util.Pojo;
 import si.opkp.util.RequestParams;
 import si.opkp.util.Util;
 
-@RestController
-@RequestMapping("/v1/search")
-@CrossOrigin
-public class SearchController {
+@Service
+public class SearchController extends Controller {
 
 	private static final Map<String, String> SEARCH_FUNCTIONS = new HashMap<String, String>() {{
 		put("fir_food", "search_foods");
@@ -33,13 +32,11 @@ public class SearchController {
 	@Autowired
 	private Database database;
 
-	@RequestMapping(value = "{node}/{keywordList}", method = RequestMethod.GET)
-	public ResponseEntity<?> get(@PathVariable String node,
-										  @PathVariable String keywordList,
-										  RequestParams params) {
+	@Override
+	public ResponseEntity<?> get(String[] path, RequestParams params) {
 		try {
-			String function = SEARCH_FUNCTIONS.get(node);
-			String[] keywords = keywordList.split(",");
+			String function = SEARCH_FUNCTIONS.get(path[0]);
+			String[] keywords = path[1].split(",");
 
 			for (int i = 0; i < keywords.length; i++) {
 				keywords[i] = keywords[i] + "*";
@@ -51,7 +48,7 @@ public class SearchController {
 
 			return result.toResponseEntity();
 		} catch (Exception e) {
-			return Util.responseError(HttpStatus.BAD_REQUEST);
+			return super.get(path, params);
 		}
 	}
 

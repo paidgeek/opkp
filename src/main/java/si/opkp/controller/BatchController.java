@@ -10,6 +10,7 @@ import com.moybl.restql.ast.Sequence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -23,18 +24,18 @@ import si.opkp.batch.Dependency;
 import si.opkp.util.Pojo;
 import si.opkp.util.Util;
 
-@RestController
-@RequestMapping("/v1/batch")
-@CrossOrigin
-public class BatchController {
+@Service
+public class BatchController extends Controller {
 
 	@Autowired
-	private GraphController graphController;
-	@Autowired
-	private SearchController searchController;
+	private Router router;
 
-	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<?> perform(@RequestBody Batch batch) {
+	@Override
+	public ResponseEntity<?> post(String[] path, Pojo body) {
+		return super.post(path, body);
+	}
+
+	private ResponseEntity<?> perform(@RequestBody Batch batch) {
 		try {
 			Pojo result = new Pojo();
 			Map<String, Engine> states = new HashMap<>();
@@ -46,7 +47,7 @@ public class BatchController {
 					Engine state = states.get(dependency.getCommand());
 
 					if (!state.evaluate(dependency.getCondition())
-							.equals(Literal.trueLiteral())) {
+								 .equals(Literal.trueLiteral())) {
 						result.setProperty(command.getName(),
 								String.format("command was terminated, because condition '%s' failed for command '%s'",
 										dependency.getCondition(),
@@ -62,36 +63,9 @@ public class BatchController {
 
 				states.put(command.getName(), state);
 
-				ResponseEntity<?> response;
-
-				switch (controller) {
-					case "graph":
-						if (path.size() == 1) {
-							String node = path.get(0);
-							response = graphController.get(node, command.getParams());
-
-							break;
-						} else if (path.size() == 2) {
-							String node = path.get(0);
-							response = graphController.get(node, path.get(1), command.getParams());
-
-							break;
-						}
-					case "search":
-						String node = path.get(0);
-						String keywordList = path.get(1);
-						response = searchController.get(node, keywordList, command.getParams());
-
-						break;
-					default:
-						state.setVariable("status", (double) HttpStatus.BAD_REQUEST.value());
-						result.setProperty(command.getName(), Util.createError("invalid controller"));
-
-						continue;
-				}
-
+				ResponseEntity<?> response = router.get(controller, path.toArray(new String[path.size()]), command.getParams());
 				state.setVariable("status", response.getStatusCode()
-						.value());
+																.value());
 				result.setProperty(command.getName(), response.getBody());
 			}
 
