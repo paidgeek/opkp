@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
+import si.opkp.util.Pojo;
 import si.opkp.util.RequestParams;
 
 @RestController
@@ -66,5 +68,22 @@ public class Router {
 		return controllers.get(controller)
 								.get(path, params);
 	}
+
+	/*
+	@RequestMapping(value = "{controller}", method = RequestMethod.POST)
+	public ResponseEntity<?> post(@PathVariable String controller,
+											@RequestBody Pojo body) {
+		return post(controller, new String[]{}, body);
+	}
+
+	public ResponseEntity<?> post(String controller, String[] path, Pojo body) {
+		if (!controllers.containsKey(controller)) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+
+		return controllers.get(controller)
+								.post(path, body);
+	}
+	*/
 
 }

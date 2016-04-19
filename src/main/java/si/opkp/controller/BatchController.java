@@ -7,12 +7,14 @@ import com.moybl.restql.ast.Identifier;
 import com.moybl.restql.ast.Literal;
 import com.moybl.restql.ast.Sequence;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,17 +26,29 @@ import si.opkp.batch.Dependency;
 import si.opkp.util.Pojo;
 import si.opkp.util.Util;
 
-@Service
-public class BatchController extends Controller {
+@RestController
+@CrossOrigin
+@RequestMapping("v1/batch")
+public class BatchController {
 
 	@Autowired
 	private Router router;
 
+	/*
 	@Override
 	public ResponseEntity<?> post(String[] path, Pojo body) {
-		return super.post(path, body);
-	}
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			Batch batch = mapper.readValue(mapper.writeValueAsString(body), Batch.class);
 
+			return perform(batch);
+		} catch (Exception e) {
+			return new ResponseEntity(HttpStatus.BAD_REQUEST);
+		}
+	}
+	*/
+
+	@RequestMapping(method = RequestMethod.POST)
 	private ResponseEntity<?> perform(@RequestBody Batch batch) {
 		try {
 			Pojo result = new Pojo();

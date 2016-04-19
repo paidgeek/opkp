@@ -86,6 +86,7 @@ app.controller("search", function ($scope, $uibModal, opkpService, $http) {
 	$scope.selectSearchTab = function (nodeIndex) {
 		$scope.currentNodeIndex = nodeIndex;
 		$scope.response = {};
+		$scope.currentPage = 1;
 
 		search();
 	};
@@ -101,7 +102,6 @@ app.controller("search", function ($scope, $uibModal, opkpService, $http) {
 			promise.then(function (data) {
 				if (data.total) {
 					$scope.response.objects = data.objects;
-					$scope.currentPage = 1;
 					$scope.response.total = data.total;
 				}
 			});
