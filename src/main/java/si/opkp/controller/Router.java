@@ -5,10 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -16,7 +14,6 @@ import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 
-import si.opkp.util.Pojo;
 import si.opkp.util.RequestParams;
 
 @RestController
@@ -25,15 +22,15 @@ import si.opkp.util.RequestParams;
 public class Router {
 
 	@Autowired
-	private Map<String, Controller> controllers;
+	private Map<String, ControllerAdapter> controllers;
 
 	@PostConstruct
 	private void init() {
 		// remove "Controller" from controller names
-		Map<String, Controller> full = controllers;
+		Map<String, ControllerAdapter> full = controllers;
 		controllers = new TreeMap<>();
 
-		for (Map.Entry<String, Controller> e : full.entrySet()) {
+		for (Map.Entry<String, ControllerAdapter> e : full.entrySet()) {
 			controllers.put(e.getKey()
 								  .replace("Controller", ""), e.getValue());
 		}

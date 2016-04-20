@@ -9,10 +9,8 @@ import com.moybl.restql.ast.Sequence;
 import com.moybl.restql.factory.RestQLBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +24,7 @@ import si.opkp.util.RequestParams;
 import si.opkp.util.RequestWhere;
 
 @Service
-public class GraphController extends Controller {
+public class GraphController extends ControllerAdapter {
 
 	@Autowired
 	private Database database;

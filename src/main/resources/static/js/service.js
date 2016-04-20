@@ -77,9 +77,10 @@ OPKPService.create = function () {
 					}, {
 							name: "ingredients",
 							controller: "graph",
-							path: "fir_ingredients/'" + id + "'",
+							path: "fir_ingredients",
 							params: {
-								fields: "fir_food()"
+								fields: "fir_food()",
+								where: "RECID='" + id + "'"
 							}
 						}]
 				});
