@@ -1,6 +1,7 @@
 package si.opkp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,6 +24,8 @@ public class Router {
 
 	@Autowired
 	private Map<String, ControllerAdapter> controllers;
+	@Autowired
+	private Map<String, Middleware> middlewares;
 
 	@PostConstruct
 	private void init() {
@@ -32,7 +35,7 @@ public class Router {
 
 		for (Map.Entry<String, ControllerAdapter> e : full.entrySet()) {
 			controllers.put(e.getKey()
-								  .replace("Controller", ""), e.getValue());
+					.replace("Controller", ""), e.getValue());
 		}
 	}
 
@@ -62,8 +65,17 @@ public class Router {
 			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
 		}
 
-		return controllers.get(controller)
-								.get(path, params);
+		ControllerAdapter controllerAdapter = controllers.get(controller);
+
+		for (Middleware middleware : middlewares.values()) {
+			ResponseEntity midResponse = middleware.get(controllerAdapter, path, params);
+
+			if (midResponse.getStatusCode() != HttpStatus.OK) {
+				return midResponse;
+			}
+		}
+
+		return controllerAdapter.get(path, params);
 	}
 
 	/*
