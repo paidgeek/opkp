@@ -80,7 +80,7 @@ OPKPService.create = function () {
 							path: "fir_ingredients",
 							params: {
 								fields: "fir_food()",
-								where: "RECID='" + id + "'"
+								where: "RECID:'" + id + "'"
 							}
 						}]
 				});
