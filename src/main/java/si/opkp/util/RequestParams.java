@@ -13,6 +13,7 @@ public class RequestParams {
 
 	private List<RequestField> fields;
 	private RequestWhere where;
+	private RequestSort sort;
 	private long skip;
 	private long take;
 
@@ -61,12 +62,22 @@ public class RequestParams {
 		this.where = new RequestWhere(node);
 	}
 
+	public void setSort(String expression) {
+		AstNode node = RestQL.parse(expression).getElements().get(0);
+
+		this.sort = new RequestSort(node);
+	}
+
 	public List<RequestField> getFields() {
 		return fields;
 	}
 
 	public RequestWhere getWhere() {
 		return where;
+	}
+
+	public RequestSort getSort() {
+		return sort;
 	}
 
 }

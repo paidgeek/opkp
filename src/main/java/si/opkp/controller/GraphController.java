@@ -34,29 +34,32 @@ public class GraphController extends ControllerAdapter {
 		if (path.length == 1) {
 			String node = path[0];
 
+			setMissingNodeValues(node, params.getFields());
+
 			NodeResult result = database.query(new SelectOperation().fields(params.getFields())
-																					  .from(node)
-																					  .where(params.getWhere()));
+					.from(node)
+					.where(params.getWhere())
+					.sort(params.getSort()));
 
 			return result.toResponseEntity();
 		} else if (path.length == 2) {
 			String node = path[0];
 			Sequence id = (Sequence) RestQL.parse(path[1])
-													 .getElements()
-													 .get(0);
+					.getElements()
+					.get(0);
 
 			List<Literal> ids = id.getElements()
-										 .stream()
-										 .map(element -> (Literal) element)
-										 .collect(Collectors.toList());
+					.stream()
+					.map(element -> (Literal) element)
+					.collect(Collectors.toList());
 
 			RestQLBuilder b = new RestQLBuilder();
 			AstNode condition = null;
 			int i = 0;
 
 			for (FieldDefinition identifier : database.getNodes()
-																	.get(node)
-																	.getIdentifiers()) {
+					.get(node)
+					.getIdentifiers()) {
 				Member left = b.member(b.identifier(identifier.getNode()), b.identifier(identifier.getName()));
 
 				if (i >= ids.size()) {
@@ -76,10 +79,11 @@ public class GraphController extends ControllerAdapter {
 
 			RequestWhere where = new RequestWhere(condition);
 			NodeResult result = database.query(new SelectOperation().from(node)
-																					  .fields(params.getFields())
-																					  .skip(params.getSkip())
-																					  .take(params.getTake())
-																					  .where(where));
+					.fields(params.getFields())
+					.skip(params.getSkip())
+					.take(params.getTake())
+					.where(where)
+					.sort(params.getSort()));
 
 			return result.toResponseEntity();
 		}

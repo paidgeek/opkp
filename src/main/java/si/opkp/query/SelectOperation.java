@@ -7,6 +7,7 @@ import java.util.List;
 
 import si.opkp.util.Graph;
 import si.opkp.util.RequestField;
+import si.opkp.util.RequestSort;
 import si.opkp.util.RequestWhere;
 
 public class SelectOperation {
@@ -15,7 +16,7 @@ public class SelectOperation {
 	private String from;
 	private List<Graph<String, AstNode>.Edge> joins;
 	private RequestWhere where;
-	private List<RequestField> sort;
+	private RequestSort sort;
 	private List<RequestField> group;
 	private long skip, take;
 
@@ -49,8 +50,8 @@ public class SelectOperation {
 		return this;
 	}
 
-	public SelectOperation sort(List<RequestField> fields) {
-		sort = fields;
+	public SelectOperation sort(RequestSort sort) {
+		this.sort = sort;
 
 		return this;
 	}
@@ -89,7 +90,7 @@ public class SelectOperation {
 		return where;
 	}
 
-	public List<RequestField> getSort() {
+	public RequestSort getSort() {
 		return sort;
 	}
 
